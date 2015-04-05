@@ -6,10 +6,10 @@ For further explanation check the [Hadoop Website](http://hadoop.apache.org/).
 
 First of all, install Java in the desired Compute Node.
 
-'''
+```
 sudo apt-get update
 sudo apt-get install openjdk-7-jre
-'''
+```
 
 Then edit your .bashrc file to set up your JAVA_HOME environment variable.
 
