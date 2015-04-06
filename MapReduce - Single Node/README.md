@@ -36,7 +36,7 @@ This is the default Standalone installation of Hadoop.
 
 ## MapReduce v1.0
 
-Create a [WordCount.java](https://github.com/gmendonca/zebra/blob/master/Map%20Reduce%20-%20Single%20Node/WordCount.java) and compile it, and create a jar:
+Create a [WordCount.java](https://github.com/gmendonca/zebra/blob/master/MapReduce%20-%20Single%20Node/WordCount.java) and compile it, and create a jar:
 
     $ bin/hadoop com.sun.tools.javac.Main WordCount.java
     $ jar cf wc.jar WordCount*.class
@@ -146,7 +146,7 @@ Start ResourceManager daemon and NodeManager daemon:
 
     $ sbin/start-yarn.sh
 
-Create a [WordCount2.java](https://github.com/gmendonca/zebra/blob/master/Map%20Reduce%20-%20Single%20Node/WordCount2.java) and compile it, and create a jar:
+Create a [WordCount2.java](https://github.com/gmendonca/zebra/blob/master/MapReduce%20-%20Single%20Node/WordCount2.java) and compile it, and create a jar:
 
     $ bin/hadoop com.sun.tools.javac.Main WordCount2.java
     $ jar cf wc2.jar WordCount2*.class
