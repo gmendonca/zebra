@@ -144,4 +144,17 @@ etc/hadoop/yarn-site.xml:
 
 Start ResourceManager daemon and NodeManager daemon:
 
-  $ sbin/start-yarn.sh
+    $ sbin/start-yarn.sh
+
+Create a [WordCount2.java](https://github.com/gmendonca/zebra/blob/master/Map%20Reduce%20-%20Single%20Node/WordCount2.java) and compile it, and create a jar:
+
+    $ bin/hadoop com.sun.tools.javac.Main WordCount2.java
+    $ jar cf wc2.jar WordCount2*.class
+
+Then create and copy the input, run the MapReduce job and check the result:
+
+    $ bin/hdfs dfs -put ~/input2/ /user/mylovelyuser/input2
+
+    $ bin/hadoop jar wc2.jar WordCount2 /user/mylovelyuser/input2 /user/mylovelyuser/output2
+
+    $ bin/hdfs dfs -cat /user/mylovelyuser/output2/*
