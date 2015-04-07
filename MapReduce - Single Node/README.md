@@ -8,7 +8,7 @@ First of all, install Java in the desired Compute Node.
 
 
     $ sudo apt-get update
-    $ sudo apt-get install openjdk-7-jre
+    $ sudo apt-get install openjdk-7-jdk
 
 
 Then edit your .bashrc file to set up your JAVA_HOME environment variable.
@@ -20,7 +20,7 @@ You can extract the Hadoop files and set in the /usr/local/hadoop directory.
 Edit your .bashrc file and add the following lines:
 
     export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/jre
-    export PATH=$JAVA_HOME/bin:$PATH
+    export PATH=$JAVA_HOME/bin:/usr/local/hadoop/bin:$PATH
     export HADOOP_CLASSPATH=/usr/lib/jvm/java-7-openjdk-amd64/lib/tools.jar
 
 After editing:
@@ -43,15 +43,15 @@ Create a [WordCount.java](https://github.com/gmendonca/zebra/blob/master/MapRedu
 
 Create a input directory in top of HDFS:
 
-    $ hadoop fs –mkdir ~/input
+    $ hadoop fs –mkdir /user/mylovelyuser/input/
 
 You may create inputs files or copy into this directory. After that, you may run the application:
 
-    $ bin/hadoop jar wc.jar WordCount ~/input ~/output
+    $ bin/hadoop jar wc.jar WordCount input/ output/
 
 You will be able to see the output after this:
 
-    $ bin/hdfs dfs -cat /user/joe/wordcount/output/part-r-00000
+    $ bin/hdfs dfs -cat /user/mylovelyuser/output/part-r-00000
 
 ## MapReduce v2.0
 
@@ -90,7 +90,7 @@ If you cannot ssh to localhost without a passphrase, execute the following comma
   $ ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
   $ cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
 
-After all this steps described in the Hadoop Website, just format the filesystems, start the daemos for Namenode and Data Node, and create the directory for the Mapreduce jobs:
+After all this steps described in the Hadoop Website, just format the filesystems, start the daemons for Namenode and Data Node, and create the directory for the MapReduce jobs:
 
     $ bin/hdfs namenode -format
     $ sbin/start-dfs.sh
@@ -100,7 +100,7 @@ After all this steps described in the Hadoop Website, just format the filesystem
 By this point, you can run the v1.0 example as well.
 Just copy your input files to the directory created for the MapReduce jobs:
 
-    $ bin/hdfs dfs -put ~/input/ /user/mylovelyuser/input
+    $ bin/hdfs dfs -put input/ /user/mylovelyuser/input
 
 You can check your files with:
 
@@ -139,6 +139,20 @@ etc/hadoop/yarn-site.xml:
         <name>yarn.nodemanager.aux-services</name>
         <value>mapreduce_shuffle</value>
     </property>
+    <property>
+       <name>yarn.application.classpath</name>
+       <value>
+            /usr/local/hadoop/etc/hadoop,
+            /usr/local/hadoop/share/hadoop/common/*,
+            /usr/local/hadoop/share/hadoop/common/lib/*,
+            /usr/local/hadoop/share/hadoop//hdfs/*,
+            /usr/local/hadoop/share/hadoop/hdfs/lib/*,
+            /usr/local/hadoop/share/hadoop/mapreduce/*,
+            /usr/local/hadoop/share/hadoop/mapreduce/lib/*,
+            /usr/local/hadoop/share/hadoop/yarn/*,
+            /usr/local/hadoop/share/hadoop/yarn/lib/*
+       </value>
+   </property>
 </configuration>
 ```
 
@@ -153,7 +167,7 @@ Create a [WordCount2.java](https://github.com/gmendonca/zebra/blob/master/MapRed
 
 Then create and copy the input, run the MapReduce job and check the result:
 
-    $ bin/hdfs dfs -put ~/input2/ /user/mylovelyuser/input2
+    $ bin/hdfs dfs -put input2/ /user/mylovelyuser/input2
 
     $ bin/hadoop jar wc2.jar WordCount2 /user/mylovelyuser/input2 /user/mylovelyuser/output2
 
