@@ -83,12 +83,12 @@ etc/hadoop/hdfs-site.xml:
 
 Now check that you can ssh to the localhost without a passphrase:
 
-  $ ssh localhost
+    $ ssh localhost
 
 If you cannot ssh to localhost without a passphrase, execute the following commands:
 
-  $ ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
-  $ cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
+    $ ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
+    $ cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
 
 After all this steps described in the Hadoop Website, just format the filesystems, start the daemons for Namenode and Data Node, and create the directory for the MapReduce jobs:
 
