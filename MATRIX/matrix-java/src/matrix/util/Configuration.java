@@ -4,13 +4,49 @@ import java.util.Map;
 
 public class Configuration {
 	
+	private Map<String, String> configMap;
+	
+	private long numTaskPerClient;	// number of task per client
+	private long numAllTask;	// number of all tasks
+	private long numMapTask;
+	private long numReduceTask;
+	private int numCorePerExecutor;	// number of cores per executor
+	private long maxTaskPerPkg;	// maximum number of tasks per package
+	private long monitorInterval;	//monitor interval in microsecond
+	private long schedulerPortNo;	// scheduler port number
+	private long sleepLength;	// time duration in microsecond
+	private int workStealingOn;	// indicate whether to do work staling (1) or not (0)
+	private long wsPollIntervalStart;// the initial value of poll interval in microsecond
+	private long wsPollIntervalUb;	// the upper bound of poll interval in microsecond
+
+	private String policy;
+	private long dataSizeThreshold;
+	private long estTimeThreadshold;
+
+	private String schedulerMemFile;	// the memberlist file of all the schedulers
+	private String netProtoc;	// network protocol type: TCP, UDP, UDT, etc
+	private String dagType;	// the type of workload DAGs: BOT, Fan-In, Fan-Out, Pipeline
+	private long dagArg;	// the argument to the workload DAG
+	private String hostIdType;// the host identity type: localhost, hostname, ip address
+	private String submitMode;// the mode that clients submit tasks: best case, worst case
+	private String workloadFile;	// the workload file
+	private String schedulerWorkloadPath;// the workload root directory for all the schedulers
+	private int clientLog;	// indicate whether to logging (1) for client or not (0)
+	private int taskLog;// indicate whether to logging (1) for each individual task or not (0)
+	private int systemLog;// indicate whether to logging (1) for the system status or not (0)
+	private int schedulerLog;// indicate whether to logging (1) for scheduler or not (0)
+	private String zhtMemFile;	// the ZHT memberlist file
+	private String zhtConfigFile;	// the ZHT configuration file
+
+
+	
 	public Configuration(String configFile){
 		parseConfiguration(configFile);
 		
 	}
 
 	private void parseConfiguration(String configFile) {
-		Map<String, String> configMap;
+		
 		fstream fileStream(configFile.c_str());
 
 		if (!fileStream.good())
@@ -30,63 +66,63 @@ public class Configuration {
 		fileStream.close();
 
 		//numTaskPerClient = str_to_num<long>(configMap.find("NumTaskPerClient")->second);
-		numTaskPerClient = Long.parseLong(configMap.get("NumTaskPerClient").second, 10);
+		numTaskPerClient = Long.parseLong(configMap.get("NumTaskPerClient"), 10);
 
-		numAllTask = str_to_num<long>(configMap.find("NumAllTask")->second);
+		numAllTask = Long.parseLong(configMap.get("NumAllTask"), 10);
 
-		numMapTask = str_to_num<long>(configMap.find("NumMapTask")->second);
+		numMapTask = Long.parseLong(configMap.get("NumMapTask"), 10);
 
-		numReduceTask = str_to_num<long>(configMap.find("NumReduceTask")->second);
+		numReduceTask = Long.parseLong(configMap.get("NumReduceTask"), 10);
 
-		numCorePerExecutor = str_to_num<int>(configMap.find("NumCorePerExecutor")->second);
+		numCorePerExecutor = Integer.parseInt(configMap.get("NumCorePerExecutor"), 10);
 
-		maxTaskPerPkg = str_to_num<long>(configMap.find("MaxTaskPerPkg")->second);
+		maxTaskPerPkg = Long.parseLong(configMap.get("MaxTaskPerPkg"), 10);
 
-		monitorInterval = str_to_num<long>(configMap.find("MonitorInterval")->second);
+		monitorInterval = Long.parseLong(configMap.get("MonitorInterval"), 10);
 
-		schedulerPortNo = str_to_num<long>(configMap.find("SchedulerPortNo")->second);
+		schedulerPortNo = Long.parseLong(configMap.get("SchedulerPortNo"), 10);
 
-		sleepLength = str_to_num<long>(configMap.find("SleepLength")->second);
+		sleepLength = Long.parseLong(configMap.get("SleepLength"), 10);
 
-		workStealingOn = str_to_num<int>(configMap.find("WorkStealOn")->second);
+		workStealingOn = Integer.parseInt(configMap.get("WorkStealOn"), 10);
 
-		wsPollIntervalStart = str_to_num<long>(configMap.find("WorkStealPollIntervalStart")->second);
+		wsPollIntervalStart = Long.parseLong(configMap.get("WorkStealPollIntervalStart"), 10);
 
-		wsPollIntervalUb = str_to_num<long>(configMap.find("WorkStealPollIntervalUpperBound")->second);
+		wsPollIntervalUb = Long.parseLong(configMap.get("WorkStealPollIntervalUpperBound"), 10);
 
-		policy = configMap.find("Policy")->second;
+		policy = configMap.get("Policy");
 
-		dataSizeThreshold = str_to_num<long>(configMap.find("DataSizeThreshold")->second);
+		dataSizeThreshold = Long.parseLong(configMap.get("DataSizeThreshold"), 10);
 
-		estTimeThreadshold = str_to_num<long>(configMap.find("EstimatedTimeThreshold")->second);
+		estTimeThreadshold = Long.parseLong(configMap.get("EstimatedTimeThreshold"), 10);
 
-		schedulerMemFile = configMap.find("SchedulerMemlistFile")->second;
+		schedulerMemFile = configMap.get("SchedulerMemlistFile");
 
-		netProtoc = configMap.find("NetworkProtocol")->second;
+		netProtoc = configMap.get("NetworkProtocol");
 
-		dagType = configMap.find("DagType")->second;
+		dagType = configMap.get("DagType");
 
-		dagArg = str_to_num<long>(configMap.find("DagArgument")->second);
+		dagArg = Long.parseLong(configMap.get("DagArgument"), 10);
 
-		hostIdType = configMap.find("HostIdentityType")->second;
+		hostIdType = configMap.get("HostIdentityType");
 
-		submitMode = configMap.find("SubmissionMode")->second;
+		submitMode = configMap.get("SubmissionMode");
 
-		workloadFile = configMap.find("WorkloadFile")->second;
+		workloadFile = configMap.get("WorkloadFile");
 
-		schedulerWorkloadPath = configMap.find("SchedulerWorkloadPath")->second;
+		schedulerWorkloadPath = configMap.get("SchedulerWorkloadPath");
 
-		clientLog = str_to_num<int>(configMap.find("ClientLog")->second);
+		clientLog = Integer.parseInt(configMap.get("ClientLog"), 10);
 
-		taskLog = str_to_num<int>(configMap.find("TaskLog")->second);
+		taskLog = Integer.parseInt(configMap.get("TaskLog"));
 
-		systemLog = str_to_num<int>(configMap.find("SystemLog")->second);
+		systemLog = Integer.parseInt(configMap.get("SystemLog"));
 
-		schedulerLog = str_to_num<int>(configMap.find("SchedulerLog")->second);
+		schedulerLog = Integer.parseInt(configMap.get("SchedulerLog"));
 
-		zhtMemFile = configMap.find("ZhtMemlistFile")->second;
+		zhtMemFile = configMap.get("ZhtMemlistFile");
 
-		zhtConfigFile = configMap.find("ZhtConfigFile")->second;
+		zhtConfigFile = configMap.get("ZhtConfigFile");
 
 		
 	}

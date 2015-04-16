@@ -32,7 +32,7 @@ public class MatrixClient implements Peer{
 		StringBuffer base = new StringBuffer("");
 		base.append(schedulerList.size().ToString());
 		base.append(config.numTaskPerClient.ToString());
-		String suffix = base + "." + num_to_str<int>(get_index());
+		String suffix = base + "." + Integer.toString(getIndex());
 		
 		if (config.clientLog == 1 && getIndex() == 0) {
 			String clientLogFile = "./client." + suffix;
