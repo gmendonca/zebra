@@ -59,8 +59,8 @@ public class Configuration {
 			ss >> key >> value;
 			if (!key.empty() && key[0] != '#')
 				configMap.insert(make_pair(key, value));
-			key.clear();
-			value.clear();
+			key = null;
+			value = null;
 		}
 
 		fileStream.close();
