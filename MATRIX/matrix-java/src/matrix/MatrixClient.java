@@ -29,11 +29,35 @@ public class MatrixClient implements Peer{
 		
 		taskList = Tools.readWorkloadFromFile("", Charset.defaultCharset());
 		
+		StringBuffer base = new StringBuffer("");
+		base.append(schedulerList.size().ToString());
+		base.append(config.numTaskPerClient.ToString());
+		string suffix = base + "." + num_to_str<int>(get_index());
+		
+		if (config->clientLog == 1 && get_index() == 0) {
+			string clientLogFile("./client." + suffix);
+			clientLogOS.open(clientLogFile.c_str());
+		}
+
+		if (config->systemLog == 1 && get_index() == 0) {
+			string systemLogFile("./system." + suffix);
+			systemLogOS.open(systemLogFile.c_str());
+		}
+		
 		stopTime = System.currentTimeMillis();
+		
+		long diff = stopTime - startTime;
+		
+		System.out.println("I am a Matrix Client, it takes me " + diff.tv_sec + "s, and " + diff.tv_nsec + " ns for initialization!");
+		
+		if (clientLogOS.isOpen()) {
+			clientLogOS = "I am a Matrix Client, it takes me " + diff.tv_sec
+					+ "s, and " + diff.tv_nsec + " ns for initialization!";
+		}
 	}
 
 	@Override
-	public void insertTaskInfoToZHT() {
+	public void insertTaskInfoToZHT(adjList dagAdjList, inDegree dagInDegree) {
 		// TODO Auto-generated method stub
 		
 	}
