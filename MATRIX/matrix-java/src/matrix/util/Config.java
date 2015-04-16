@@ -1,0 +1,43 @@
+package matrix.util;
+
+public enum Config {
+	
+	NumTaskPerClient(1000),
+	NumAllTask(1000),
+	NumMapTask(0),
+	NumReduceTask(0),
+	NumCorePerExecutor(1),
+	MaxTaskPerPkg(100),
+
+	MonitorInterval(10000),
+	SchedulerPortNo(60000),
+	SleepLength(100000),
+	WorkStealOn(1),
+	WorkStealPollIntervalStart(1000),
+	WorkStealPollIntervalUpperBound(1000000),
+
+	DataSizeThreshold(1000),
+	Policy("MDL"),
+	EstimatedTimeThreshold(20),
+	SchedulerMemlistFile("/home/kwang/Documents/work_kwang/cppprogram/matrix/matrix_v2/matrix/src/memlist"),
+	NetworkProtocol("TCP"),
+	DagType("Pipeline"),
+	DagArgument(10),
+	HostIdentityType("ip"),
+
+	SubmissionMode("bestcase"),
+	WorkloadFile("/home/kwang/Documents/work_kwang/cppprogram/matrix/matrix_v2/matrix/src/workload"),
+	SchedulerWorkloadPath("/home/kwang/Documents/work_kwang/cppprogram/matrix/matrix_v2/matrix/src/workload_dag"),
+	ClientLog(1),
+	TaskLog(1),
+	SystemLog(1),
+	SchedulerLog(1),
+
+	ZhtMemlistFile("/home/kwang/Documents/work_kwang/cppprogram/matrix/matrix_v2/ZHT/src/neighbor.conf"),
+	ZhtConfigFile("/home/kwang/Documents/work_kwang/cppprogram/matrix/matrix_v2/ZHT/src/zht.conf");
+	
+	
+	private Config(int num) { }
+	private Config(String value){ }
+
+}

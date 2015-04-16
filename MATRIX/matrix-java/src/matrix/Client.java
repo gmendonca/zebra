@@ -2,6 +2,8 @@ package matrix;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+
+import matrix.util.Config;
 import matrix.util.Tools;
 
 public class Client {
@@ -27,7 +29,7 @@ public class Client {
 		/* generate task dag adjecent list (children) */
 		adjList dagAdjList;
 		generateDagAdjList(dagAdjList, mc.config.dagType,
-				mc.config.dagArg, mc.config.numTaskPerClient);
+				mc.config.dagArg, Config.NumTaskPerClient);
 
 		/* calculate indegrees (number of parents) for every tasks */
 		inDegree dagInDegree;

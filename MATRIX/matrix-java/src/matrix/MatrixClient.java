@@ -32,15 +32,15 @@ public class MatrixClient implements Peer{
 		StringBuffer base = new StringBuffer("");
 		base.append(schedulerList.size().ToString());
 		base.append(config.numTaskPerClient.ToString());
-		string suffix = base + "." + num_to_str<int>(get_index());
+		String suffix = base + "." + num_to_str<int>(get_index());
 		
-		if (config->clientLog == 1 && get_index() == 0) {
-			string clientLogFile("./client." + suffix);
+		if (config.clientLog == 1 && getIndex() == 0) {
+			String clientLogFile = "./client." + suffix;
 			clientLogOS.open(clientLogFile.c_str());
 		}
 
-		if (config->systemLog == 1 && get_index() == 0) {
-			string systemLogFile("./system." + suffix);
+		if (config.systemLog == 1 && getIndex() == 0) {
+			String systemLogFil = "./system." + suffix;
 			systemLogOS.open(systemLogFile.c_str());
 		}
 		
@@ -48,17 +48,18 @@ public class MatrixClient implements Peer{
 		
 		long diff = stopTime - startTime;
 		
-		System.out.println("I am a Matrix Client, it takes me " + diff.tv_sec + "s, and " + diff.tv_nsec + " ns for initialization!");
+		System.out.println("I am a Matrix Client, it takes me " + diff + "ms for initialization!");
 		
 		if (clientLogOS.isOpen()) {
-			clientLogOS = "I am a Matrix Client, it takes me " + diff.tv_sec
-					+ "s, and " + diff.tv_nsec + " ns for initialization!";
+			clientLogOS = "I am a Matrix Client, it takes me " + diff + "ms for initialization!";
 		}
 	}
 
 	@Override
 	public void insertTaskInfoToZHT(adjList dagAdjList, inDegree dagInDegree) {
-		// TODO Auto-generated method stub
+		startTime = System.currentTimeMillis();
+		
+		for()
 		
 	}
 
