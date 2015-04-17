@@ -1,4 +1,4 @@
-package matrix;
+package matrix.client;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,7 +32,7 @@ public class MatrixClient implements Peer{
 		
 		StringBuffer base = new StringBuffer("");
 		base.append(schedulerList.size().ToString());
-		base.append(config.numTaskPerClient.ToString());
+		base.append(Config.NumTaskPerClient);
 		String suffix = base + "." + Integer.toString(getIndex());
 		
 		if (Config.ClientLog.equals(1) && getIndex() == 0) {
