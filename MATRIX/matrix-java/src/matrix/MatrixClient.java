@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import matrix.util.Config;
 import matrix.util.Peer;
 import matrix.util.TaskMsg;
 import matrix.util.Tools;
@@ -34,12 +35,12 @@ public class MatrixClient implements Peer{
 		base.append(config.numTaskPerClient.ToString());
 		String suffix = base + "." + Integer.toString(getIndex());
 		
-		if (config.clientLog == 1 && getIndex() == 0) {
+		if (Config.ClientLog.equals(1) && getIndex() == 0) {
 			String clientLogFile = "./client." + suffix;
 			clientLogOS.open(clientLogFile.c_str());
 		}
 
-		if (config.systemLog == 1 && getIndex() == 0) {
+		if (Config.SystemLog.equals(1) && getIndex() == 0) {
 			String systemLogFil = "./system." + suffix;
 			systemLogOS.open(systemLogFile.c_str());
 		}

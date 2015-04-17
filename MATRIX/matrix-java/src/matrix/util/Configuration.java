@@ -1,42 +1,47 @@
 package matrix.util;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 public class Configuration {
 	
-	private Map<String, String> configMap;
+	public Map<String, String> configMap;
 	
-	private long numTaskPerClient;	// number of task per client
-	private long numAllTask;	// number of all tasks
-	private long numMapTask;
-	private long numReduceTask;
-	private int numCorePerExecutor;	// number of cores per executor
-	private long maxTaskPerPkg;	// maximum number of tasks per package
-	private long monitorInterval;	//monitor interval in microsecond
-	private long schedulerPortNo;	// scheduler port number
-	private long sleepLength;	// time duration in microsecond
-	private int workStealingOn;	// indicate whether to do work staling (1) or not (0)
-	private long wsPollIntervalStart;// the initial value of poll interval in microsecond
-	private long wsPollIntervalUb;	// the upper bound of poll interval in microsecond
+	public long numTaskPerClient;	// number of task per client
+	public long numAllTask;	// number of all tasks
+	public long numMapTask;
+	public long numReduceTask;
+	public int numCorePerExecutor;	// number of cores per executor
+	public long maxTaskPerPkg;	// maximum number of tasks per package
+	public long monitorInterval;	//monitor interval in microsecond
+	public long schedulerPortNo;	// scheduler port number
+	public long sleepLength;	// time duration in microsecond
+	public int workStealingOn;	// indicate whether to do work staling (1) or not (0)
+	public long wsPollIntervalStart;// the initial value of poll interval in microsecond
+	public long wsPollIntervalUb;	// the upper bound of poll interval in microsecond
 
-	private String policy;
-	private long dataSizeThreshold;
-	private long estTimeThreadshold;
+	public String policy;
+	public long dataSizeThreshold;
+	public long estTimeThreadshold;
 
-	private String schedulerMemFile;	// the memberlist file of all the schedulers
-	private String netProtoc;	// network protocol type: TCP, UDP, UDT, etc
-	private String dagType;	// the type of workload DAGs: BOT, Fan-In, Fan-Out, Pipeline
-	private long dagArg;	// the argument to the workload DAG
-	private String hostIdType;// the host identity type: localhost, hostname, ip address
-	private String submitMode;// the mode that clients submit tasks: best case, worst case
-	private String workloadFile;	// the workload file
-	private String schedulerWorkloadPath;// the workload root directory for all the schedulers
-	private int clientLog;	// indicate whether to logging (1) for client or not (0)
-	private int taskLog;// indicate whether to logging (1) for each individual task or not (0)
-	private int systemLog;// indicate whether to logging (1) for the system status or not (0)
-	private int schedulerLog;// indicate whether to logging (1) for scheduler or not (0)
-	private String zhtMemFile;	// the ZHT memberlist file
-	private String zhtConfigFile;	// the ZHT configuration file
+	public String schedulerMemFile;	// the memberlist file of all the schedulers
+	public String netProtoc;	// network protocol type: TCP, UDP, UDT, etc
+	public String dagType;	// the type of workload DAGs: BOT, Fan-In, Fan-Out, Pipeline
+	public long dagArg;	// the argument to the workload DAG
+	public String hostIdType;// the host identity type: localhost, hostname, ip address
+	public String submitMode;// the mode that clients submit tasks: best case, worst case
+	public String workloadFile;	// the workload file
+	public String schedulerWorkloadPath;// the workload root directory for all the schedulers
+	public int clientLog;	// indicate whether to logging (1) for client or not (0)
+	public int taskLog;// indicate whether to logging (1) for each individual task or not (0)
+	public int systemLog;// indicate whether to logging (1) for the system status or not (0)
+	public int schedulerLog;// indicate whether to logging (1) for scheduler or not (0)
+	public String zhtMemFile;	// the ZHT memberlist file
+	public String zhtConfigFile;	// the ZHT configuration file
 
 
 	
@@ -47,23 +52,30 @@ public class Configuration {
 
 	private void parseConfiguration(String configFile) {
 		
-		fstream fileStream(configFile.c_str());
-
-		if (!fileStream.good())
-			return;
-
-		String line, key, value;
-
-		while (getline(fileStream, line)) {
-			stringstream ss(line);
-			ss >> key >> value;
-			if (!key.empty() && key[0] != '#')
-				configMap.insert(make_pair(key, value));
-			key = null;
-			value = null;
+		FileInputStream fStream;
+		try {
+			fStream = new FileInputStream(configFile);
+			BufferedReader br = new BufferedReader(new InputStreamReader(fStream));
+			
+			String line, key, value;
+			
+			while ((line = br.readLine()) != null)   {
+				key = line.split("\\s")[0];
+				value = line.split("\\s")[1];
+				if (!key.isEmpty() && !key.startsWith("#"))
+					configMap.put(key, value);
+				  //System.out.println (line);
+				}
+			fStream.close();
+			br.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		fileStream.close();
+		
 
 		//numTaskPerClient = str_to_num<long>(configMap.find("NumTaskPerClient")->second);
 		numTaskPerClient = Long.parseLong(configMap.get("NumTaskPerClient"), 10);
