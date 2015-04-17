@@ -1,9 +1,8 @@
-package matrix;
+package matrix.client;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import matrix.client.MatrixClient;
 import matrix.util.AdjList;
 import matrix.util.Tools;
 
@@ -11,6 +10,7 @@ public class Client {
 
 	
 	public static void main(String args[]){
+		
 		if (args.length != 2) {
 			System.out.println("The usage is: client\tconfiguration_file!\n");
 			System.exit(1);
