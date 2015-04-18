@@ -5,9 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import matrix.util.AdjList;
 import matrix.util.Config;
@@ -68,7 +70,7 @@ public class MatrixClient implements ClientInterface, Peer{
 	@Override
 	public void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree) {
 		startTime = System.currentTimeMillis();
-		Iterator it = dagAdjList.adjList.entrySet().iterator();
+		Iterator<Entry<Long, ArrayList<Long>>> it = dagAdjList.adjList.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pair = (Map.Entry)it.next();
 			
