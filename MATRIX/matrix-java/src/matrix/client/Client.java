@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import matrix.util.AdjList;
+import matrix.util.InDegree;
 import matrix.util.Tools;
 
 public class Client {

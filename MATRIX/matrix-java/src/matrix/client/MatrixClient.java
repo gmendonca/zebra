@@ -13,12 +13,13 @@ import java.util.Map.Entry;
 
 import matrix.util.AdjList;
 import matrix.util.Config;
+import matrix.util.Configuration;
 import matrix.util.InDegree;
 import matrix.util.Peer;
 import matrix.util.TaskMsg;
 import matrix.util.Tools;
 
-public class MatrixClient implements ClientInterface, Peer{
+public class MatrixClient implements PeerClient, Peer{
 	
 	private List<String> taskList;
 	private List<TaskMsg> tasks;
@@ -28,6 +29,16 @@ public class MatrixClient implements ClientInterface, Peer{
 	
 	public static BufferedWriter clientLogOS;
 	public static BufferedWriter systemLogOS;
+	
+	//Attributes from Interface Peer
+	public ZHTClient zc;
+	public Configuration config;
+	public ArrayList<String> schedulerList;
+	public Boolean running;
+	public long numZHTMsg;
+
+	private String id;
+	private int index;
 	
 	public MatrixClient(String configFile){
 		
@@ -40,7 +51,7 @@ public class MatrixClient implements ClientInterface, Peer{
 		taskList = Tools.readWorkloadFromFile("", Charset.defaultCharset());
 		
 		StringBuffer base = new StringBuffer("");
-		base.append(schedulerList.size().ToString());
+		base.append(schedulerList.size());
 		base.append(Config.NumTaskPerClient);
 		String suffix = base + "." + Integer.toString(getIndex());
 		

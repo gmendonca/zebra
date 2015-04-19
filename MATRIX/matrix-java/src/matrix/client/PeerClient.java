@@ -6,7 +6,7 @@ import matrix.util.AdjList;
 import matrix.util.InDegree;
 import matrix.util.TaskMsg;
 
-public interface ClientInterface {
+public interface PeerClient {
 	
 	public void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree);
 	
