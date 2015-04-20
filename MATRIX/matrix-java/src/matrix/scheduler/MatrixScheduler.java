@@ -1,5 +1,5 @@
 package matrix.scheduler;
 
-public class MatrixScheduler {
+public class MatrixScheduler extends PeerScheduler{
 
 }

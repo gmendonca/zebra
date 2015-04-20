@@ -1,23 +1,40 @@
 package matrix.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import matrix.util.AdjList;
+import matrix.util.Configuration;
 import matrix.util.InDegree;
+import matrix.util.Peer;
 import matrix.util.TaskMsg;
 
-public interface PeerClient {
+public abstract class PeerClient implements Peer{
 	
-	public void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree);
+	private String id;
+	private int index;
 	
-	public void initTask();
+	//Attributes from Interface Peer
+	public ZHTClient zc;
+	public Configuration config;
+	public ArrayList<String> schedulerList;
+	public Boolean running;
+	public long numZHTMsg;
 	
-	public void submitTask();
+	public int getIndex(){
+		return index;
+	}
 	
-	public void submitTaskBc();
+	public abstract void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree);
 	
-	public void submitTaskWc(List<TaskMsg> taskMsg, int randomScheduler);
+	public abstract void initTask();
 	
-	public void doMonitoring();
+	public abstract void submitTask();
+	
+	public abstract void submitTaskBc();
+	
+	public abstract void submitTaskWc(List<TaskMsg> taskMsg, int randomScheduler);
+	
+	public abstract void doMonitoring();
 
 }

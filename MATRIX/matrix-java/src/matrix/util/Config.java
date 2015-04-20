@@ -36,7 +36,6 @@ public enum Config {
 	ZhtMemlistFile("/home/kwang/Documents/work_kwang/cppprogram/matrix/matrix_v2/ZHT/src/neighbor.conf"),
 	ZhtConfigFile("/home/kwang/Documents/work_kwang/cppprogram/matrix/matrix_v2/ZHT/src/zht.conf");
 	
-	
 	private Config(int num) { }
 	private Config(String value){ }
 
