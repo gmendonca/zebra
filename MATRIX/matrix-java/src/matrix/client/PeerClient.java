@@ -1,8 +1,10 @@
 package matrix.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import matrix.util.AdjList;
+import matrix.util.Configuration;
 import matrix.util.InDegree;
 import matrix.util.Peer;
 import matrix.util.TaskMsg;
@@ -11,6 +13,13 @@ public abstract class PeerClient implements Peer{
 	
 	private String id;
 	private int index;
+	
+	//Attributes from Interface Peer
+	public ZHTClient zc;
+	public Configuration config;
+	public ArrayList<String> schedulerList;
+	public Boolean running;
+	public long numZHTMsg;
 	
 	public int getIndex(){
 		return index;

@@ -18,6 +18,7 @@ import matrix.util.InDegree;
 import matrix.util.Peer;
 import matrix.util.TaskMsg;
 import matrix.util.Tools;
+import matrix.util.Value;
 
 public class MatrixClient extends PeerClient{
 	
@@ -30,13 +31,6 @@ public class MatrixClient extends PeerClient{
 	public BufferedWriter clientLogOS;
 	public BufferedWriter systemLogOS;
 	
-	//Attributes from Interface Peer
-	public ZHTClient zc;
-	public Configuration config;
-	public ArrayList<String> schedulerList;
-	public Boolean running;
-	public long numZHTMsg;
-	
 	public MatrixClient(String configFile) throws IOException{
 		initMatrixClient();
 	}
@@ -45,19 +39,19 @@ public class MatrixClient extends PeerClient{
 		
 		startTime = System.currentTimeMillis();
 		
-		taskList = Tools.readWorkloadFromFile("", Charset.defaultCharset());
+		taskList = Tools.readWorkloadFromFile(config.workloadFile, Charset.defaultCharset());
 		
 		StringBuffer base = new StringBuffer("");
 		base.append(schedulerList.size());
-		base.append(Config.NumTaskPerClient);
+		base.append(config.numTaskPerClient);
 		String suffix = base + "." + Integer.toString(getIndex());
 		
-		if (Config.ClientLog.equals(1) && getIndex() == 0) {
+		if (config.clientLog == 1 && getIndex() == 0) {
 			String clientLogFile = "./client." + suffix;
 			clientLogOS = new BufferedWriter(new FileWriter(clientLogFile, true));
 		}
 
-		if (Config.SystemLog.equals(1) && getIndex() == 0) {
+		if (config.systemLog == 1  && getIndex() == 0) {
 			String systemLogFile = "./system." + suffix;
 			systemLogOS = new BufferedWriter(new FileWriter(systemLogFile, true));
 		}
@@ -77,17 +71,70 @@ public class MatrixClient extends PeerClient{
 
 	@Override
 	public void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree) {
+		
 		startTime = System.currentTimeMillis();
 		Iterator<Entry<Long, ArrayList<Long>>> it = dagAdjList.adjList.entrySet().iterator();
+		
+		String taskId, child;
+		Value value;
+		ArrayList<Long> existList;
+		
 		while(it.hasNext()){
-			Map.Entry pair = (Map.Entry)it.next();
+			Map.Entry<Long, ArrayList<Long>> pair = (Map.Entry<Long, ArrayList<Long>>)it.next();
 			
+			taskId = Integer.toString(getIndex()) + (Long)pair.getKey();
 			
-			Map<String,InDegree> value;
+			existList = (ArrayList<Long>)pair.getValue();
+			
+			Long inDegree = dagInDegree.inDegree.get((Long)pair.getKey());
+			
+			value = new Value();
+			value.setTaskId(taskId);
+			value.setInDegree(inDegree);
+			
+			for(Long l : existList){
+				child = Integer.toString(getIndex()) + l;
+				value.addChild(child);
+			}
+			
+			String seriValue;
+			seriValue = Tools.valueToStr(value);
+			zc.insert(taskId, seriValue);
+			
+			increZHTMsgCount(config.numTaskPerClient);
+			
+			stopTime = System.currentTimeMillis();
+			
+			long diff = stopTime - startTime;
+			
+			System.out.println("I am done, the time taken is: " + diff + "ms!");
+			System.out.println("------------------------------------------------------------");
+			
+			try{
+				clientLogOS.newLine();
+				clientLogOS.write("I am done, the time taken is: " + diff + "ms!");
+				clientLogOS.write("------------------------------------------------------------");
+			} catch(IOException e) { }
+			
 			
 		}
 		
-		
+	}
+	
+	@Override
+	public void initTask(){
+		for(int i = 0; i < config.numTaskPerClient; i++){
+			String taskId = Integer.toString(getIndex()) + i;
+			
+			ArrayList<String> taskItemStr = Tools.tokenize(taskId + " " + taskList.get(i));
+			
+			TaskMsg tm;
+			tm.setTaskId(taskItemStr.get(0));
+			tm.setUser(taskItemStr.get(1));
+			tm.setDir(taskItemStr.get(2));
+			tm.setCmd(taskItemStr.get(3));
+			tm.setDataLength(0);
+		}
 	}
 
 	
