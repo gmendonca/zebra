@@ -19,7 +19,7 @@ import matrix.util.Peer;
 import matrix.util.TaskMsg;
 import matrix.util.Tools;
 
-public class MatrixClient implements PeerClient{
+public class MatrixClient extends PeerClient{
 	
 	private List<String> taskList;
 	private List<TaskMsg> tasks;
@@ -36,9 +36,6 @@ public class MatrixClient implements PeerClient{
 	public ArrayList<String> schedulerList;
 	public Boolean running;
 	public long numZHTMsg;
-
-	private String id;
-	private int index;
 	
 	public MatrixClient(String configFile) throws IOException{
 		initMatrixClient();
@@ -93,125 +90,6 @@ public class MatrixClient implements PeerClient{
 		
 	}
 
-	@Override
-	public void initTask() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void submitTask() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void submitTaskBc() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void submitTaskWc(List<TaskMsg> taskMsg, int randomScheduler) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void doMonitoring() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Boolean initZhtClient(String something, String something2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void waitAllScheduler() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void waitAllTaskRecv() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setId(String id) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setIndex(Integer index) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public int getIndex() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void increZHTMsgCount(long count) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void insertWrap(String key, String value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void insertWrap(char key, char value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void lookupWrap(String key, String result) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void lookupWrap(char key, char result) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void sendBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum,
-			String something) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void recvBatchTasks() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 }

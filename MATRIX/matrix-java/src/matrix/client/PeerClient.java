@@ -7,18 +7,25 @@ import matrix.util.InDegree;
 import matrix.util.Peer;
 import matrix.util.TaskMsg;
 
-public interface PeerClient extends Peer{
+public abstract class PeerClient implements Peer{
 	
-	public void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree);
+	private String id;
+	private int index;
 	
-	public void initTask();
+	public int getIndex(){
+		return index;
+	}
 	
-	public void submitTask();
+	public abstract void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree);
 	
-	public void submitTaskBc();
+	public abstract void initTask();
 	
-	public void submitTaskWc(List<TaskMsg> taskMsg, int randomScheduler);
+	public abstract void submitTask();
 	
-	public void doMonitoring();
+	public abstract void submitTaskBc();
+	
+	public abstract void submitTaskWc(List<TaskMsg> taskMsg, int randomScheduler);
+	
+	public abstract void doMonitoring();
 
 }

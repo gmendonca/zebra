@@ -8,7 +8,7 @@ import matrix.util.MatrixMsg;
 import matrix.util.Peer;
 import matrix.util.TaskMsg;
 
-public interface PeerScheduler extends Peer{
+public abstract class PeerScheduler implements Peer{
 	
 	void regist();	// regist to ZHT server
 
