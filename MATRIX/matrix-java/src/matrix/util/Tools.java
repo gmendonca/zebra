@@ -20,4 +20,12 @@ public class Tools {
 		//return new String(encoded, encoding);
 		return new ArrayList<String>();
 	}
+	
+	public static void genDagAdjList(AdjList dagAdjList, String dagType, long dagArg, long numTask){
+		
+	}
+	
+	public static void genDagInDegree(AdjList dagAdjList, InDegree dagInDegree){
+		
+	}
 }

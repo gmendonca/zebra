@@ -4,9 +4,10 @@ import java.util.List;
 
 import matrix.util.AdjList;
 import matrix.util.InDegree;
+import matrix.util.Peer;
 import matrix.util.TaskMsg;
 
-public interface PeerClient {
+public interface PeerClient extends Peer{
 	
 	public void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree);
 	

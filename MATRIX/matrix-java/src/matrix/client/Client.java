@@ -18,7 +18,7 @@ public class Client {
 		}
 		
 		
-		MatrixClient mc;
+		MatrixClient mc = null;
 		
 		try {
 			String configFile = Tools.readFile(args[1],Charset.defaultCharset());
@@ -28,26 +28,29 @@ public class Client {
 			System.exit(1);
 		}
 		
+		if(mc == null) return;
+		
 		/* generate task dag adjecent list (children) */
-		AdjList dagAdjList;
-		generateDagAdjList(dagAdjList, mc.config.dagType,
-				mc.config.dagArg, mc.config.numTaskPerClient);
+		AdjList dagAdjList = new AdjList();
+		Tools.genDagAdjList(dagAdjList, mc.config.dagType, mc.config.dagArg, mc.config.numTaskPerClient);
 
 		/* calculate indegrees (number of parents) for every tasks */
-		InDegree dagInDegree;
-		gen_dag_indegree(dagAdjList, dagInDegree);
+		InDegree dagInDegree = new InDegree();
+		Tools.genDagInDegree(dagAdjList, dagInDegree);
 		//adjList dagParentList;
 		//gen_dag_parents(dagAdjList, dagParentList);
 
 		/* wait until all schedulers have registered to ZHT */
 
-		System.out.println("--------------------------------" + "\n----------------------------");
+		System.out.println("------------------------------------------------------------");
 		System.out.println("Now, I am waiting until all the schedulers are running!");
 
-
-		if (mc.clientLogOS.isOpen()) {
-			System.out.println("--------------------------------" + "\n----------------------------");
-			//mc.clientLogOS = "Now, I am waiting until all the schedulers are running!";
+		try {
+			mc.clientLogOS.newLine();
+			mc.clientLogOS.write("------------------------------------------------------------");
+			mc.clientLogOS.write("Now, I am waiting until all the schedulers are running!");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 
@@ -58,17 +61,18 @@ public class Client {
 		long diff = stopTime - startTime;
 
 		
-		System.out.println("It took " + diff.tv_sec + "s, and " + diff.tv_nsec + " ns");
-		System.out.println("--------------------------------" + "\n----------------------------");
+		System.out.println("It took " + diff + "ms");
+		System.out.println("------------------------------------------------------------");
 
-
-		if (mc.clientLogOS.isOpen()) {
-			//mc.clientLogOS << "It took " << diff.tv_sec << "s, and "
-			//		<< diff.tv_nsec << " ns" << endl;
-			//mc->clientLogOS << "--------------------------------"
-			//		"----------------------------" << endl;
+		try {
+			mc.clientLogOS.newLine();
+			mc.clientLogOS.write("It took " + diff + "ms");
+			mc.clientLogOS.write("------------------------------------------------------------");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
+		
 		/* insert the task information to ZHT */
 		mc.insertTaskInfoToZHT(dagAdjList, dagInDegree);
 
