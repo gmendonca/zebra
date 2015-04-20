@@ -196,15 +196,13 @@ ZPack* ZPack::New(::google::protobuf::Arena* arena) const {
 }
 
 void ZPack::Clear() {
-#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
-  &reinterpret_cast<ZPack*>(16)->f) - \
-   reinterpret_cast<char*>(16))
+#define ZR_HELPER_(f) reinterpret_cast<char*>(\
+  &reinterpret_cast<ZPack*>(16)->f)
 
-#define ZR_(first, last) do {                              \
-    size_t f = OFFSET_OF_FIELD_(first);                    \
-    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
-    ::memset(&first, 0, n);                                \
-  } while (0)
+#define ZR_(first, last) do {\
+  ::memset(&first, 0,\
+           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
+} while (0)
 
   if (_has_bits_[0 / 32] & 255) {
     ZR_(valnull_, replicanum_);
@@ -225,7 +223,7 @@ void ZPack::Clear() {
     }
   }
 
-#undef OFFSET_OF_FIELD_
+#undef ZR_HELPER_
 #undef ZR_
 
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -652,6 +650,347 @@ void ZPack::InternalSwap(ZPack* other) {
   return metadata;
 }
 
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// ZPack
+
+// optional bytes opcode = 1;
+ bool ZPack::has_opcode() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+ void ZPack::set_has_opcode() {
+  _has_bits_[0] |= 0x00000001u;
+}
+ void ZPack::clear_has_opcode() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+ void ZPack::clear_opcode() {
+  opcode_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_opcode();
+}
+ const ::std::string& ZPack::opcode() const {
+  // @@protoc_insertion_point(field_get:ZPack.opcode)
+  return opcode_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_opcode(const ::std::string& value) {
+  set_has_opcode();
+  opcode_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ZPack.opcode)
+}
+ void ZPack::set_opcode(const char* value) {
+  set_has_opcode();
+  opcode_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ZPack.opcode)
+}
+ void ZPack::set_opcode(const void* value, size_t size) {
+  set_has_opcode();
+  opcode_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ZPack.opcode)
+}
+ ::std::string* ZPack::mutable_opcode() {
+  set_has_opcode();
+  // @@protoc_insertion_point(field_mutable:ZPack.opcode)
+  return opcode_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* ZPack::release_opcode() {
+  clear_has_opcode();
+  return opcode_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_allocated_opcode(::std::string* opcode) {
+  if (opcode != NULL) {
+    set_has_opcode();
+  } else {
+    clear_has_opcode();
+  }
+  opcode_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), opcode);
+  // @@protoc_insertion_point(field_set_allocated:ZPack.opcode)
+}
+
+// optional bytes key = 2;
+ bool ZPack::has_key() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+ void ZPack::set_has_key() {
+  _has_bits_[0] |= 0x00000002u;
+}
+ void ZPack::clear_has_key() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+ void ZPack::clear_key() {
+  key_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_key();
+}
+ const ::std::string& ZPack::key() const {
+  // @@protoc_insertion_point(field_get:ZPack.key)
+  return key_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_key(const ::std::string& value) {
+  set_has_key();
+  key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ZPack.key)
+}
+ void ZPack::set_key(const char* value) {
+  set_has_key();
+  key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ZPack.key)
+}
+ void ZPack::set_key(const void* value, size_t size) {
+  set_has_key();
+  key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ZPack.key)
+}
+ ::std::string* ZPack::mutable_key() {
+  set_has_key();
+  // @@protoc_insertion_point(field_mutable:ZPack.key)
+  return key_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* ZPack::release_key() {
+  clear_has_key();
+  return key_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_allocated_key(::std::string* key) {
+  if (key != NULL) {
+    set_has_key();
+  } else {
+    clear_has_key();
+  }
+  key_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), key);
+  // @@protoc_insertion_point(field_set_allocated:ZPack.key)
+}
+
+// optional bytes val = 3;
+ bool ZPack::has_val() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+ void ZPack::set_has_val() {
+  _has_bits_[0] |= 0x00000004u;
+}
+ void ZPack::clear_has_val() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+ void ZPack::clear_val() {
+  val_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_val();
+}
+ const ::std::string& ZPack::val() const {
+  // @@protoc_insertion_point(field_get:ZPack.val)
+  return val_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_val(const ::std::string& value) {
+  set_has_val();
+  val_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ZPack.val)
+}
+ void ZPack::set_val(const char* value) {
+  set_has_val();
+  val_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ZPack.val)
+}
+ void ZPack::set_val(const void* value, size_t size) {
+  set_has_val();
+  val_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ZPack.val)
+}
+ ::std::string* ZPack::mutable_val() {
+  set_has_val();
+  // @@protoc_insertion_point(field_mutable:ZPack.val)
+  return val_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* ZPack::release_val() {
+  clear_has_val();
+  return val_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_allocated_val(::std::string* val) {
+  if (val != NULL) {
+    set_has_val();
+  } else {
+    clear_has_val();
+  }
+  val_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), val);
+  // @@protoc_insertion_point(field_set_allocated:ZPack.val)
+}
+
+// optional bytes newval = 4;
+ bool ZPack::has_newval() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+ void ZPack::set_has_newval() {
+  _has_bits_[0] |= 0x00000008u;
+}
+ void ZPack::clear_has_newval() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+ void ZPack::clear_newval() {
+  newval_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_newval();
+}
+ const ::std::string& ZPack::newval() const {
+  // @@protoc_insertion_point(field_get:ZPack.newval)
+  return newval_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_newval(const ::std::string& value) {
+  set_has_newval();
+  newval_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ZPack.newval)
+}
+ void ZPack::set_newval(const char* value) {
+  set_has_newval();
+  newval_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ZPack.newval)
+}
+ void ZPack::set_newval(const void* value, size_t size) {
+  set_has_newval();
+  newval_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ZPack.newval)
+}
+ ::std::string* ZPack::mutable_newval() {
+  set_has_newval();
+  // @@protoc_insertion_point(field_mutable:ZPack.newval)
+  return newval_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* ZPack::release_newval() {
+  clear_has_newval();
+  return newval_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_allocated_newval(::std::string* newval) {
+  if (newval != NULL) {
+    set_has_newval();
+  } else {
+    clear_has_newval();
+  }
+  newval_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), newval);
+  // @@protoc_insertion_point(field_set_allocated:ZPack.newval)
+}
+
+// optional bytes lease = 5;
+ bool ZPack::has_lease() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+ void ZPack::set_has_lease() {
+  _has_bits_[0] |= 0x00000010u;
+}
+ void ZPack::clear_has_lease() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+ void ZPack::clear_lease() {
+  lease_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_lease();
+}
+ const ::std::string& ZPack::lease() const {
+  // @@protoc_insertion_point(field_get:ZPack.lease)
+  return lease_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_lease(const ::std::string& value) {
+  set_has_lease();
+  lease_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:ZPack.lease)
+}
+ void ZPack::set_lease(const char* value) {
+  set_has_lease();
+  lease_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:ZPack.lease)
+}
+ void ZPack::set_lease(const void* value, size_t size) {
+  set_has_lease();
+  lease_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:ZPack.lease)
+}
+ ::std::string* ZPack::mutable_lease() {
+  set_has_lease();
+  // @@protoc_insertion_point(field_mutable:ZPack.lease)
+  return lease_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* ZPack::release_lease() {
+  clear_has_lease();
+  return lease_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ZPack::set_allocated_lease(::std::string* lease) {
+  if (lease != NULL) {
+    set_has_lease();
+  } else {
+    clear_has_lease();
+  }
+  lease_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), lease);
+  // @@protoc_insertion_point(field_set_allocated:ZPack.lease)
+}
+
+// optional bool valnull = 6;
+ bool ZPack::has_valnull() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+ void ZPack::set_has_valnull() {
+  _has_bits_[0] |= 0x00000020u;
+}
+ void ZPack::clear_has_valnull() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+ void ZPack::clear_valnull() {
+  valnull_ = false;
+  clear_has_valnull();
+}
+ bool ZPack::valnull() const {
+  // @@protoc_insertion_point(field_get:ZPack.valnull)
+  return valnull_;
+}
+ void ZPack::set_valnull(bool value) {
+  set_has_valnull();
+  valnull_ = value;
+  // @@protoc_insertion_point(field_set:ZPack.valnull)
+}
+
+// optional bool newvalnull = 7;
+ bool ZPack::has_newvalnull() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+ void ZPack::set_has_newvalnull() {
+  _has_bits_[0] |= 0x00000040u;
+}
+ void ZPack::clear_has_newvalnull() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+ void ZPack::clear_newvalnull() {
+  newvalnull_ = false;
+  clear_has_newvalnull();
+}
+ bool ZPack::newvalnull() const {
+  // @@protoc_insertion_point(field_get:ZPack.newvalnull)
+  return newvalnull_;
+}
+ void ZPack::set_newvalnull(bool value) {
+  set_has_newvalnull();
+  newvalnull_ = value;
+  // @@protoc_insertion_point(field_set:ZPack.newvalnull)
+}
+
+// optional int32 replicanum = 8;
+ bool ZPack::has_replicanum() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+ void ZPack::set_has_replicanum() {
+  _has_bits_[0] |= 0x00000080u;
+}
+ void ZPack::clear_has_replicanum() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+ void ZPack::clear_replicanum() {
+  replicanum_ = 0;
+  clear_has_replicanum();
+}
+ ::google::protobuf::int32 ZPack::replicanum() const {
+  // @@protoc_insertion_point(field_get:ZPack.replicanum)
+  return replicanum_;
+}
+ void ZPack::set_replicanum(::google::protobuf::int32 value) {
+  set_has_replicanum();
+  replicanum_ = value;
+  // @@protoc_insertion_point(field_set:ZPack.replicanum)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
 

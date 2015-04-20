@@ -599,6 +599,246 @@ void TaskMsg::InternalSwap(TaskMsg* other) {
   return metadata;
 }
 
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// TaskMsg
+
+// required string taskId = 1;
+ bool TaskMsg::has_taskid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+ void TaskMsg::set_has_taskid() {
+  _has_bits_[0] |= 0x00000001u;
+}
+ void TaskMsg::clear_has_taskid() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+ void TaskMsg::clear_taskid() {
+  taskid_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_taskid();
+}
+ const ::std::string& TaskMsg::taskid() const {
+  // @@protoc_insertion_point(field_get:TaskMsg.taskId)
+  return taskid_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void TaskMsg::set_taskid(const ::std::string& value) {
+  set_has_taskid();
+  taskid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:TaskMsg.taskId)
+}
+ void TaskMsg::set_taskid(const char* value) {
+  set_has_taskid();
+  taskid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:TaskMsg.taskId)
+}
+ void TaskMsg::set_taskid(const char* value, size_t size) {
+  set_has_taskid();
+  taskid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:TaskMsg.taskId)
+}
+ ::std::string* TaskMsg::mutable_taskid() {
+  set_has_taskid();
+  // @@protoc_insertion_point(field_mutable:TaskMsg.taskId)
+  return taskid_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* TaskMsg::release_taskid() {
+  clear_has_taskid();
+  return taskid_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void TaskMsg::set_allocated_taskid(::std::string* taskid) {
+  if (taskid != NULL) {
+    set_has_taskid();
+  } else {
+    clear_has_taskid();
+  }
+  taskid_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), taskid);
+  // @@protoc_insertion_point(field_set_allocated:TaskMsg.taskId)
+}
+
+// required string user = 2;
+ bool TaskMsg::has_user() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+ void TaskMsg::set_has_user() {
+  _has_bits_[0] |= 0x00000002u;
+}
+ void TaskMsg::clear_has_user() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+ void TaskMsg::clear_user() {
+  user_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_user();
+}
+ const ::std::string& TaskMsg::user() const {
+  // @@protoc_insertion_point(field_get:TaskMsg.user)
+  return user_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void TaskMsg::set_user(const ::std::string& value) {
+  set_has_user();
+  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:TaskMsg.user)
+}
+ void TaskMsg::set_user(const char* value) {
+  set_has_user();
+  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:TaskMsg.user)
+}
+ void TaskMsg::set_user(const char* value, size_t size) {
+  set_has_user();
+  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:TaskMsg.user)
+}
+ ::std::string* TaskMsg::mutable_user() {
+  set_has_user();
+  // @@protoc_insertion_point(field_mutable:TaskMsg.user)
+  return user_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* TaskMsg::release_user() {
+  clear_has_user();
+  return user_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void TaskMsg::set_allocated_user(::std::string* user) {
+  if (user != NULL) {
+    set_has_user();
+  } else {
+    clear_has_user();
+  }
+  user_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user);
+  // @@protoc_insertion_point(field_set_allocated:TaskMsg.user)
+}
+
+// required string dir = 3;
+ bool TaskMsg::has_dir() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+ void TaskMsg::set_has_dir() {
+  _has_bits_[0] |= 0x00000004u;
+}
+ void TaskMsg::clear_has_dir() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+ void TaskMsg::clear_dir() {
+  dir_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_dir();
+}
+ const ::std::string& TaskMsg::dir() const {
+  // @@protoc_insertion_point(field_get:TaskMsg.dir)
+  return dir_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void TaskMsg::set_dir(const ::std::string& value) {
+  set_has_dir();
+  dir_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:TaskMsg.dir)
+}
+ void TaskMsg::set_dir(const char* value) {
+  set_has_dir();
+  dir_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:TaskMsg.dir)
+}
+ void TaskMsg::set_dir(const char* value, size_t size) {
+  set_has_dir();
+  dir_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:TaskMsg.dir)
+}
+ ::std::string* TaskMsg::mutable_dir() {
+  set_has_dir();
+  // @@protoc_insertion_point(field_mutable:TaskMsg.dir)
+  return dir_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* TaskMsg::release_dir() {
+  clear_has_dir();
+  return dir_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void TaskMsg::set_allocated_dir(::std::string* dir) {
+  if (dir != NULL) {
+    set_has_dir();
+  } else {
+    clear_has_dir();
+  }
+  dir_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), dir);
+  // @@protoc_insertion_point(field_set_allocated:TaskMsg.dir)
+}
+
+// required string cmd = 4;
+ bool TaskMsg::has_cmd() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+ void TaskMsg::set_has_cmd() {
+  _has_bits_[0] |= 0x00000008u;
+}
+ void TaskMsg::clear_has_cmd() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+ void TaskMsg::clear_cmd() {
+  cmd_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_cmd();
+}
+ const ::std::string& TaskMsg::cmd() const {
+  // @@protoc_insertion_point(field_get:TaskMsg.cmd)
+  return cmd_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void TaskMsg::set_cmd(const ::std::string& value) {
+  set_has_cmd();
+  cmd_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:TaskMsg.cmd)
+}
+ void TaskMsg::set_cmd(const char* value) {
+  set_has_cmd();
+  cmd_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:TaskMsg.cmd)
+}
+ void TaskMsg::set_cmd(const char* value, size_t size) {
+  set_has_cmd();
+  cmd_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:TaskMsg.cmd)
+}
+ ::std::string* TaskMsg::mutable_cmd() {
+  set_has_cmd();
+  // @@protoc_insertion_point(field_mutable:TaskMsg.cmd)
+  return cmd_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* TaskMsg::release_cmd() {
+  clear_has_cmd();
+  return cmd_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void TaskMsg::set_allocated_cmd(::std::string* cmd) {
+  if (cmd != NULL) {
+    set_has_cmd();
+  } else {
+    clear_has_cmd();
+  }
+  cmd_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cmd);
+  // @@protoc_insertion_point(field_set_allocated:TaskMsg.cmd)
+}
+
+// required int64 dataLength = 5;
+ bool TaskMsg::has_datalength() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+ void TaskMsg::set_has_datalength() {
+  _has_bits_[0] |= 0x00000010u;
+}
+ void TaskMsg::clear_has_datalength() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+ void TaskMsg::clear_datalength() {
+  datalength_ = GOOGLE_LONGLONG(0);
+  clear_has_datalength();
+}
+ ::google::protobuf::int64 TaskMsg::datalength() const {
+  // @@protoc_insertion_point(field_get:TaskMsg.dataLength)
+  return datalength_;
+}
+ void TaskMsg::set_datalength(::google::protobuf::int64 value) {
+  set_has_datalength();
+  datalength_ = value;
+  // @@protoc_insertion_point(field_set:TaskMsg.dataLength)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
 
