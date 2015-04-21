@@ -22,6 +22,7 @@ public class Scheduler {
 
 		ms.waitAllTaskRecv();
 		
+		//TODO: we gotta change this, it's used somewhere else
 		long startTime = System.currentTimeMillis();
 
 		ms.forkCrtThread();	// forks checking ready task thread
