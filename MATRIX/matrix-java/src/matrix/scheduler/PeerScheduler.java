@@ -3,12 +3,13 @@ package matrix.scheduler;
 import java.net.Socket;
 import java.util.ArrayDeque;
 
+import matrix.OverallPeer;
+import matrix.Peer;
 import matrix.util.CmpQueueItem;
 import matrix.util.MatrixMsg;
-import matrix.util.Peer;
 import matrix.util.TaskMsg;
 
-public abstract class PeerScheduler implements Peer{
+public abstract class PeerScheduler extends OverallPeer{
 	
 	void regist();	// regist to ZHT server
 

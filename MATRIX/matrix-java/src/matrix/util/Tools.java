@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 public class Tools {
@@ -27,5 +28,16 @@ public class Tools {
 	
 	public static void genDagInDegree(AdjList dagAdjList, InDegree dagInDegree){
 		
+	}
+	
+	public static ArrayList<String> tokenizer(String source){
+		return (source.isEmpty()) 
+				? new ArrayList<String>() 
+				: (ArrayList<String>) Arrays.asList(source.split(" "));
+		
+	}
+	
+	public static String getIP(){
+		return null;
 	}
 }

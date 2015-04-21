@@ -16,28 +16,21 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import matrix.Peer;
 import matrix.util.AdjList;
 import matrix.util.Config;
 import matrix.util.Configuration;
 import matrix.util.InDegree;
 import matrix.util.Monitoring;
-import matrix.util.Peer;
 import matrix.util.TaskMsg;
 import matrix.util.Tools;
 import matrix.util.Value;
 
 public class MatrixClient extends PeerClient{
-	
-	private List<String> taskList;
-	private List<TaskMsg> tasks;
-	
-	public long startTime;
-	public long stopTime;
-	
-	public BufferedWriter clientLogOS;
-	public BufferedWriter systemLogOS;
+
 	
 	public MatrixClient(String configFile) throws IOException{
+		//TODO: check if this tasks is suppose to be initialized
 		tasks = new ArrayList<TaskMsg>();
 		initMatrixClient();
 	}
@@ -129,12 +122,16 @@ public class MatrixClient extends PeerClient{
 	
 	@Override
 	public void initTask(){
+		TaskMsg tm;
 		for(int i = 0; i < config.numTaskPerClient; i++){
 			String taskId = Integer.toString(getIndex()) + i;
 			
 			ArrayList<String> taskItemStr = Tools.tokenizer(taskId + " " + taskList.get(i));
 			
-			TaskMsg tm;
+			if(taskItemStr.isEmpty())
+				continue;
+			
+			tm = new TaskMsg();
 			tm.setTaskId(taskItemStr.get(0));
 			tm.setUser(taskItemStr.get(1));
 			tm.setDir(taskItemStr.get(2));
@@ -265,6 +262,5 @@ public class MatrixClient extends PeerClient{
 			e.printStackTrace();
 		} }
 	}
-	
 	
 }

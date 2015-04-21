@@ -1,11 +1,12 @@
-package matrix.util;
+package matrix;
 
-import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
+
+import matrix.util.TaskMsg;
 
 public interface Peer {
+	
 	
 	Boolean initZhtClient(String something, String something2);
 

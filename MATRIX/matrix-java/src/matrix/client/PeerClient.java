@@ -1,29 +1,27 @@
 package matrix.client;
 
+import java.io.BufferedWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import matrix.OverallPeer;
+import matrix.Peer;
 import matrix.util.AdjList;
 import matrix.util.Configuration;
 import matrix.util.InDegree;
-import matrix.util.Peer;
 import matrix.util.TaskMsg;
 
-public abstract class PeerClient implements Peer{
+public abstract class PeerClient extends OverallPeer{
 	
-	private String id;
-	private int index;
+	public List<String> taskList;
+	public List<TaskMsg> tasks;
 	
-	//Attributes from Interface Peer
-	public ZHTClient zc;
-	public Configuration config;
-	public ArrayList<String> schedulerList;
-	public Boolean running;
-	public long numZHTMsg;
+	public long startTime;
+	public long stopTime;
 	
-	public int getIndex(){
-		return index;
-	}
+	public BufferedWriter clientLogOS;
+	public BufferedWriter systemLogOS;
 	
 	public abstract void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree);
 	
@@ -33,8 +31,65 @@ public abstract class PeerClient implements Peer{
 	
 	public abstract void submitTaskBc();
 	
-	public abstract void submitTaskWc(List<TaskMsg> taskMsg, int randomScheduler);
+	public abstract void submitTaskWc(ArrayList<TaskMsg> taskMsg, int randomScheduler);
 	
 	public abstract void doMonitoring();
+
+	
+	public Boolean initZhtClient(String something, String something2){
+		return false;
+	}
+
+	public void waitAllScheduler(){
+		
+	}
+	public void waitAllTaskRecv(){
+		
+	}
+
+	public void setId(String id){
+		
+	}
+
+	public String getId(){
+		return id;
+	}
+
+	public void setIndex(Integer index){
+		
+	}
+
+	public int getIndex(){
+		return index;
+	}
+
+	public void increZHTMsgCount(long count){
+		
+	}
+
+	public void insertWrap(String key, String value){
+		
+	}
+	public void insertWrap(char key, char value){
+		
+	}
+
+	public void lookupWrap(String key, String result){
+		
+	}
+	public void lookupWrap(char key, char result){
+		
+	}
+
+	public void sendBatchTasks(ArrayList<TaskMsg> taskMsg, Socket socket, String peer){
+		
+	}
+	public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum){
+		
+	}
+
+	public void recvBatchTasks(){
+		
+	}
 
 }
