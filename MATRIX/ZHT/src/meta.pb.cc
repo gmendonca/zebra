@@ -182,15 +182,13 @@ Package* Package::New(::google::protobuf::Arena* arena) const {
 }
 
 void Package::Clear() {
-#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
-  &reinterpret_cast<Package*>(16)->f) - \
-   reinterpret_cast<char*>(16))
+#define ZR_HELPER_(f) reinterpret_cast<char*>(\
+  &reinterpret_cast<Package*>(16)->f)
 
-#define ZR_(first, last) do {                              \
-    size_t f = OFFSET_OF_FIELD_(first);                    \
-    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
-    ::memset(&first, 0, n);                                \
-  } while (0)
+#define ZR_(first, last) do {\
+  ::memset(&first, 0,\
+           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
+} while (0)
 
   if (_has_bits_[0 / 32] & 15) {
     ZR_(isdir_, replicanum_);
@@ -202,7 +200,7 @@ void Package::Clear() {
     }
   }
 
-#undef OFFSET_OF_FIELD_
+#undef ZR_HELPER_
 #undef ZR_
 
   listitem_.Clear();
@@ -554,6 +552,218 @@ void Package::InternalSwap(Package* other) {
   return metadata;
 }
 
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// Package
+
+// optional string virtualPath = 1;
+ bool Package::has_virtualpath() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+ void Package::set_has_virtualpath() {
+  _has_bits_[0] |= 0x00000001u;
+}
+ void Package::clear_has_virtualpath() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+ void Package::clear_virtualpath() {
+  virtualpath_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_virtualpath();
+}
+ const ::std::string& Package::virtualpath() const {
+  // @@protoc_insertion_point(field_get:Package.virtualPath)
+  return virtualpath_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Package::set_virtualpath(const ::std::string& value) {
+  set_has_virtualpath();
+  virtualpath_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:Package.virtualPath)
+}
+ void Package::set_virtualpath(const char* value) {
+  set_has_virtualpath();
+  virtualpath_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:Package.virtualPath)
+}
+ void Package::set_virtualpath(const char* value, size_t size) {
+  set_has_virtualpath();
+  virtualpath_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:Package.virtualPath)
+}
+ ::std::string* Package::mutable_virtualpath() {
+  set_has_virtualpath();
+  // @@protoc_insertion_point(field_mutable:Package.virtualPath)
+  return virtualpath_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* Package::release_virtualpath() {
+  clear_has_virtualpath();
+  return virtualpath_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Package::set_allocated_virtualpath(::std::string* virtualpath) {
+  if (virtualpath != NULL) {
+    set_has_virtualpath();
+  } else {
+    clear_has_virtualpath();
+  }
+  virtualpath_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), virtualpath);
+  // @@protoc_insertion_point(field_set_allocated:Package.virtualPath)
+}
+
+// optional string realFullPath = 2;
+ bool Package::has_realfullpath() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+ void Package::set_has_realfullpath() {
+  _has_bits_[0] |= 0x00000002u;
+}
+ void Package::clear_has_realfullpath() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+ void Package::clear_realfullpath() {
+  realfullpath_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_realfullpath();
+}
+ const ::std::string& Package::realfullpath() const {
+  // @@protoc_insertion_point(field_get:Package.realFullPath)
+  return realfullpath_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Package::set_realfullpath(const ::std::string& value) {
+  set_has_realfullpath();
+  realfullpath_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:Package.realFullPath)
+}
+ void Package::set_realfullpath(const char* value) {
+  set_has_realfullpath();
+  realfullpath_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:Package.realFullPath)
+}
+ void Package::set_realfullpath(const char* value, size_t size) {
+  set_has_realfullpath();
+  realfullpath_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:Package.realFullPath)
+}
+ ::std::string* Package::mutable_realfullpath() {
+  set_has_realfullpath();
+  // @@protoc_insertion_point(field_mutable:Package.realFullPath)
+  return realfullpath_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* Package::release_realfullpath() {
+  clear_has_realfullpath();
+  return realfullpath_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Package::set_allocated_realfullpath(::std::string* realfullpath) {
+  if (realfullpath != NULL) {
+    set_has_realfullpath();
+  } else {
+    clear_has_realfullpath();
+  }
+  realfullpath_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), realfullpath);
+  // @@protoc_insertion_point(field_set_allocated:Package.realFullPath)
+}
+
+// optional bool isDir = 3;
+ bool Package::has_isdir() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+ void Package::set_has_isdir() {
+  _has_bits_[0] |= 0x00000004u;
+}
+ void Package::clear_has_isdir() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+ void Package::clear_isdir() {
+  isdir_ = false;
+  clear_has_isdir();
+}
+ bool Package::isdir() const {
+  // @@protoc_insertion_point(field_get:Package.isDir)
+  return isdir_;
+}
+ void Package::set_isdir(bool value) {
+  set_has_isdir();
+  isdir_ = value;
+  // @@protoc_insertion_point(field_set:Package.isDir)
+}
+
+// optional int32 replicanum = 4;
+ bool Package::has_replicanum() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+ void Package::set_has_replicanum() {
+  _has_bits_[0] |= 0x00000008u;
+}
+ void Package::clear_has_replicanum() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+ void Package::clear_replicanum() {
+  replicanum_ = 0;
+  clear_has_replicanum();
+}
+ ::google::protobuf::int32 Package::replicanum() const {
+  // @@protoc_insertion_point(field_get:Package.replicanum)
+  return replicanum_;
+}
+ void Package::set_replicanum(::google::protobuf::int32 value) {
+  set_has_replicanum();
+  replicanum_ = value;
+  // @@protoc_insertion_point(field_set:Package.replicanum)
+}
+
+// repeated string listItem = 5;
+ int Package::listitem_size() const {
+  return listitem_.size();
+}
+ void Package::clear_listitem() {
+  listitem_.Clear();
+}
+ const ::std::string& Package::listitem(int index) const {
+  // @@protoc_insertion_point(field_get:Package.listItem)
+  return listitem_.Get(index);
+}
+ ::std::string* Package::mutable_listitem(int index) {
+  // @@protoc_insertion_point(field_mutable:Package.listItem)
+  return listitem_.Mutable(index);
+}
+ void Package::set_listitem(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:Package.listItem)
+  listitem_.Mutable(index)->assign(value);
+}
+ void Package::set_listitem(int index, const char* value) {
+  listitem_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:Package.listItem)
+}
+ void Package::set_listitem(int index, const char* value, size_t size) {
+  listitem_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:Package.listItem)
+}
+ ::std::string* Package::add_listitem() {
+  return listitem_.Add();
+}
+ void Package::add_listitem(const ::std::string& value) {
+  listitem_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:Package.listItem)
+}
+ void Package::add_listitem(const char* value) {
+  listitem_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:Package.listItem)
+}
+ void Package::add_listitem(const char* value, size_t size) {
+  listitem_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:Package.listItem)
+}
+ const ::google::protobuf::RepeatedPtrField< ::std::string>&
+Package::listitem() const {
+  // @@protoc_insertion_point(field_list:Package.listItem)
+  return listitem_;
+}
+ ::google::protobuf::RepeatedPtrField< ::std::string>*
+Package::mutable_listitem() {
+  // @@protoc_insertion_point(field_mutable_list:Package.listItem)
+  return &listitem_;
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
 
