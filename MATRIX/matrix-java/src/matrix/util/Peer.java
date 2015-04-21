@@ -1,6 +1,7 @@
 package matrix.util;
 
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public interface Peer {
 	void lookupWrap(String key, String result);
 	void lookupWrap(char key, char result);
 
-	void sendBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum, String something);
+	void sendBatchTasks(ArrayList<TaskMsg> taskMsg, Socket socket, String peer);
 	void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum);
 
 	void recvBatchTasks();
