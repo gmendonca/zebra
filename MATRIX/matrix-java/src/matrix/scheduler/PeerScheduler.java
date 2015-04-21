@@ -45,11 +45,11 @@ public abstract class PeerScheduler extends OverallPeer{
 	void findMostLoadedNeigh();
 
 	/* try to steal tasks from the most-loaded neighbor */
-	Boolean steal_task();
+	Boolean stealTask();
 
 	//void* workstealing(void*);	// work stealing thread function
 
-	void fork_ws_thread();	// fork work stealing thread
+	void forkWsThread();	// fork work stealing thread
 
 	int taskReadyProcess(String Value, TaskMsg taskMsg);
 	/* check if a given task is ready to run, and put it in the right queue */
