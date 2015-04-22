@@ -2,6 +2,9 @@ package matrix.scheduler;
 
 import java.io.IOException;
 
+import matrix.protocol.Metamatrix.MatrixMsg;
+import matrix.util.MatrixEpollServer;
+
 public class MatrixScheduler extends PeerScheduler{
 
 	public MatrixScheduler(String configFile) throws IOException {
@@ -11,11 +14,11 @@ public class MatrixScheduler extends PeerScheduler{
 	
 	/* processing requests received by the epoll server */
 	public int procReq(int sockfd, String buf) {
-		StringBuffer bufStr(buf);
+		String bufStr = new String(buf);
 		/* this is client submitting tasks */
 		String prefix = "client send tasks";
-		if (bufStr.substr(0, prefix.size()) == prefix) {
-			recv_task_from_client(bufStr, sockfd);
+		if (bufStr.substring(0, prefix.length()) == prefix) {
+			recvTaskFromClient(bufStr, sockfd);
 		} else {
 			MatrixMsg mm;
 

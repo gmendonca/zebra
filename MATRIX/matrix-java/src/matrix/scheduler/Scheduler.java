@@ -1,14 +1,30 @@
 package matrix.scheduler;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+import matrix.util.Tools;
+
 public class Scheduler {
 	
 	public static void main(String args[]){
+		
 		if (args.length != 2) {
-			System.out.println("The usage is: client\tconfiguration_file!\n");
+			System.out.println("The usage is: scheduler\tconfiguration_file!\n");
 			System.exit(1);
 		}
 		
-		MatrixScheduler ms = new MatrixScheduler();
+		MatrixScheduler ms = null;
+		
+		try {
+			String configFile = Tools.readFile(args[1],Charset.defaultCharset());
+			 ms = new MatrixScheduler(configFile);
+		} catch (IOException e) {
+			System.out.println("The usage is: scheduler\tconfiguration_file!\n");
+			System.exit(1);
+		}
+		
+		if(ms == null) return;
 		
 		ms.regist();	// regists to ZHT
 
