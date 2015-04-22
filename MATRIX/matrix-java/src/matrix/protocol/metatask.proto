@@ -1,8 +1,0 @@
-message TaskMsg
-{
-	required String taskId = 1;
-	required String user = 2;
-	required String dir = 3;
-	required String cmd = 4;
-	required int dataLength = 5; 
-}

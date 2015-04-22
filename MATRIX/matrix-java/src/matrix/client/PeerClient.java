@@ -4,12 +4,11 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 
 import matrix.OverallPeer;
 import matrix.util.AdjList;
 import matrix.util.InDegree;
-import matrix.util.TaskMsg;
+import matrix.protocol.Metatask.TaskMsg;
 
 public abstract class PeerClient extends OverallPeer{
 	
@@ -18,8 +17,8 @@ public abstract class PeerClient extends OverallPeer{
 		super(configFile);
 	}
 
-	public List<String> taskList;
-	public List<TaskMsg> tasks;
+	public ArrayList<String> taskList;
+	public ArrayList<TaskMsg> tasks;
 	
 	public long startTime;
 	public long stopTime;

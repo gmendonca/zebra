@@ -22,9 +22,9 @@ import matrix.util.Config;
 import matrix.util.Configuration;
 import matrix.util.InDegree;
 import matrix.util.Monitoring;
-import matrix.util.TaskMsg;
+import matrix.protocol.Metatask.TaskMsg;
 import matrix.util.Tools;
-import matrix.util.Value;
+import matrix.protocol.Metazht.Value;
 
 public class MatrixClient extends PeerClient{
 
@@ -77,7 +77,7 @@ public class MatrixClient extends PeerClient{
 		Iterator<Entry<Long, ArrayList<Long>>> it = dagAdjList.adjList.entrySet().iterator();
 		
 		String taskId, child;
-		Value value;
+		
 		ArrayList<Long> existList;
 		
 		while(it.hasNext()){
@@ -89,17 +89,18 @@ public class MatrixClient extends PeerClient{
 			
 			Long inDegree = dagInDegree.get((Long)pair.getKey());
 			
-			value = new Value();
-			value.setTaskId(taskId);
+			Value.Builder value;
+			value.setId(taskId);
 			value.setInDegree(inDegree);
 			
 			for(Long l : existList){
 				child = Integer.toString(getIndex()) + l;
-				value.addChild(child);
+				value.addChildren(child);
+				
 			}
 			
 			String seriValue;
-			seriValue = Tools.valueToStr(value);
+			seriValue = Tools.valueToStr(value.build());
 			zc.insert(taskId, seriValue);
 			
 		}
@@ -123,7 +124,7 @@ public class MatrixClient extends PeerClient{
 	
 	@Override
 	public void initTask(){
-		TaskMsg tm;
+		
 		for(int i = 0; i < config.numTaskPerClient; i++){
 			String taskId = Integer.toString(getIndex()) + i;
 			
@@ -132,13 +133,14 @@ public class MatrixClient extends PeerClient{
 			if(taskItemStr.isEmpty())
 				continue;
 			
-			tm = new TaskMsg();
+			//TODO: it's going to work?
+			TaskMsg.Builder tm = TaskMsg.newBuilder();
 			tm.setTaskId(taskItemStr.get(0));
 			tm.setUser(taskItemStr.get(1));
 			tm.setDir(taskItemStr.get(2));
 			tm.setCmd(taskItemStr.get(3));
 			tm.setDataLength(0);
-			tasks.add(tm);
+			tasks.add(tm.build());
 		}
 	}
 	

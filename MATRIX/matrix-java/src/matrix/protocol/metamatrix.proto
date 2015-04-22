@@ -1,7 +1,0 @@
-message MatrixMsg
-{
-	required String msgType = 1;
-	optional String extraInfo = 2;
-	optional int count = 3;
-	repeated String tasks = 4;
-}

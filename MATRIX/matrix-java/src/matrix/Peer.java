@@ -3,7 +3,7 @@ package matrix;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import matrix.util.TaskMsg;
+import matrix.protocol.Metatask.TaskMsg;
 
 public interface Peer {
 	

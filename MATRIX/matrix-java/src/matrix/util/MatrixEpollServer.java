@@ -1,24 +1,4 @@
 package matrix.util;
-/*
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <queue>
-#include "scheduler_stub.h"
-
-
-
-
-#include "util.h"
-#include "matrix_epoll_server.h"
-#include <stdlib.h>
-#include <sys/epoll.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-*/
 
 public class MatrixEpollServer {
 
