@@ -5,10 +5,9 @@ import java.net.Socket;
 import java.util.ArrayDeque;
 
 import matrix.OverallPeer;
-import matrix.Peer;
 import matrix.util.CmpQueueItem;
-import matrix.util.MatrixMsg;
-import matrix.util.TaskMsg;
+import matrix.protocol.Metamatrix.MatrixMsg;
+import matrix.protocol.Metatask.TaskMsg;
 
 public abstract class PeerScheduler extends OverallPeer{
 	

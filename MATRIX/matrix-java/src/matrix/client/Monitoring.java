@@ -1,8 +1,8 @@
-package matrix.util;
+package matrix.client;
 
 import java.io.IOException;
 
-import matrix.client.MatrixClient;
+import matrix.util.Tools;
 
 public class Monitoring extends Thread{
 	
