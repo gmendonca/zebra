@@ -30,6 +30,7 @@ public class MatrixClient extends PeerClient{
 
 	
 	public MatrixClient(String configFile) throws IOException{
+		super(configFile);
 		//TODO: check if this tasks is suppose to be initialized
 		tasks = new ArrayList<TaskMsg>();
 		initMatrixClient();

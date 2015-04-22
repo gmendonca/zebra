@@ -1,5 +1,6 @@
 package matrix.scheduler;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayDeque;
 
@@ -11,66 +12,73 @@ import matrix.util.TaskMsg;
 
 public abstract class PeerScheduler extends OverallPeer{
 	
-	void regist();	// regist to ZHT server
+	public PeerScheduler(String configFile) throws IOException {
+		super(configFile);
+	}
+	
+	private String id;
+	private int index;
 
-	void loadData();
+	public abstract void regist();	// regist to ZHT server
 
-	void getTaskFromFile();
+	public abstract void loadData();
+
+	public abstract void getTaskFromFile();
 	/* receive tasks from another scheduler as a
 	 * consequence of successful work stealing
 	 * */
-	Boolean recvTaskFromScheduler(int something);
+	public abstract Boolean recvTaskFromScheduler(int something);
 
-	void recvPushingTask(MatrixMsg matrixMsg, int num);
+	public abstract void recvPushingTask(MatrixMsg matrixMsg, int num);
 
 	/* receive tasks submitted by client */
-	void recvTaskFromClient(String something, int num);
+	public abstract void recvTaskFromClient(String something, int num);
 
 	/* pack and send tasks to another thief scheduler */
-	void packSendTask(int num, int another, Socket socket, Boolean bool, ArrayDeque<TaskMsg> dequeTaskMsg);
+	public abstract void packSendTask(int num, int another, Socket socket, Boolean bool, ArrayDeque<TaskMsg> dequeTaskMsg);
 
 	/* send tasks to another thief scheduler */
-	void sendTask();
+	public abstract void sendTask();
 
 	/* processing requests received by the epoll server */
-	int procReq(int some, char c);
+	public abstract int procReq(int some, char c);
 
-	void forkEsThread();	// fork epoll server thread
+	public abstract void forkEsThread();	// fork epoll server thread
 
-	void resetChoosebm();	// reset the bitmap of neighbors chosen
+	public abstract void resetChoosebm();	// reset the bitmap of neighbors chosen
 
-	void chooseNeigh();	// choose candidate neighbors to steal tasks
+	public abstract void chooseNeigh();	// choose candidate neighbors to steal tasks
 
 	/* find the neighbor with the maximum load */
-	void findMostLoadedNeigh();
+	public abstract void findMostLoadedNeigh();
 
 	/* try to steal tasks from the most-loaded neighbor */
-	Boolean stealTask();
+	public abstract Boolean stealTask();
 
 	//void* workstealing(void*);	// work stealing thread function
 
-	void forkWsThread();	// fork work stealing thread
+	public abstract void forkWsThread();	// fork work stealing thread
 
-	int taskReadyProcess(String Value, TaskMsg taskMsg);
+	public abstract int taskReadyProcess(String Value, TaskMsg taskMsg);
 	/* check if a given task is ready to run, and put it in the right queue */
-	Boolean checkReadyTask(TaskMsg taskMsg);
+	public abstract Boolean checkReadyTask(TaskMsg taskMsg);
 
-	void forkCrtThread();	// fork check ready task thread
+	public abstract void forkCrtThread();	// fork check ready task thread
 
-	void execTask(TaskMsg taskMsg);	// execute a task
+	public abstract void execTask(TaskMsg taskMsg);	// execute a task
 
-	void forkExecTaskThread();	// fork execute task threads
+	public abstract void forkExecTaskThread();	// fork execute task threads
 
 	/* decrease the number of waiting parents for a given task */
-	long notifyChildren(CmpQueueItem cmpQueueItem);
+	public abstract long notifyChildren(CmpQueueItem cmpQueueItem);
 
 	/* fork check compute task thread */
-	void forkCctThread();
+	public abstract void forkCctThread();
 
 	/* fork recording status thread */
-	void forkRecordStatThread();
+	public abstract void forkRecordStatThread();
 
-	void forkRecordTaskThread();
+	public abstract void forkRecordTaskThread();
 
-	void forkLocalQueueMonitorThread();
+	public abstract void forkLocalQueueMonitorThread();
 }

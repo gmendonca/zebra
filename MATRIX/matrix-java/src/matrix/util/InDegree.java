@@ -4,5 +4,5 @@ import java.util.Map;
 
 public class InDegree {
 	
-	public static Map<Long, Long> inDegree;
+	public Map<Long, Long> inDegree;
 }

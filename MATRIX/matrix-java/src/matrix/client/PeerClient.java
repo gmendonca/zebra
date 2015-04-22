@@ -1,19 +1,23 @@
 package matrix.client;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 import matrix.OverallPeer;
-import matrix.Peer;
 import matrix.util.AdjList;
-import matrix.util.Configuration;
 import matrix.util.InDegree;
 import matrix.util.TaskMsg;
 
 public abstract class PeerClient extends OverallPeer{
 	
+
+	public PeerClient(String configFile) throws IOException {
+		super(configFile);
+	}
+
 	public List<String> taskList;
 	public List<TaskMsg> tasks;
 	
@@ -22,6 +26,9 @@ public abstract class PeerClient extends OverallPeer{
 	
 	public BufferedWriter clientLogOS;
 	public BufferedWriter systemLogOS;
+	
+	private String id;
+	private int index;
 	
 	public abstract void insertTaskInfoToZHT(AdjList dagAdjList, InDegree dagInDegree);
 	

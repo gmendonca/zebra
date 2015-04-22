@@ -1,5 +1,7 @@
 package matrix;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import matrix.client.ZHTClient;
@@ -14,14 +16,12 @@ public abstract class OverallPeer implements Peer{
 		public ArrayList<String> schedulerList;
 		public Boolean running;
 		public long numZHTMsg;
-		private String id;
-		private int index;
 		
-		public OverallPeer(String configFile){
+		public OverallPeer(String configFile) throws IOException{
 			config = new Configuration(configFile);
-			set_id(Tools.getHostId(config.hostIdType));
-			schedulerList = Tools.readFromFile(config.schedulerMemFile);
-			set_index(Tools.getSelfIdx(getId(), schedulerList));
+			setId(Tools.getHostId(config.hostIdType));
+			schedulerList = Tools.readFromFile(config.schedulerMemFile, Charset.defaultCharset());
+			setIndex(Tools.genSelfIdx(getId(), schedulerList));
 			running = true;
 			numZHTMsg = 0;
 			initZhtClient(config.zhtConfigFile, config.zhtMemFile);
