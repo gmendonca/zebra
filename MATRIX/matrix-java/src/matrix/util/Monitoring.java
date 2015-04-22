@@ -47,7 +47,7 @@ public class Monitoring extends Thread{
 			/* log the instant system status */
 			
 			currentTimeUs = System.currentTimeMillis() % 1000;
-			for (int i = 0; i < mc.schedulerVec.size(); i++) {
+			for (int i = 0; i < mc.schedulerList.size(); i++) {
 				String schedulerStat;
 				mc.zc.lookup(mc.schedulerList.get(i), schedulerStat);
 				if (schedulerStat.isEmpty())

@@ -87,7 +87,7 @@ public class MatrixClient extends PeerClient{
 			
 			existList = (ArrayList<Long>)pair.getValue();
 			
-			Long inDegree = dagInDegree.inDegree.get((Long)pair.getKey());
+			Long inDegree = dagInDegree.get((Long)pair.getKey());
 			
 			value = new Value();
 			value.setTaskId(taskId);

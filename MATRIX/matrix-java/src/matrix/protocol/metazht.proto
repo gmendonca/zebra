@@ -1,0 +1,23 @@
+message Value
+{
+	required String id = 1;
+	optional int inDegree = 2;
+	repeated String parents = 3;
+	repeated String children = 4;
+	repeated String dataNameList = 5;
+	repeated int dataSize = 6;
+	optional int allDataSize = 7;
+	optional int taskLength = 8;
+	
+	optional int numTaskFin = 9;
+	optional int numWorkSteal = 10;
+	optional int numWorkStealFail = 11;
+	optional int numTaskWait = 12;
+	optional int numTaskReady = 13;
+	optional int numCoreAvilable = 14;
+	optional int numAllCore = 15;
+	
+	optional int outputSize = 16;
+	
+	optional int submitTime = 17;
+}

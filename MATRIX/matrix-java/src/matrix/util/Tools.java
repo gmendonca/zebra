@@ -11,7 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Tools {
 	
@@ -28,14 +31,6 @@ public class Tools {
 	public static ArrayList<String> readWorkloadFromFile(String path, Charset encoding) throws IOException {
 		List<String> list = Files.readAllLines(Paths.get(path),encoding);
 		return (ArrayList<String>) list;
-	}
-	
-	public static void genDagAdjList(AdjList dagAdjList, String dagType, long dagArg, long numTask){
-		
-	}
-	
-	public static void genDagInDegree(AdjList dagAdjList, InDegree dagInDegree){
-		
 	}
 	
 	public static ArrayList<String> tokenizer(String source){
@@ -218,5 +213,40 @@ public class Tools {
 		
 		return dagAdjList;
 	}
+	
+	public static AdjList genDagAdjList(AdjList dagAdjList, String dagType, long dagArg, long numTask){
+		if (dagType.equals("BOT"))
+			genBotAdjList(dagAdjList, numTask);
+		else if (dagType.equals("FanOut")) 
+			genFanoutAdjList(dagAdjList, dagArg, numTask);
+		else if (dagType.equals("FanIn"))
+			genFaninAdjList(dagAdjList, dagArg, numTask);
+		else if (dagType.equals("Pipeline"))
+			genPipelineAdjList(dagAdjList, dagArg, numTask);
+		
+		return dagAdjList;
+	}
+	
+	public static InDegree genDagInDegree(AdjList dagAdjList, InDegree dagInDegree){
+		for (long i = 0; i < dagAdjList.adjList.size(); i++) {
+			dagInDegree.put(i, 0L);
+		}
+		Iterator<Entry<Long, ArrayList<Long>>> it = dagAdjList.adjList.entrySet().iterator();
+		long inc;
+		while(it.hasNext()){
+			Map.Entry<Long, ArrayList<Long>> pair = (Map.Entry<Long, ArrayList<Long>>)it.next();
+			
+			for (int j = 0; j < pair.getValue().size(); j++) {
+				inc = dagInDegree.get(pair.getValue().get(j));
+				dagInDegree.put(pair.getValue().get(j), ++inc);
+			}
+		}
+		
+		return dagInDegree;
+	}
+	
+	//TODO: there are a lot of time methods, but I don't think its extremely necessary
+	
+	
 	
 }
