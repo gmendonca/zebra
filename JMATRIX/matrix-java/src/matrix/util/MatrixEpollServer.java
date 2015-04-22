@@ -2,6 +2,42 @@ package matrix.util;
 
 public class MatrixEpollServer {
 
+//public:
+public void	MatrixEpollServer(long port, MatrixScheduler ms) {
+	_port = port;
+	_ms = ms; /////////////
+	_eventQueue();
+	eqMutex = Mutex();
+}
+
+public void serve() {
+
+}
+
+/*
+private:
+	int create_and_bind(const char*);
+	int create_and_bind(const char*, const char*);
+	int make_socket_non_blocking(const int&);
+	int make_svr_socket();
+	int reuse_sock(int);
+	void init_thread();
+
+private:
+	static void* threaded_serve(void*);
+
+private:
+	MatrixEpollServer();
+
+private:
+	MatrixScheduler *_ms;
+	long _port;
+	Mutex eqMutex;
+	queue<MatrixEventData> _eventQueue;
+
+private:
+	static const int MAX_EVENTS;
+*/
 }
 
 class MatrixEventData {
