@@ -1,5 +1,9 @@
 package matrix.scheduler;
 
+import java.util.ArrayList;
+
+import matrix.protocol.Metatask.TaskMsg;
+
 public class LocalQueueMonitor extends Thread{
 	MatrixScheduler ms;
 	long diff;
@@ -15,45 +19,45 @@ public class LocalQueueMonitor extends Thread{
 	}
 	
 	public void run(){
-		while (ms->running) {
-			clock_gettime(0, &ms->end);
-			diff = time_diff(ms->start, ms->end);
+		while (ms.running) {
+			clock_gettime(0, &ms.end);
+			diff = time_diff(ms.start, ms.end);
 			time = (double) diff.tv_sec + (double) diff.tv_nsec / 1E9;
-			aveThroughput = (double) (ms->numTaskFin) / time;
-			maxSize = (long) (aveThroughput * ms->config->estTimeThreadshold);
-			vector<TaskMsg> vecRemain;
-			vector<TaskMsg> vecMigrated;
+			aveThroughput = (double) (ms.numTaskFin) / time;
+			maxSize = (long) (aveThroughput * ms.config.estTimeThreadshold);
+			ArrayList<TaskMsg> vecRemain;
+			ArrayList<TaskMsg> vecMigrated;
 			if (maxSize == 0) {
-				usleep(ms->config->sleepLength);
+				Thread.sleep(ms.config.sleepLength);
 				continue;
 			}
-			ms->lqMutex.lock();
-			if (ms->localQueue.size() > maxSize) {
-				int numTaskToMove = ms->localQueue.size() - maxSize;
+			ms.lqMutex.lock();
+			if (ms.localQueue.size() > maxSize) {
+				int numTaskToMove = ms.localQueue.size() - maxSize;
 				for (int i = 0; i < maxSize; i++) {
-					vecRemain.push_back(ms->localQueue.top());
-					ms->localQueue.pop();
+					vecRemain.push_back(ms.localQueue.top());
+					ms.localQueue.pop();
 				}
 
 				for (int i = 0; i < numTaskToMove; i++) {
-					vecMigrated.push_back(ms->localQueue.top());
-					ms->localQueue.pop();
+					vecMigrated.push_back(ms.localQueue.top());
+					ms.localQueue.pop();
 				}
 
 				for (int i = 0; i < maxSize; i++) {
-					ms->localQueue.push(vecRemain.at(i));
+					ms.localQueue.push(vecRemain.at(i));
 				}
-				ms->lqMutex.unlock();
+				ms.lqMutex.unlock();
 
-				ms->wsqMutex.lock();
+				ms.wsqMutex.lock();
 				for (int i = 0; i < numTaskToMove; i++) {
-					ms->wsQueue.push(vecMigrated.at(i));
+					ms.wsQueue.push(vecMigrated.at(i));
 				}
-				ms->wsqMutex.unlock();
+				ms.wsqMutex.unlock();
 			} else {
-				ms->lqMutex.unlock();
+				ms.lqMutex.unlock();
 			}
-			usleep(ms->config->sleepLength);
+			Thread.sleep(ms.config.sleepLength);
 		}
 	}
 }

@@ -5,7 +5,7 @@ package matrix.scheduler;
  * poll interval has reached the upper bound, the scheduler would do work
  * stealing.
  * */
-public class WorkStealing {
+public class WorkStealing extends Thread{
 	MatrixScheduler ms;
 	long incre;
 	
@@ -15,17 +15,16 @@ public class WorkStealing {
 	}
 	
 	public void run(){
-		
 
-		while (ms->running) {
-			while (ms->localQueue.size() + ms->wsQueue.size() == 0
-					&& ms->pollInterval < ms->config->wsPollIntervalUb) {
-				ms->choose_neigh();
-				ms->find_most_loaded_neigh();
-				bool success = ms->steal_task();
-				ms->numWS++;
-				ms->maxLoadedIdx = -1;
-				ms->maxLoad = -1000000;
+		while (ms.running) {
+			while (ms.localQueue.size() + ms.wsQueue.size() == 0
+					&& ms.pollInterval < ms.config.wsPollIntervalUb) {
+				ms.chooseNeigh();
+				ms.findMostLoadedNeigh();
+				Boolean success = ms.stealTask();
+				ms.numWS++;
+				ms.maxLoadedIdx = -1;
+				ms.maxLoad = -1000000;
 
 				/* if successfully steals some tasks, then the poll
 				 * interval is set back to the initial value, otherwise
@@ -33,27 +32,24 @@ public class WorkStealing {
 				 * interval, and tries to do work stealing again
 				 * */
 				if (success) {
-					ms->pollInterval = ms->config->wsPollIntervalStart;
+					ms.pollInterval = ms.config.wsPollIntervalStart;
 				} else {
-					ms->numWSFail++;
-					usleep(ms->pollInterval);
-					ms->pollInterval *= 2;
+					ms.numWSFail++;
+					Thread.sleep(ms.pollInterval);
+					ms.pollInterval *= 2;
 				}
 			}
 
-			if (ms->pollInterval >= ms->config->wsPollIntervalUb) {
+			if (ms.pollInterval >= ms.config.wsPollIntervalUb) {
 				break;
 			}
 
-			ms->pollInterval = ms->config->wsPollIntervalStart;
-			usleep(ms->pollInterval);
+			ms.pollInterval = ms.config.wsPollIntervalStart;
+			Thread.sleep(ms.pollInterval);
 		}
-
-		ms->ZHTMsgCountMutex.lock();
-		ms->incre_ZHT_msg_count(incre);
-		ms->ZHTMsgCountMutex.unlock();
-
-		pthread_exit(NULL);
-		return NULL;
+		
+		synchronized(this){
+			ms.increZHTMsgCount(incre);
+		}
 	}
 }

@@ -8,7 +8,7 @@ import matrix.protocol.Metatask.TaskMsg;
  * waiting queue to see it they are ready to run. Move the
  * tasks that are ready to run to the ready queue.
  * */
-public class CheckingReadyTask {
+public class CheckingReadyTask extends Thread{
 	MatrixScheduler ms;
 	TaskMsg tm;
 	long increment;
@@ -20,28 +20,26 @@ public class CheckingReadyTask {
 	}
 	
 	public void run(){
-		while (ms->running) {
-			while (ms->waitQueue.size() > 0) {
-				//cout << "number of task waiting is:" << ms->waitQueue.size() << endl;
-				tm = ms->waitQueue.front();
-				ms->waitQueue.pop_front();
+		while (ms.running) {
+			while (ms.waitQueue.size() > 0) {
+				//cout << "number of task waiting is:" << ms.waitQueue.size() << endl;
+				tm = ms.waitQueue.front();
+				ms.waitQueue.pop_front();
 				//cout << "next one to process is:" << tm.taskid() << endl;
 
-				bool ready = ms->check_a_ready_task(tm);
+				Boolean ready = ms.checkReadyTask(tm);
 				increment++;
 				if (!ready) {
-					ms->waitQueue.push_back(tm);
+					ms.waitQueue.push_back(tm);
 					//cout << "Ok, the task is still not ready!" << tm.taskid() << endl;
 				}
 			}
 		}
 
-		ms->ZHTMsgCountMutex.lock();
-		ms->incre_ZHT_msg_count(increment);
-		ms->ZHTMsgCountMutex.unlock();
+		synchronized(this){
+			ms.increZHTMsgCount(increment);
+		}
 
-		pthread_exit(NULL);
-		return NULL;
 	}
 
 }
