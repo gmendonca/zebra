@@ -127,7 +127,7 @@ public class MatrixClient extends PeerClient{
 		for(int i = 0; i < config.numTaskPerClient; i++){
 			String taskId = Integer.toString(getIndex()) + i;
 			
-			ArrayList<String> taskItemStr = Tools.tokenizer(taskId + " " + taskList.get(i));
+			ArrayList<String> taskItemStr = Tools.tokenizer(taskId + " " + taskList.get(i), " ");
 			
 			if(taskItemStr.isEmpty())
 				continue;
@@ -168,9 +168,10 @@ public class MatrixClient extends PeerClient{
 			String taskId = tasks.get(i).getTaskId();
 			String taskDetail = zc.lookUp(taskId);
 			Value value = Tools.strToValue(taskDetail);
-			value.setSubmitTime(Tools.getTimeUsec());
+			Value.Builder vb = value.toBuilder();
+			vb.setSubmitTime(System.currentTimeMillis());
 			
-			taskDetail = Tools.valueToStr(value);
+			taskDetail = Tools.valueToStr(vb.build());
 			zc.insert(taskId, taskDetail);
 			
 			increment += 2;
