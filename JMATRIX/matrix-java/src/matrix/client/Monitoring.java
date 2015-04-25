@@ -3,6 +3,7 @@ package matrix.client;
 import java.io.IOException;
 
 import matrix.util.Tools;
+import matrix.protocol.Metazht.Value;
 
 public class Monitoring extends Thread{
 	
@@ -28,18 +29,21 @@ public class Monitoring extends Thread{
 		long prevTimeUs = 0L, currentTimeUs = 0L;
 		double instantThr = 0.0;
 
-		String numTaskFinStr;
+		String numTaskFinStr = null;
 
 		/* system status log head */
 		
-		mc.systemLogOS.write("Time(us)\tNumAllCore\tNumIdleCore\tNumTaskWait\t" + "NumTaskReady\tNumTaskDone\tThroughput");
-		mc.systemLogOS.newLine();
+		
+		try {
+			mc.systemLogOS.write("Time(us)\tNumAllCore\tNumIdleCore\tNumTaskWait\t" + "NumTaskReady\tNumTaskDone\tThroughput");
+			mc.systemLogOS.newLine();
+		} catch (Exception e){ }
 
 
 		long increment = 0;
 
 		while (true) {
-			mc.zc.lookup(key, numTaskFinStr);	// lookup how many tasks are done
+			numTaskFinStr = mc.zc.lookup(key);	// lookup how many tasks are done
 			numTaskDone = Long.parseLong(numTaskFinStr);
 			System.out.println("number of task done is: " + numTaskDone);
 			increment++;
@@ -49,14 +53,14 @@ public class Monitoring extends Thread{
 			currentTimeUs = System.currentTimeMillis() % 1000;
 			for (int i = 0; i < mc.schedulerList.size(); i++) {
 				String schedulerStat;
-				mc.zc.lookup(mc.schedulerList.get(i), schedulerStat);
+				schedulerStat = mc.zc.lookup(mc.schedulerList.get(i));
 				if (schedulerStat.isEmpty())
 					continue;
 
 				Value value = Tools.strToValue(schedulerStat);
-				numIdleCore += value.numCoreAvilable();
-				numTaskWait += value.numTaskWait();
-				numTaskReady += value.numTaskReady();
+				numIdleCore += value.getNumCoreAvilable();
+				numTaskWait += value.getNumTaskWait();
+				numTaskReady += value.getNumTaskReady();
 			}
 				
 
@@ -64,11 +68,12 @@ public class Monitoring extends Thread{
 
 			instantThr = (double) (numTaskDone - preNumTaskDone)
 						/ (currentTimeUs - prevTimeUs) * 1E6;
-
+			try {
 			mc.systemLogOS.write(currentTimeUs + "\t" + numAllCore + "\t"
 						+ numIdleCore + "\t" + numTaskWait + "\t"
 						+ numTaskReady + "\t" + numTaskDone + "\t" + instantThr);
 			mc.systemLogOS.newLine();
+			} catch(Exception e) { }
 
 			preNumTaskDone = numTaskDone;
 			prevTimeUs = currentTimeUs;
@@ -79,7 +84,7 @@ public class Monitoring extends Thread{
 			if (numTaskDone == mc.config.numAllTask)	// all the tasks are done
 				break;
 			else
-				Thread.sleep(mc.config.monitorInterval);	// sleep sometime
+				try { Thread.sleep(mc.config.monitorInterval); } catch (Exception e) { }	// sleep sometime 
 		}
 		
 		mc.stopTime = System.currentTimeMillis();

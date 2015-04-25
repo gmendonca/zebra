@@ -1,11 +1,18 @@
 package matrix.scheduler;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.PriorityQueue;
 
 import matrix.OverallPeer;
 import matrix.util.CmpQueueItem;
+import matrix.util.TaskMsgQueueItem;
 import matrix.protocol.Metamatrix.MatrixMsg;
 import matrix.protocol.Metatask.TaskMsg;
 
@@ -17,6 +24,41 @@ public abstract class PeerScheduler extends OverallPeer{
 	
 	private String id;
 	private int index;
+
+	int numIdleCore;	// number of idle cores
+	long prevNumTaskFin;	// number of tasks done last time
+	long numTaskFin;	// number of tasks done up to now
+	long numTaskSteal;	// number of tasks stolen from other schedulers
+	long numTaskStolen;	// number of tasks being stolen by other schedulers
+	long numWS;	// number of work stealing operations
+	long numWSFail;	// number of failed work stealing operations
+
+	Boolean []chooseBitMap;	// bitmap of neighbors chosen
+	int numNeigh;	// number of neighbors
+	int []neighIdx;	// the indeces of all chosen neighbors
+	int maxLoadedIdx;	// the neighbor index with the maximum load
+	long maxLoad;	// the maximum load of all the neighbors
+	long pollInterval;	// the work stealing polling interval
+	Boolean startWS;
+
+
+	PriorityQueue<TaskMsgQueueItem> localQueue;
+
+	PriorityQueue<TaskMsgQueueItem> wsQueue;
+
+	Deque<TaskMsg> waitQueue;	// waiting queue
+	//deque<string> readyQueue;	// ready queue
+	Deque<CmpQueueItem> completeQueue;	// complete queue
+
+	NavigableMap<String, String> localData;
+	Boolean cache;
+
+	public BufferedWriter schedulerLogOS;	// scheduler log output stream
+
+	public BufferedWriter taskLogOS;
+	ArrayList<String> taskTimeEntry;
+
+	long startTime, stopTime;
 
 	public abstract void regist();	// regist to ZHT server
 
@@ -80,4 +122,60 @@ public abstract class PeerScheduler extends OverallPeer{
 	public abstract void forkRecordTaskThread();
 
 	public abstract void forkLocalQueueMonitorThread();
+	
+	public Boolean initZhtClient(String something, String something2){
+		return false;
+	}
+
+	public void waitAllScheduler(){
+		
+	}
+	public void waitAllTaskRecv(){
+		
+	}
+
+	public void setId(String id){
+		
+	}
+
+	public String getId(){
+		return id;
+	}
+
+	public void setIndex(Integer index){
+		
+	}
+
+	public int getIndex(){
+		return index;
+	}
+
+	public void increZHTMsgCount(long count){
+		
+	}
+
+	public void insertWrap(String key, String value){
+		
+	}
+	public void insertWrap(char key, char value){
+		
+	}
+
+	public void lookupWrap(String key, String result){
+		
+	}
+	public void lookupWrap(char key, char result){
+		
+	}
+
+	public void sendBatchTasks(ArrayList<TaskMsg> taskMsg, Socket socket, String peer){
+		
+	}
+	public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum){
+		
+	}
+
+	public void recvBatchTasks(){
+		
+	}
 }

@@ -88,7 +88,7 @@ public class MatrixClient extends PeerClient{
 			
 			Long inDegree = dagInDegree.get((Long)pair.getKey());
 			
-			Value.Builder value;
+			Value.Builder value = Value.newBuilder();
 			value.setId(taskId);
 			value.setInDegree(inDegree);
 			
@@ -166,7 +166,7 @@ public class MatrixClient extends PeerClient{
 		
 		for(int i = 0; i < config.numTaskPerClient; i++){
 			String taskId = tasks.get(i).getTaskId();
-			String taskDetail = zc.lookUp(taskId);
+			String taskDetail = zc.lookup(taskId);
 			Value value = Tools.strToValue(taskDetail);
 			Value.Builder vb = value.toBuilder();
 			vb.setSubmitTime(System.currentTimeMillis());

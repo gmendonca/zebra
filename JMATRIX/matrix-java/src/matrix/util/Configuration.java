@@ -18,7 +18,7 @@ public class Configuration {
 	public int numCorePerExecutor;	// number of cores per executor
 	public long maxTaskPerPkg;	// maximum number of tasks per package
 	public long monitorInterval;	//monitor interval in microsecond
-	public long schedulerPortNo;	// scheduler port number
+	public int schedulerPortNo;	// scheduler port number
 	public long sleepLength;	// time duration in microsecond
 	public int workStealingOn;	// indicate whether to do work staling (1) or not (0)
 	public long wsPollIntervalStart;// the initial value of poll interval in microsecond
@@ -92,7 +92,7 @@ public class Configuration {
 
 		monitorInterval = Long.parseLong(configMap.get("MonitorInterval"), 10);
 
-		schedulerPortNo = Long.parseLong(configMap.get("SchedulerPortNo"), 10);
+		schedulerPortNo = Integer.parseInt(configMap.get("SchedulerPortNo"), 10);
 
 		sleepLength = Long.parseLong(configMap.get("SleepLength"), 10);
 

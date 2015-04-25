@@ -1,26 +1,332 @@
 package matrix.scheduler;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Socket;
+import java.nio.charset.Charset;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.TreeMap;
 
 import matrix.epoll.MatrixEpollServer;
 import matrix.protocol.Metamatrix.MatrixMsg;
 import matrix.protocol.Metatask.TaskMsg;
 import matrix.protocol.Metazht.Value;
 import matrix.util.CmpQueueItem;
+import matrix.util.Declarations;
 import matrix.util.MatrixTcpProxy;
+import matrix.util.ReturnValue;
+import matrix.util.TaskMsgQueueItem;
 import matrix.util.Tools;
 
 public class MatrixScheduler extends PeerScheduler{
 
 	public MatrixScheduler(String configFile) throws IOException {
 		super(configFile);
-		// TODO Auto-generated constructor stub
+		
+
+		long startTime, stopTime;
+		startTime = System.currentTimeMillis();
+
+		/* number of neighbors is equal to the
+		 * squared root of all number of schedulers
+		 * */
+		if (schedulerList.size() == 1)
+			config.workStealingOn = 0;
+
+		numNeigh = (int) (Math.sqrt(schedulerList.size()) + 0.5);
+		neighIdx = new int[numNeigh];
+		maxLoadedIdx = -1;
+		maxLoad = -1000000;
+		pollInterval = config.wsPollIntervalStart;
+		chooseBitMap = new Boolean[schedulerList.size()];
+		resetChoosebm();
+		startWS = false;
+		
+		stopTime = System.currentTimeMillis();
+		
+		if (config.schedulerLog == 1) {
+			String schedulerLogFile = new String("./scheduler." + (Integer.toString(schedulerList.size())) +
+					"." + Long.toString(config.numTaskPerClient) + 
+					"." + Integer.toString(getIndex()));
+			schedulerLogOS = new BufferedWriter(new FileWriter(schedulerLogFile, true));
+
+			long diff = stopTime - startTime;
+			schedulerLogOS.write("I am a Scheduler, it takes me " + diff + " ms for initialization!");
+		}
+
+		numIdleCore = config.numCorePerExecutor;
+		prevNumTaskFin = 0;
+		numTaskFin = 0;
+		numTaskSteal = 0;
+		numTaskStolen = 0;
+		numWS = 0;
+		numWSFail = 0;
+
+		waitQueue = new ArrayDeque<TaskMsg>();
+		localQueue = new PriorityQueue<TaskMsgQueueItem>();
+		wsQueue = new PriorityQueue<TaskMsgQueueItem>();
+		completeQueue = new ArrayDeque<CmpQueueItem>();
+
+		localData = new TreeMap<String, String>();
+		cache = false;
+		if(Declarations.DATA_CACHE)
+			cache = true;
+
+		String taskLogFile = new String("./task." + (Integer.toString(schedulerList.size())) + "."
+						+ Long.toString(config.numTaskPerClient) + "."
+						+ Integer.toString(getIndex()));
+		taskLogOS = new BufferedWriter(new FileWriter(taskLogFile, true));
+	}
+	
+	/* the scheduler tries to regist to ZHT server by increasing a counter.
+	 * The purpose of doing the registration is to ensure that all the
+	 * schedulers are running at the beginning before moving forward
+	 * */
+	public void regist() {
+		String regKey = new String("number of scheduler registered");
+		String taskFinKey = new String("num tasks done");
+		String recvKey = new String("num tasks recv");
+
+		/* the first scheduler (index = 0) intializes the records
+		 * including both the number of registered schedulers and
+		 * the number of tasks done
+		 * */
+		if (getIndex() == 0) {
+			zc.insert(regKey, new String("1"));
+			zc.insert(taskFinKey, new String("0"));
+			zc.insert(recvKey, new String("0"));
+		} else {
+			String value;
+			value = zc.lookup(regKey);
+			while (value.isEmpty()) {
+				try{ Thread.sleep(config.sleepLength); } catch(Exception e) { }
+				value = zc.lookup(regKey);
+			}
+
+			int newValNum = Integer.parseInt(value) + 1;
+			String newVal = Integer.toString(newValNum);
+			String queryVal;
+
+			while (zc.compare_swap(regKey, value, newVal, queryVal) != 0) {
+				if (queryVal.isEmpty()) {
+					value = zc.lookup(regKey);
+				} else {
+					value = queryVal;
+				}
+				newValNum = Integer.parseInt(value) + 1;
+				newVal = Integer.toString(newValNum);
+				try { Thread.sleep(config.sleepLength); } catch(Exception e){ }
+			}
+		}
+	}
+	
+	public void loadData() {
+		String filePath = new String("./workload_dag/file." + Integer.toString(
+				schedulerList.size()) + "." + Long.toString(config.numTaskPerClient));
+
+		ArrayList<String> fileList = new ArrayList<String>();
+		try {
+			fileList = Tools.readFromFile(filePath, Charset.defaultCharset());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < fileList.size(); i++) {
+			ArrayList<String> lineList = Tools.tokenizer(fileList.get(i), " ");
+			if (Integer.parseInt(lineList.get(1)) == getIndex()) {
+				localData.put(lineList.get(0), "This is the data");
+			}
+		}
+	}
+	
+	public void getTaskFromFile() {
+		String done;
+		String key = new String("Split Workload");
+		done = zc.lookup(key);
+
+		while (done.isEmpty()) {
+			try{ Thread.sleep(config.sleepLength); } catch (Exception e) { }
+			done = zc.lookup(key);
+		}
+
+		String filePath = config.schedulerWorkloadPath + "/workload."
+				+ getIndex();
+		String line;
+
+		ifstream fileStream(filePath.c_str());
+		if (!fileStream.good()) {
+			return;
+		} else {
+			int numTask = 0;
+			while (getline(fileStream, line)) {
+				numTask++;
+				ArrayList<String> taskItemStr = Tools.tokenizer(line, " ");
+				TaskMsg.Builder tm = TaskMsg.newBuilder();
+				tm.setTaskId(taskItemStr.get(0));
+				tm.setUser(taskItemStr.get(1));
+				tm.setDir(taskItemStr.get(2));
+				tm.setCmd(taskItemStr.get(3));
+				tm.setDataLength(0);
+				long time = System.currentTimeMillis();
+				taskTimeEntry.add(tm.getTaskId() + "\tWaitQueueTime\t" + time);
+				waitQueue.push(tm.build());
+			}
+
+			String numTaskRecvStr, numTaskRecvMoreStr, queryValue;
+			String recvKey = new String("num tasks recv");
+			numTaskRecvStr = zc.lookup(recvKey);
+
+			long numTaskRecv = Long.parseLong(numTaskRecvStr);
+			numTaskRecv += numTask;
+			numTaskRecvMoreStr = Long.toString(numTaskRecv);
+			//cout << "number of task more recv is:" << numTaskRecv << endl;
+			while (zc.compare_swap(recvKey, numTaskRecvStr, numTaskRecvMoreStr,
+					queryValue) != 0) {
+				if (queryValue.isEmpty()) {
+					numTaskRecvStr = zc.lookup(recvKey);
+				} else {
+					numTaskRecvStr = queryValue;
+				}
+				//cout << "OK, conflict, current value is:" << numTaskRecvStr << endl;
+				numTaskRecv = Long.parseLong(numTaskRecvStr);
+				numTaskRecv += numTask;
+				numTaskRecvMoreStr = Long.toString(numTaskRecv);
+			}
+		}
+	}
+	
+	/* send tasks to another thief scheduler */
+	public void sendTask(Socket sockfd) {
+		int numTaskToSend = -1;
+		ArrayList<TaskMsg> taskList = new ArrayList<TaskMsg>();
+		synchronized(this){
+
+		/* number of tasks to send equals to half of the current load,
+		 * which is calculated as the number of tasks in the ready queue
+		 * minus number of idle cores */
+		numTaskToSend = wsQueue.size() / 2;
+		for (int i = 0; i < numTaskToSend; i++) {
+			taskList.add(wsQueue.poll().getTaskMsg());
+		}
+		}
+		sendBatchTasks(taskList, sockfd, "scheduler");
+	}
+	
+	/* receive tasks submitted by client */
+	public void recvTaskFromClient(String str, Socket sockfd) {
+		StringBuffer taskStr = new StringBuffer("");
+		taskStr.append(str);
+		ReturnValue rv = MatrixTcpProxy.recvMul(sockfd,taskStr.toString());
+		String taskStrLs = rv.result.substring(0, taskStr.length() - 1);
+		//cout << "The task String is:" << taskStrLs << endl;
+		ArrayList<String> stealList = Tools.tokenizer(taskStrLs, "##");
+		//cout << "The task size is:" << stealList.size() << endl;
+		if (stealList.size() == 1) {
+			return;
+		}
+
+		MatrixMsg mmNumTask = Tools.strToMm(stealList.get(0));
+		long numTask = mmNumTask.getCount();
+		//cout << "Number of tasks is:" << numTask << endl;
+		int increment = 0;
+
+		for (int i = 1; i < stealList.size(); i++) {
+			MatrixMsg mm = Tools.strToMm(stealList.get(i));
+			ArrayList<TaskMsg> tmList;
+			String time = Long.toString(System.currentTimeMillis());
+			for (int j = 0; j < mm.getCount(); j++) {
+				tmList.add(Tools.strToTaskMsg(mm.getTasks(j)));
+			}
+			//cout << "OK, before the time record!" << endl;
+			synchronized(this){
+			for (int j = 0; j < mm.getCount(); j++) {
+				String taskMD;
+				//cout << "Now, I am doing a zht lookup:" << tmList.get(j).taskid() << endl;
+				taskMD = zc.lookup(tmList.get(j).getTaskId());
+				//cout << "I got the task metadata:" << taskMD << endl;
+				Value value = Tools.strToValue(taskMD);
+				taskTimeEntry.add(tmList.get(j).getTaskId() + "\tSubmissionTime\t"
+						+ Long.toString(value.getSubmitTime()));
+				taskTimeEntry.add(tmList.get(j).getTaskId()
+						+ "\tWaitQueueTime\t" + time);
+			}
+			}
+			//cout << "OK, I did the time record!" << endl;
+			increment += mm.getCount();
+
+			synchronized(this){
+			for (int j = 0; j < mm.getCount(); j++) {
+				waitQueue.add(tmList.get(j));
+			}
+			}
+		}
+		//cout << "OK, now I have put the tasks in the wait queue, let's update the ZHT record!" << endl;
+		String numTaskRecvStr, numTaskRecvMoreStr, queryValue;
+		numTaskRecvStr = zc.lookup("num tasks recv");
+		long numTaskRecv = Long.parseLong(numTaskRecvStr);
+		//cout << "Number of tasks recv is:" << numTaskRecvStr << endl;
+		numTaskRecv += numTask;
+		numTaskRecvMoreStr = Long.toString(numTaskRecv);
+		//cout << "The one potential to insert is:" << numTaskRecvMoreStr << endl;
+		increment += 2;
+		while (zc.compare_swap("num tasks recv", numTaskRecvStr,
+				numTaskRecvMoreStr, queryValue) != 0) {
+			if (queryValue.isEmpty()) {
+				numTaskRecvStr = zc.lookup("num tasks recv");
+				increment++;
+			} else {
+				numTaskRecvStr = queryValue;
+			}
+			numTaskRecv = Long.parseLong(numTaskRecvStr);
+			numTaskRecv += numTask;
+			numTaskRecvMoreStr = Long.toString(numTaskRecv);
+		}
+
+		if (increment > 0) {
+			synchronized(this){
+				increZHTMsgCount(increment);
+			}
+		}
+		//cout << "Now, I am done with the number of tasks:" << queryValue << endl;
+	}
+	
+	public void recvPushingTask(MatrixMsg mm, Socket sockfd) {
+		long increment = 0;
+		TaskMsg tm = Tools.strToTaskMsg(mm.getTasks(0));
+
+		synchronized(this){
+			taskTimeEntry.add(
+					tm.getTaskId() + "\tPushQueuedTime\t"
+							+ System.currentTimeMillis());
+		}
+
+		synchronized(this){
+			localQueue.add(new TaskMsgQueueItem(tm));
+		}
+		//increment += 2;
+
+		MatrixMsg.Builder mmSuc = MatrixMsg.newBuilder();
+		mmSuc.setMsgType("success receiving pushing task");
+		//String mmSucStr = mmSuc.SerializeAsString();
+		String mmSucStr = Tools.mmToStr(mmSuc.build());
+		MatrixTcpProxy.sendBf(sockfd, mmSucStr);
+
+		/*ZHTMsgCountMutex.lock();
+		 incre_ZHT_msg_count(increment);
+		 ZHTMsgCountMutex.unlock();*/
 	}
 	
 	/* processing requests received by the epoll server */
-	public int procReq(int sockfd, String buf) {
+	public int procReq(Socket sockfd, String buf) {
 		String bufStr = new String(buf);
 		/* this is client submitting tasks */
 		String prefix = "client send tasks";
@@ -38,7 +344,7 @@ public class MatrixScheduler extends PeerScheduler{
 			String msg = mm.getMsgType();
 			if (msg.equals("query load")) { 	// thief querying load
 				int load = wsQueue.size();
-				MatrixMsg.Builder mmLoad;
+				MatrixMsg.Builder mmLoad = MatrixMsg.newBuilder();
 				mmLoad.setMsgType("send load");
 				mmLoad.setCount(load);
 				String strLoad = Tools.mmToStr(mmLoad.build());
@@ -49,16 +355,15 @@ public class MatrixScheduler extends PeerScheduler{
 				recvPushingTask(mm, sockfd);
 			} else if (msg.equals("scheduler require data")) {
 				String dataPiece;
-				//ldMutex.lock();
-
-				if (localData.get(mm.getExtraInfo()) == localData.end()) {
-					dataPiece = "shit, that is wrong!";
-				} else {
-					dataPiece = localData.get(mm.getExtraInfo());
+				synchronized(this){
+					if (localData.get(mm.getExtraInfo()) == localData.lastEntry().getValue()) {
+						dataPiece = "shit, that is wrong!";
+					} else {
+						dataPiece = localData.get(mm.getExtraInfo());
+					}
 				}
-				ldMutex.unlock();
 
-				MatrixMsg.Builder mmDataPiece;
+				MatrixMsg.Builder mmDataPiece = MatrixMsg.newBuilder();
 				mmDataPiece.setMsgType("scheduler send data");
 				mmDataPiece.setExtraInfo(dataPiece);
 				String dataStr = Tools.mmToStr(mmDataPiece.build());
@@ -67,13 +372,17 @@ public class MatrixScheduler extends PeerScheduler{
 				MatrixTcpProxy.sendBig(sockfd, dataStr);
 			}
 		}
-		close(sockfd);
+		try {
+			sockfd.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return 1;
 	}
 
 	/* fork epoll server thread */
 	public void forkEsThread() {
-		MatrixEpollServer mes = new MatrixEpollServer(config.schedulerPortNo, this);
+		final MatrixEpollServer mes = new MatrixEpollServer(config.schedulerPortNo, this);
 		
 		Thread t = new Thread(new Runnable() { public void run() { 
 				mes.serve();
@@ -112,7 +421,7 @@ public class MatrixScheduler extends PeerScheduler{
 	 * the load information of each scheduler one by one
 	 * */
 	public void findMostLoadedNeigh() {
-		MatrixMsg.Builder mm;
+		MatrixMsg.Builder mm = MatrixMsg.newBuilder();
 		mm.setMsgType("query load");
 
 		String strLoadQuery = Tools.mmToStr(mm.build());
@@ -121,13 +430,11 @@ public class MatrixScheduler extends PeerScheduler{
 
 		for (int i = 0; i < numNeigh; i++) {
 			String result;
-			sockMutex.lock();
-			int sockfd = send_first(schedulerList.get(neighIdx[i]),
-					config.schedulerPortNo, strLoadQuery);
-			MatrixTcpProxy.recvBf(sockfd, result);
+			synchronized(this){
+				Socket sockfd = MatrixTcpProxy.sendFirst(schedulerList.get(neighIdx[i]),config.schedulerPortNo, strLoadQuery);
+				result = MatrixTcpProxy.recvBf(sockfd);
 
-			close(sockfd);
-			sockMutex.unlock();
+			}
 			if (result.isEmpty()) {
 				continue;
 			}
@@ -142,9 +449,9 @@ public class MatrixScheduler extends PeerScheduler{
 	}
 
 	/* receive several tasks (numTask) from another scheduler */
-	public Boolean recvTaskFromScheduler(int sockfd) {
+	public Boolean recvTaskFromScheduler(Socket sockfd) {
 		String taskStr;
-		MatrixTcpProxy.recvMul(sockfd, taskStr);
+		taskStr = MatrixTcpProxy.recvMul(sockfd);
 
 		String taskStrLs = taskStr.substring(0, taskStr.length() - 1);
 
@@ -159,25 +466,25 @@ public class MatrixScheduler extends PeerScheduler{
 		for (int i = 1; i < stealList.size(); i++) {
 			MatrixMsg mm = Tools.strToMm(stealList.get(i));
 
-			ArrayList<TaskMsg> tmList;
+			ArrayList<TaskMsg> tmList = new ArrayList<TaskMsg>();
 			String time = "" + System.currentTimeMillis();
 
 			for (int j = 0; j < mm.getCount(); j++) {
 				tmList.add(Tools.strToTaskMsg(mm.getTasks(j)));
 			}
 
-			tteMutex.lock();
-			for (int j = 0; j < mm.getCount(); j++) {
-				taskTimeEntry.add(
-						tmList.get(j).getTaskId() + "\tWorkStealQueuedTime\t" + time);
+			synchronized(this){
+				for (int j = 0; j < mm.getCount(); j++) {
+					taskTimeEntry.add(
+							tmList.get(j).getTaskId() + "\tWorkStealQueuedTime\t" + time);
+				}
 			}
-			tteMutex.unlock();
 
-			wsqMutex.lock();
-			for (int j = 0; j < mm.getCount(); j++) {
-				wsQueue.push(tmList.get(j));
+			synchronized(this){
+				for (int j = 0; j < mm.getCount(); j++) {
+					wsQueue.add(new TaskMsgQueueItem(tmList.get(j)));
+				}
 			}
-			wsqMutex.unlock();
 		}
 
 		return true;
@@ -190,26 +497,33 @@ public class MatrixScheduler extends PeerScheduler{
 	 * tasks batch by batch.
 	 * */
 	public Boolean stealTask() {
+		
+		Boolean ret = false;
 		/* if no neighbors have ready tasks */
 		if (maxLoad <= 0) {
-			return false;
+			return ret;
 		}
 
-		MatrixMsg.Builder mm;
+		MatrixMsg.Builder mm = MatrixMsg.newBuilder();
 		mm.setMsgType("steal task");
 		//String strStealTask = mm.SerializeAsString();
 		String strStealTask = Tools.mmToStr(mm.build());
 
 		String numTaskPkgStr;
 		//System.out.println("OK, before sending stealing task message!");
-		sockMutex.lock();
+		synchronized(this){
 		//System.out.println("OK, I am sending stealing task message!");
-		int sockfd = send_first(schedulerList.get(maxLoadedIdx),
+		Socket sockfd = MatrixTcpProxy.sendFirst(schedulerList.get(maxLoadedIdx),
 				config.schedulerPortNo, strStealTask);
 
-		Boolean ret = recvTaskFromScheduler(sockfd);
-		close(sockfd);
-		sockMutex.unlock();
+		ret = recvTaskFromScheduler(sockfd);
+		try {
+			sockfd.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		}
 		return ret;
 	}
 
@@ -228,46 +542,46 @@ public class MatrixScheduler extends PeerScheduler{
 	 * */
 	public void execTask(TaskMsg tm) {
 		String taskDetail;
-		sockMutex.lock();
-		zc.lookup(tm.getTaskId(), taskDetail);
-		sockMutex.unlock();
+		synchronized(this){
+			taskDetail = zc.lookup(tm.getTaskId());
+		}
 		Value value = Tools.strToValue(taskDetail);
 
-		long startTime = System.currentTimeMillis()
+		long startTime = System.currentTimeMillis();
 
 		String data = new String("");
 
-	//#ifdef ZHT_STORAGE
+		if(Declarations.ZHT_STORAGE){
 		String dataPiece;
-		for (int i = 0; i < value.parents_size(); i++)
+		for (int i = 0; i < value.getParentsCount(); i++)
 		{
-			zc.lookup(value.getDataNameList(i), dataPiece);
+			dataPiece = zc.lookup(value.getDataNameList(i));
 			data += dataPiece;
 		}
-	//#else
-		for (int i = 0; i < value.parents_size(); i++) {
+		}else{
+		for (int i = 0; i < value.getParentsCount(); i++) {
 			if (value.getDataSize(i) > 0) {
-				if (value.getParents(i).compare(getId()) == 0) {
-					ldMutex.lock();
+				if (value.getParents(i).equals(getId())) {
+					synchronized(this){
 					//data += "what ever!";
 					data += localData.get(value.getDataNameList(i));
 					//System.out.println(tm.taskid() << " find the data");
-					ldMutex.unlock();
+					}
 				} else {
 					Boolean dataReq = true;
 					if (cache) {
-						ldMutex.lock();
-						if (localData.find(value.getDataNameList(i))
-								!= localData.end()) {
+						synchronized(this){
+						if (localData.get(value.getDataNameList(i)) != localData.lastEntry().getValue()) {
 							data += localData.get(value.getDataNameList(i));
 							dataReq = false;
 						} else {
 							dataReq = true;
 						}
-						ldMutex.unlock();
+						}
 					}
 					if (dataReq) {
-						MatrixMsg.Builder mm;
+						String dataPiece = new String();;
+						MatrixMsg.Builder mm = MatrixMsg.newBuilder();
 						mm.setMsgType("scheduler require data");
 						//System.out.println("The require data is:" << value.datanamelist(i));
 						mm.setExtraInfo(value.getDataNameList(i));
@@ -275,19 +589,22 @@ public class MatrixScheduler extends PeerScheduler{
 						//mmStr = mm.SerializeAsString();
 						//System.out.println(tm.taskid() << "\trequires " << i << "\tdata!");
 
-						sockMutex.lock();
-						int sockfd = sendFirst(value.getParents(i),
-								config.schedulerPortNo, mmStr);
+						synchronized(this){
+						Socket sockfd = MatrixTcpProxy.sendFirst(value.getParents(i),(int)config.schedulerPortNo, mmStr);
 						//sockMutex.unlock();
 
 						//System.out.println(tm.taskid() << "\tit takes " << diff.tv_sec << "s, and " << diff.tv_nsec
 						//		<< "ns to send the " << i << "\tdata to scheduler " << value.parents(i));
 
-						String dataPiece;
 						//recv_bf(sockfd, dataPiece);
-						recvBig(sockfd, dataPiece);
-						close(sockfd);
-						sockMutex.unlock();
+						ReturnValue rv = MatrixTcpProxy.recvBig(sockfd, dataPiece);
+						dataPiece = rv.result;
+						try {
+							sockfd.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						}
 						//System.out.println(tm.taskid() << "\tit takes " << diff.tv_sec << "s, and " << diff.tv_nsec
 						//		<< "ns to receive the " << i << "\tdata from scheduler " << value.parents(i));
 						MatrixMsg mmData = Tools.strToMm(dataPiece);
@@ -296,55 +613,54 @@ public class MatrixScheduler extends PeerScheduler{
 						//System.out.println("After parse, extra info is:" << mmData.extrainfo());
 						data += mmData.getExtraInfo();
 						if (cache) {
-							ldMutex.lock();
-							localData.insert(
-									make_pair(value.getDataNameList(i),
-											mmData.getExtraInfo()));
-							ldMutex.unlock();
+							synchronized(this){
+							localData.put(value.getDataNameList(i),
+											mmData.getExtraInfo());
+							}
 						}
 					}
 				}
 			}
 		}
-	//#endif
+		}
 
 		
 		String execmd = tm.getCmd();
 		String result = Tools.exec(execmd);
 		String key = getId() + tm.getTaskId();
 
-	//#ifdef ZHT_STORAGE
+		if(Declarations.ZHT_STORAGE){
 		//sockMutex.lock();
 		zc.insert(key, result);
 		//sockMutex.unlock();
-	//#else
-		ldMutex.lock();
-		localData.insert(make_pair(key, result));
-		//System.out.println("key is:" << key << ", and value is:" << result);
-		ldMutex.unlock();
-	//#endif
+		}else{
+			synchronized(this){
+				localData.put(key,result);
+				//System.out.println("key is:" << key << ", and value is:" << result);
+			}
+		}
 
 		long finTime = System.currentTimeMillis();
-		tteMutex.lock();
-		taskTimeEntry.push_back(
+		synchronized(this){
+			taskTimeEntry.add(
 				tm.getTaskId() + "\tStartTime\t" + startTime);
-		taskTimeEntry.push_back(
+			taskTimeEntry.add(
 				tm.getTaskId() + "\tFinTime\t" + finTime);
-		tteMutex.unlock();
+		}
+		
+		synchronized(this){
+			//completeQueue.push_back(CmpQueueItem(tm.taskid(), key, result.length()));
+			completeQueue.add(new CmpQueueItem(tm.getTaskId(), key, value.getOutputSize()));
+		}
+		
+		synchronized(this){
+			numTaskFin++;
+			//System.out.println(tm.taskid() << "\tNumber of task fin is:" << numTaskFin);
+		}
 
-		cqMutex.lock();
-		//completeQueue.push_back(CmpQueueItem(tm.taskid(), key, result.length()));
-		completeQueue.push_back(CmpQueueItem(tm.taskid(), key, value.outputsize()));
-		cqMutex.unlock();
-
-		numTaskFinMutex.lock();
-		numTaskFin++;
-		//System.out.println(tm.taskid() << "\tNumber of task fin is:" << numTaskFin);
-		numTaskFinMutex.unlock();
-
-		ZHTMsgCountMutex.lock();
-		incre_ZHT_msg_count(1);
-		ZHTMsgCountMutex.unlock();
+		synchronized(this){
+			increZHTMsgCount(1);
+		}
 	}
 
 	/* forking execute task threads. The number of executing threads is
@@ -376,7 +692,7 @@ public class MatrixScheduler extends PeerScheduler{
 			flag = 0;
 		} else {
 			long maxDataSize = -1000000;
-			String maxDataScheduler, key;
+			String maxDataScheduler = new String(), key = new String();
 			for (int i = 0; i < valuePkg.getDataSizeCount(); i++) {
 				if (valuePkg.getDataSize(i) > maxDataSize) {
 					maxDataSize = valuePkg.getDataSize(i);
@@ -390,30 +706,34 @@ public class MatrixScheduler extends PeerScheduler{
 			} else {
 				Boolean taskPush = true;
 				if (cache) {
-					ldMutex.lock();
-					if (localData.find(key) != localData.end()) {
+					synchronized(this){
+					if (localData.get(key) != localData.lastEntry().getValue()) {
 						flag = 1; 
 						taskPush = false;
 					} else {
 						taskPush = true;
 					}
-					ldMutex.unlock();
+					}
 				}
 				if (taskPush) {
-					MatrixMsg.Builder mm;
+					MatrixMsg.Builder mm = MatrixMsg.newBuilder();
 					mm.setMsgType("scheduler push task");
 					mm.setCount(1);
 					mm.addTasks(Tools.taskMsgToStr(tb.build()));
 					//String mmStr = mm.SerializeAsString();
 					String mmStr = Tools.mmToStr(mm.build());
-					sockMutex.lock();
-					int sockfd = sendFirst(maxDataScheduler,
+					synchronized(this){
+					Socket sockfd = MatrixTcpProxy.sendFirst(maxDataScheduler,
 							config.schedulerPortNo, mmStr);
 					//sockMutex.unlock();
 					String ack;
-					recv_bf(sockfd, ack);
-					close(sockfd);
-					sockMutex.unlock();
+					MatrixTcpProxy.recvBf(sockfd, ack);
+					try {
+						sockfd.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					}
 					flag = 2;
 				}
 			}
@@ -429,9 +749,9 @@ public class MatrixScheduler extends PeerScheduler{
 	public Boolean checkReadyTask(TaskMsg tm) {
 		String taskDetail;
 		Boolean ready = false;
-		sockMutex.lock();
-		zc.lookup(tm.getTaskId(), taskDetail);
-		sockMutex.unlock();
+		synchronized(this){
+			taskDetail = zc.lookup(tm.getTaskId());
+		}
 		Value value = Tools.strToValue(taskDetail);
 		//System.out.println("task indegree:" << tm.taskid() << "\t" << value.indegree());
 
@@ -439,21 +759,21 @@ public class MatrixScheduler extends PeerScheduler{
 			ready = true;
 			int flag = taskReadyProcess(value, tm);
 			if (flag != 2) {
-				tteMutex.lock();
+				synchronized(this){
 				taskTimeEntry.add(
 						tm.getTaskId() + "\tReadyQueuedTime\t"
-								+ System.currentMiliseconds());
-				tteMutex.unlock();
+								+ System.currentTimeMillis());
+				}
 
 			}
 			if (flag == 0) {
-				wsqMutex.lock();
-				wsQueue.push(tm);
-				wsqMutex.unlock();
+				synchronized(this){
+					wsQueue.add(new TaskMsgQueueItem(tm));
+				}
 			} else if (flag == 1) {
-				lqMutex.lock();
-				localQueue.push(tm);
-				lqMutex.unlock();
+				synchronized(this){
+					localQueue.add(new TaskMsgQueueItem(tm));
+				}
 			}
 		}
 
@@ -492,46 +812,48 @@ public class MatrixScheduler extends PeerScheduler{
 		//System.out.println("task finished, notify children:" << cqItem.taskId << "\t" << taskDetail << "\tChildren size is:" << value.children_size());
 		for (int i = 0; i < value.getChildrenCount(); i++) {
 			childTaskId = value.getChildren(i);
-			sockMutex.lock();
-			zc.lookup(childTaskId, childTaskDetail);
-			//System.out.println("The child task id is:" << childTaskId << "\t" << childTaskDetail);
-			//System.out.println("The size is:" << childTaskDetail.length());
-			sockMutex.unlock();
+			synchronized(this){
+				childTaskDetail = zc.lookup(childTaskId);
+				//System.out.println("The child task id is:" << childTaskId << "\t" << childTaskDetail);
+				//System.out.println("The size is:" << childTaskDetail.length());
+			}
 			increment++;
 			if (taskDetail.isEmpty()) {
 				System.out.println("I am notifying a children, that is insane:"
 						+ cqItem.taskId);
 			}
 			childVal = Tools.strToValue(childTaskDetail);
-			childVal.set_indegree(childVal.getInDegree() - 1);
-			childVal.add_parents(getId());
-			childVal.add_datanamelist(cqItem.key);
-			childVal.add_datasize(cqItem.dataSize);
-			childVal.set_alldatasize(childVal.alldatasize() + cqItem.dataSize);
-			childTaskDetailAttempt = value_to_str(childVal);
+			Value.Builder vb = childVal.toBuilder();
+			vb.setInDegree(childVal.getInDegree() - 1);
+			vb.addParents(getId());
+			vb.addDataNameList(cqItem.key);
+			vb.addDataSize(cqItem.dataSize);
+			vb.setAllDataSize(vb.getAllDataSize() + cqItem.dataSize);
+			childTaskDetailAttempt = Tools.valueToStr(vb.build());
 
 			//System.out.println(cqItem.taskId << "\t" << childTaskId << "\t" << childTaskDetail << "\t" << childTaskDetailAttempt);
 			increment++;
-			sockMutex.lock();
-			while (zc.compare_swap(childTaskId, childTaskDetail,
-					childTaskDetailAttempt, query_value) != 0) {
-				if (query_value.empty()) {
-					zc.lookup(childTaskId, childTaskDetail);
+			synchronized(this){
+				while (zc.compare_swap(childTaskId, childTaskDetail,
+						childTaskDetailAttempt, query_value) != 0) {
+					if (query_value.isEmpty()) {
+						childTaskDetail = zc.lookup(childTaskId);
+						increment++;
+					} else {
+						//System.out.println("The query_value is:" << query_value);
+						childTaskDetail = query_value;
+					}
+					childVal = Tools.strToValue(childTaskDetail);
+					Value.Builder vb2 = childVal.toBuilder();
+					vb2.setInDegree(childVal.getInDegree() - 1);
+					vb2.addParents(getId());
+					vb2.addDataNameList(cqItem.key);
+					vb2.addDataSize(cqItem.dataSize);
+					vb2.setAllDataSize(childVal.getAllDataSize() + cqItem.dataSize);
+					childTaskDetailAttempt = Tools.valueToStr(vb2.build());
 					increment++;
-				} else {
-					//System.out.println("The query_value is:" << query_value);
-					childTaskDetail = query_value;
 				}
-				childVal = Tools.strToValue(childTaskDetail);
-				childVal.set_indegree(childVal.indegree() - 1);
-				childVal.add_parents(get_id());
-				childVal.add_datanamelist(cqItem.key);
-				childVal.add_datasize(cqItem.dataSize);
-				childVal.set_alldatasize(childVal.alldatasize() + cqItem.dataSize);
-				childTaskDetailAttempt = value_to_str(childVal);
-				increment++;
 			}
-			sockMutex.unlock();
 		}
 
 		return increment;
@@ -560,7 +882,6 @@ public class MatrixScheduler extends PeerScheduler{
 		LocalQueueMonitor lqm = new LocalQueueMonitor(this);
 		lqm.start();
 	}
-
 
 
 }

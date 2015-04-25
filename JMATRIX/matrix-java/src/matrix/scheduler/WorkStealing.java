@@ -35,7 +35,7 @@ public class WorkStealing extends Thread{
 					ms.pollInterval = ms.config.wsPollIntervalStart;
 				} else {
 					ms.numWSFail++;
-					Thread.sleep(ms.pollInterval);
+					try { Thread.sleep(ms.pollInterval); } catch (Exception e) { }
 					ms.pollInterval *= 2;
 				}
 			}
@@ -45,7 +45,7 @@ public class WorkStealing extends Thread{
 			}
 
 			ms.pollInterval = ms.config.wsPollIntervalStart;
-			Thread.sleep(ms.pollInterval);
+			try { Thread.sleep(ms.pollInterval); } catch (Exception e) { }
 		}
 		
 		synchronized(this){

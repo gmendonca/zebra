@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 
 public class MatrixTcpProxy {
 	
-	public static Socket send_first(String ip, int port, String buf) {
+	public static Socket sendFirst(String ip, int port, String buf) {
 		Socket to_sock = new Socket();
 		try {
 			to_sock = new Socket(ip, port);
@@ -25,13 +25,13 @@ public class MatrixTcpProxy {
 		return send(sock, buf, buf.length(), 0);
 	}
 
-	public static int recvBf(Socket sock, String buf) {
+	public static ReturnValue recvBf(Socket sock, String buf) {
 		char bufStr[] = new char [Declarations.BUF_SIZE];
 
 		int ret = recv(sock, bufStr, bufStr.length, 0);
 		buf = new String(bufStr);
 
-		return ret;
+		return new ReturnValue(ret, buf);
 	}
 
 	public static int sendBig(Socket sock, String buf) {
@@ -58,13 +58,13 @@ public class MatrixTcpProxy {
 		return numSent;
 	}
 
-	int recvBig(Socket sock, String buf) {
-		int count = recv_mul(sock, buf);
-		buf = buf.substring(0, buf.length() - 1);
-		return count;
+	public static ReturnValue recvBig(Socket sock, String buf) {
+		ReturnValue rv = recvMul(sock, buf);
+		buf = rv.result.substring(0, rv.result.length() - 1);
+		return new ReturnValue(rv.value, buf);
 	}
 
-	int sendMul(Socket sock, String buf, Boolean end) {
+	public static int sendMul(Socket sock, String buf, Boolean end) {
 		StringBuffer bufUp = new StringBuffer();
 		bufUp.append(buf);
 		bufUp.append("##");
@@ -75,22 +75,22 @@ public class MatrixTcpProxy {
 		return sendBf(sock, bufUp.toString());
 	}
 
-	int recv_mul(Socket sock, String buf) {
+	public static ReturnValue recvMul(Socket sock, String buf) {
 		String tmpBuf = new String();
-		int count = recvBf(sock, tmpBuf);
+		ReturnValue rv = recvBf(sock, tmpBuf);
 		int sum = 0;
-		StringBuffer temporary = new StringBuffer();
-
-		while (count > 0) {
-			sum += count;
-			temporary.append(tmpBuf);
-			if (tmpBuf.charAt(tmpBuf.length() - 1) == '$') {
+		StringBuffer temporary = new StringBuffer(buf);
+		
+		while (rv.value > 0) {
+			sum += rv.value ;
+			temporary.append(rv.result);
+			if (rv.result.charAt(rv.result.length() - 1) == '$') {
 				break;
 			}
-			count = recvBf(sock, tmpBuf);
+			rv = recvBf(sock, rv.result);
 		}
 		buf = temporary.toString();
-		return sum;
+		return new ReturnValue(sum, buf);
 	}
 
 }

@@ -20,25 +20,21 @@ public class CheckingCompleteTask extends Thread{
 	public void run(){
 		while (ms.running) {
 			while (ms.completeQueue.size() > 0) {
-				ms.cqMutex.lock();
-				if (ms.completeQueue.size() > 0) {
-					cqItem = ms.completeQueue.front();
-					ms.completeQueue.pop_front();
-					ms.cqMutex.unlock();
-				} else {
-					ms.cqMutex.unlock();
-					continue;
+				synchronized(ms.completeQueue){
+					if (ms.completeQueue.size() > 0) {
+						cqItem = ms.completeQueue.front();
+						ms.completeQueue.pop_front();
+					} else {
+						continue;
+					}
 				}
 				increment += ms.notifyChildren(cqItem);
 			}
 		}
 
-		ms.ZHTMsgCountMutex.lock();
-		ms.incre_ZHT_msg_count(increment);
-		ms.ZHTMsgCountMutex.unlock();
-
-		pthread_exit(NULL);
-		return NULL;
+		synchronized(this){
+			ms.increZHTMsgCount(increment);
+		}
 	}
 
 }
