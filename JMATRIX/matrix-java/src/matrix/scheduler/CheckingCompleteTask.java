@@ -22,8 +22,7 @@ public class CheckingCompleteTask extends Thread{
 			while (ms.completeQueue.size() > 0) {
 				synchronized(ms.completeQueue){
 					if (ms.completeQueue.size() > 0) {
-						cqItem = ms.completeQueue.front();
-						ms.completeQueue.pop_front();
+						cqItem = ms.completeQueue.poll();
 					} else {
 						continue;
 					}

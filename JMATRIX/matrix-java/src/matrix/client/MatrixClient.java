@@ -3,26 +3,21 @@ package matrix.client;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import matrix.Peer;
 import matrix.util.AdjList;
-import matrix.util.Config;
-import matrix.util.Configuration;
 import matrix.util.InDegree;
 import matrix.protocol.Metatask.TaskMsg;
-import matrix.util.Tools;
+import matrix.util.Tools; 
 import matrix.protocol.Metazht.Value;
 
 public class MatrixClient extends PeerClient{

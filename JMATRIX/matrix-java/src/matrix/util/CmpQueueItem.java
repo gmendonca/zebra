@@ -11,5 +11,11 @@ public class CmpQueueItem {
 		this.key = key;
 		this.dataSize = dataSize;
 	}
+	
+	public CmpQueueItem() {
+		this.taskId = "";
+		this.key = "";
+		this.dataSize = 0;
+	}
 
 }

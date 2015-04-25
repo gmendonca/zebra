@@ -3,6 +3,7 @@ package matrix.scheduler;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
@@ -114,7 +115,7 @@ public class MatrixScheduler extends PeerScheduler{
 
 			int newValNum = Integer.parseInt(value) + 1;
 			String newVal = Integer.toString(newValNum);
-			String queryVal;
+			String queryVal = new String();
 
 			while (zc.compare_swap(regKey, value, newVal, queryVal) != 0) {
 				if (queryVal.isEmpty()) {
@@ -160,14 +161,19 @@ public class MatrixScheduler extends PeerScheduler{
 
 		String filePath = config.schedulerWorkloadPath + "/workload."
 				+ getIndex();
-		String line;
 
-		ifstream fileStream(filePath.c_str());
-		if (!fileStream.good()) {
+		ArrayList<String> lines = new ArrayList<String>();
+		try {
+			lines = Tools.readWorkloadFromFile(filePath, Charset.defaultCharset());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (lines.isEmpty()) {
 			return;
 		} else {
 			int numTask = 0;
-			while (getline(fileStream, line)) {
+			for(String line : lines){
 				numTask++;
 				ArrayList<String> taskItemStr = Tools.tokenizer(line, " ");
 				TaskMsg.Builder tm = TaskMsg.newBuilder();
@@ -181,7 +187,7 @@ public class MatrixScheduler extends PeerScheduler{
 				waitQueue.push(tm.build());
 			}
 
-			String numTaskRecvStr, numTaskRecvMoreStr, queryValue;
+			String numTaskRecvStr = new String(), numTaskRecvMoreStr = new String(), queryValue = new String();
 			String recvKey = new String("num tasks recv");
 			numTaskRecvStr = zc.lookup(recvKey);
 
@@ -222,7 +228,7 @@ public class MatrixScheduler extends PeerScheduler{
 	}
 	
 	/* receive tasks submitted by client */
-	public void recvTaskFromClient(String str, Socket sockfd) {
+	public void recvTaskFromClient(String str, ServerSocket sockfd) {
 		StringBuffer taskStr = new StringBuffer("");
 		taskStr.append(str);
 		ReturnValue rv = MatrixTcpProxy.recvMul(sockfd,taskStr.toString());
@@ -241,7 +247,7 @@ public class MatrixScheduler extends PeerScheduler{
 
 		for (int i = 1; i < stealList.size(); i++) {
 			MatrixMsg mm = Tools.strToMm(stealList.get(i));
-			ArrayList<TaskMsg> tmList;
+			ArrayList<TaskMsg> tmList = new ArrayList<TaskMsg>();
 			String time = Long.toString(System.currentTimeMillis());
 			for (int j = 0; j < mm.getCount(); j++) {
 				tmList.add(Tools.strToTaskMsg(mm.getTasks(j)));
@@ -270,7 +276,7 @@ public class MatrixScheduler extends PeerScheduler{
 			}
 		}
 		//cout << "OK, now I have put the tasks in the wait queue, let's update the ZHT record!" << endl;
-		String numTaskRecvStr, numTaskRecvMoreStr, queryValue;
+		String numTaskRecvStr = new String(), numTaskRecvMoreStr = new String(), queryValue = new String();
 		numTaskRecvStr = zc.lookup("num tasks recv");
 		long numTaskRecv = Long.parseLong(numTaskRecvStr);
 		//cout << "Number of tasks recv is:" << numTaskRecvStr << endl;
@@ -793,7 +799,7 @@ public class MatrixScheduler extends PeerScheduler{
 	 * its parents has been done.
 	 * */
 	public long notifyChildren(CmpQueueItem cqItem) {
-		String taskDetail;
+		String taskDetail = new String();
 		long increment = 0;
 		//sockMutex.lock();
 		//System.out.println("I got the lock, and I am notifying children!");
@@ -806,7 +812,7 @@ public class MatrixScheduler extends PeerScheduler{
 		Value value = Tools.strToValue(taskDetail);
 
 		increment++;
-		String childTaskId, childTaskDetail, childTaskDetailAttempt, query_value;
+		String childTaskId = new String(), childTaskDetail = new String(), childTaskDetailAttempt = new String(), queryValue = new String();
 		Value childVal;
 
 		//System.out.println("task finished, notify children:" << cqItem.taskId << "\t" << taskDetail << "\tChildren size is:" << value.children_size());
@@ -835,13 +841,13 @@ public class MatrixScheduler extends PeerScheduler{
 			increment++;
 			synchronized(this){
 				while (zc.compare_swap(childTaskId, childTaskDetail,
-						childTaskDetailAttempt, query_value) != 0) {
-					if (query_value.isEmpty()) {
+						childTaskDetailAttempt, queryValue) != 0) {
+					if (queryValue.isEmpty()) {
 						childTaskDetail = zc.lookup(childTaskId);
 						increment++;
 					} else {
-						//System.out.println("The query_value is:" << query_value);
-						childTaskDetail = query_value;
+						//System.out.println("The queryValue is:" << queryValue);
+						childTaskDetail = queryValue;
 					}
 					childVal = Tools.strToValue(childTaskDetail);
 					Value.Builder vb2 = childVal.toBuilder();

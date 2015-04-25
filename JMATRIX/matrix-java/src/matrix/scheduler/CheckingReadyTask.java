@@ -23,14 +23,13 @@ public class CheckingReadyTask extends Thread{
 		while (ms.running) {
 			while (ms.waitQueue.size() > 0) {
 				//cout << "number of task waiting is:" << ms.waitQueue.size() << endl;
-				tm = ms.waitQueue.front();
-				ms.waitQueue.pop_front();
+				tm = ms.waitQueue.poll();
 				//cout << "next one to process is:" << tm.taskid() << endl;
 
 				Boolean ready = ms.checkReadyTask(tm);
 				increment++;
 				if (!ready) {
-					ms.waitQueue.push_back(tm);
+					ms.waitQueue.add(tm);
 					//cout << "Ok, the task is still not ready!" << tm.taskid() << endl;
 				}
 			}

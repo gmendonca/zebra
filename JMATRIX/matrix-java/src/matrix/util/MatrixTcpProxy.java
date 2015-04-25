@@ -1,6 +1,13 @@
 package matrix.util;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -22,14 +29,42 @@ public class MatrixTcpProxy {
 	}
 
 	public static int sendBf(Socket sock, String buf) {
-		return send(sock, buf, buf.length(), 0);
+		buf = null;
+		
+		try {
+			sock.getOutputStream();
+			OutputStream os = sock.getOutputStream();
+	        OutputStreamWriter osw = new OutputStreamWriter(os);
+	        BufferedWriter bw = new BufferedWriter(osw);
+	        bw.write(buf);
+	        bw.flush();
+	        bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		int ret = (buf == null) ? 0 : 1;
+		
+		return ret;
+		
 	}
 
-	public static ReturnValue recvBf(Socket sock, String buf) {
-		char bufStr[] = new char [Declarations.BUF_SIZE];
+	public static ReturnValue recvBf(ServerSocket sock, String buf) {
+		Socket socket;
+		
+		buf = null;
 
-		int ret = recv(sock, bufStr, bufStr.length, 0);
-		buf = new String(bufStr);
+		try {
+			socket = sock.accept();
+			InputStream is = socket.getInputStream();
+	        InputStreamReader isr = new InputStreamReader(is);
+	        BufferedReader br = new BufferedReader(isr);
+	        buf = br.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+        int ret = (buf == null) ? 0 : 1; 
 
 		return new ReturnValue(ret, buf);
 	}
@@ -58,7 +93,7 @@ public class MatrixTcpProxy {
 		return numSent;
 	}
 
-	public static ReturnValue recvBig(Socket sock, String buf) {
+	public static ReturnValue recvBig(ServerSocket sock, String buf) {
 		ReturnValue rv = recvMul(sock, buf);
 		buf = rv.result.substring(0, rv.result.length() - 1);
 		return new ReturnValue(rv.value, buf);
@@ -75,7 +110,7 @@ public class MatrixTcpProxy {
 		return sendBf(sock, bufUp.toString());
 	}
 
-	public static ReturnValue recvMul(Socket sock, String buf) {
+	public static ReturnValue recvMul(ServerSocket sock, String buf) {
 		String tmpBuf = new String();
 		ReturnValue rv = recvBf(sock, tmpBuf);
 		int sum = 0;
