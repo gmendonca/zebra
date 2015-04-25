@@ -8,5 +8,7 @@ public class Declarations {
 	Map<Long, ArrayList<Long>> adjList;
 	Map<Long, Long> inDegree;
 	
+	public final static int BUF_SIZE = 64;
+	
 	
 }

@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import matrix.epoll.MatrixEpollServer;
 import matrix.protocol.Metamatrix.MatrixMsg;
 import matrix.protocol.Metatask.TaskMsg;
 import matrix.protocol.Metazht.Value;
 import matrix.util.CmpQueueItem;
-import matrix.util.MatrixEpollServer;
+import matrix.util.MatrixTcpProxy;
 import matrix.util.Tools;
 
 public class MatrixScheduler extends PeerScheduler{
@@ -41,7 +42,7 @@ public class MatrixScheduler extends PeerScheduler{
 				mmLoad.setMsgType("send load");
 				mmLoad.setCount(load);
 				String strLoad = Tools.mmToStr(mmLoad.build());
-				sendBf(sockfd, strLoad);
+				MatrixTcpProxy.sendBf(sockfd, strLoad);
 			} else if (msg.equals("steal task")) {	// thief steals tasks
 				sendTask(sockfd);
 			} else if (msg.equals("scheduler push task")) {
@@ -63,7 +64,7 @@ public class MatrixScheduler extends PeerScheduler{
 				String dataStr = Tools.mmToStr(mmDataPiece.build());
 				//mmDataPiece.SerializeAsString();
 				//send_bf(sockfd, dataStr);
-				sendBig(sockfd, dataStr);
+				MatrixTcpProxy.sendBig(sockfd, dataStr);
 			}
 		}
 		close(sockfd);
@@ -123,7 +124,7 @@ public class MatrixScheduler extends PeerScheduler{
 			sockMutex.lock();
 			int sockfd = send_first(schedulerList.get(neighIdx[i]),
 					config.schedulerPortNo, strLoadQuery);
-			recvBf(sockfd, result);
+			MatrixTcpProxy.recvBf(sockfd, result);
 
 			close(sockfd);
 			sockMutex.unlock();
@@ -143,7 +144,7 @@ public class MatrixScheduler extends PeerScheduler{
 	/* receive several tasks (numTask) from another scheduler */
 	public Boolean recvTaskFromScheduler(int sockfd) {
 		String taskStr;
-		recvMul(sockfd, taskStr);
+		MatrixTcpProxy.recvMul(sockfd, taskStr);
 
 		String taskStrLs = taskStr.substring(0, taskStr.length() - 1);
 
@@ -206,7 +207,7 @@ public class MatrixScheduler extends PeerScheduler{
 		int sockfd = send_first(schedulerList.get(maxLoadedIdx),
 				config.schedulerPortNo, strStealTask);
 
-		bool ret = recvTaskFromScheduler(sockfd);
+		Boolean ret = recvTaskFromScheduler(sockfd);
 		close(sockfd);
 		sockMutex.unlock();
 		return ret;
@@ -232,9 +233,9 @@ public class MatrixScheduler extends PeerScheduler{
 		sockMutex.unlock();
 		Value value = Tools.strToValue(taskDetail);
 
-		long startTime = System.currentMiliseconds();
+		long startTime = System.currentTimeMillis()
 
-		String data("");
+		String data = new String("");
 
 	//#ifdef ZHT_STORAGE
 		String dataPiece;
@@ -253,7 +254,7 @@ public class MatrixScheduler extends PeerScheduler{
 					//System.out.println(tm.taskid() << " find the data");
 					ldMutex.unlock();
 				} else {
-					bool dataReq = true;
+					Boolean dataReq = true;
 					if (cache) {
 						ldMutex.lock();
 						if (localData.find(value.getDataNameList(i))
@@ -323,12 +324,12 @@ public class MatrixScheduler extends PeerScheduler{
 		ldMutex.unlock();
 	//#endif
 
-		long finTime = System.currentMiliseconds();
+		long finTime = System.currentTimeMillis();
 		tteMutex.lock();
 		taskTimeEntry.push_back(
-				tm.taskid() + "\tStartTime\t" + num_to_str<long>(startTime));
+				tm.getTaskId() + "\tStartTime\t" + startTime);
 		taskTimeEntry.push_back(
-				tm.taskid() + "\tFinTime\t" + num_to_str<long>(finTime));
+				tm.getTaskId() + "\tFinTime\t" + finTime);
 		tteMutex.unlock();
 
 		cqMutex.lock();
