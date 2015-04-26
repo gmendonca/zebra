@@ -334,10 +334,16 @@ public class MatrixScheduler extends PeerScheduler{
 	/* processing requests received by the epoll server */
 	public int procReq(Socket sockfd, String buf) {
 		String bufStr = new String(buf);
+		ServerSocket recvSock = null;
+		try {
+			recvSock = new ServerSocket(sockfd.getPort());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		/* this is client submitting tasks */
 		String prefix = "client send tasks";
 		if (bufStr.substring(0, prefix.length()) == prefix) {
-			recvTaskFromClient(bufStr, sockfd);
+			recvTaskFromClient(bufStr, recvSock);
 		} else {
 			MatrixMsg mm;
 
@@ -435,16 +441,22 @@ public class MatrixScheduler extends PeerScheduler{
 		long load = -1;
 
 		for (int i = 0; i < numNeigh; i++) {
-			String result;
+			String result = new String();
+			ReturnValue rv;
 			synchronized(this){
-				Socket sockfd = MatrixTcpProxy.sendFirst(schedulerList.get(neighIdx[i]),config.schedulerPortNo, strLoadQuery);
-				result = MatrixTcpProxy.recvBf(sockfd);
+				ServerSocket sockfd = null;
+				try {
+					sockfd = new ServerSocket(MatrixTcpProxy.sendFirst(schedulerList.get(neighIdx[i]),config.schedulerPortNo, strLoadQuery));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				rv = MatrixTcpProxy.recvBf(sockfd, result);
 
 			}
-			if (result.isEmpty()) {
+			if (rv.result.isEmpty()) {
 				continue;
 			}
-			MatrixMsg mmLoad = Tools.strToMm(result);
+			MatrixMsg mmLoad = Tools.strToMm(rv.result);
 
 			load = mmLoad.getCount();
 			if (maxLoad < load) {
@@ -455,11 +467,11 @@ public class MatrixScheduler extends PeerScheduler{
 	}
 
 	/* receive several tasks (numTask) from another scheduler */
-	public Boolean recvTaskFromScheduler(Socket sockfd) {
-		String taskStr;
-		taskStr = MatrixTcpProxy.recvMul(sockfd);
+	public Boolean recvTaskFromScheduler(ServerSocket sockfd) {
+		String taskStr = new String();
+		ReturnValue rv = MatrixTcpProxy.recvMul(sockfd, taskStr);
 
-		String taskStrLs = taskStr.substring(0, taskStr.length() - 1);
+		String taskStrLs = rv.result.substring(0, rv.result.length() - 1);
 
 		ArrayList<String> stealList = Tools.tokenizer(taskStrLs, "##");
 		if (stealList.size() == 1) {
@@ -519,13 +531,17 @@ public class MatrixScheduler extends PeerScheduler{
 		//System.out.println("OK, before sending stealing task message!");
 		synchronized(this){
 		//System.out.println("OK, I am sending stealing task message!");
-		Socket sockfd = MatrixTcpProxy.sendFirst(schedulerList.get(maxLoadedIdx),
-				config.schedulerPortNo, strStealTask);
+		ServerSocket sockfd = null;
+		try {
+			sockfd = new ServerSocket(MatrixTcpProxy.sendFirst(schedulerList.get(maxLoadedIdx),config.schedulerPortNo, strStealTask));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		ret = recvTaskFromScheduler(sockfd);
 		try {
 			sockfd.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -596,7 +612,13 @@ public class MatrixScheduler extends PeerScheduler{
 						//System.out.println(tm.taskid() << "\trequires " << i << "\tdata!");
 
 						synchronized(this){
-						Socket sockfd = MatrixTcpProxy.sendFirst(value.getParents(i),(int)config.schedulerPortNo, mmStr);
+						ServerSocket sockfd = null;
+						try {
+							sockfd = new ServerSocket(MatrixTcpProxy.sendFirst(value.getParents(i),(int)config.schedulerPortNo, mmStr));
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						//sockMutex.unlock();
 
 						//System.out.println(tm.taskid() << "\tit takes " << diff.tv_sec << "s, and " << diff.tv_nsec
@@ -729,10 +751,15 @@ public class MatrixScheduler extends PeerScheduler{
 					//String mmStr = mm.SerializeAsString();
 					String mmStr = Tools.mmToStr(mm.build());
 					synchronized(this){
-					Socket sockfd = MatrixTcpProxy.sendFirst(maxDataScheduler,
-							config.schedulerPortNo, mmStr);
+					ServerSocket sockfd = null;
+					try {
+						sockfd = new ServerSocket(MatrixTcpProxy.sendFirst(maxDataScheduler,
+								config.schedulerPortNo, mmStr));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					//sockMutex.unlock();
-					String ack;
+					String ack = new String();
 					MatrixTcpProxy.recvBf(sockfd, ack);
 					try {
 						sockfd.close();
@@ -888,6 +915,5 @@ public class MatrixScheduler extends PeerScheduler{
 		LocalQueueMonitor lqm = new LocalQueueMonitor(this);
 		lqm.start();
 	}
-
 
 }

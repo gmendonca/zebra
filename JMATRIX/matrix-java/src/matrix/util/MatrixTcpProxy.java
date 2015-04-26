@@ -9,23 +9,21 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class MatrixTcpProxy {
 	
-	public static Socket sendFirst(String ip, int port, String buf) {
+	@SuppressWarnings("resource")
+	public static int sendFirst(String ip, int port, String buf) {
 		Socket to_sock = new Socket();
 		try {
 			to_sock = new Socket(ip, port);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (to_sock.isClosed()) {
+		if (!to_sock.isClosed()) {
 			sendBf(to_sock, buf);
 		}
-		return to_sock;
+		return port;
 	}
 
 	public static int sendBf(Socket sock, String buf) {
@@ -39,6 +37,7 @@ public class MatrixTcpProxy {
 	        bw.write(buf);
 	        bw.flush();
 	        bw.close();
+	        sock.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
