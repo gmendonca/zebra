@@ -40,7 +40,7 @@ public class RecordingStat extends Thread{
 			recordVal.setNumWorkStealFail(ms.numWSFail);
 			String recordValStr = Tools.valueToStr(recordVal.build());
 			synchronized(this){
-				ms.zc.insert(ms.getId(), recordValStr);
+				ms.zc.insertZHT(ms.getId(), recordValStr);
 			}
 
 			try {
@@ -60,7 +60,7 @@ public class RecordingStat extends Thread{
 			String key = new String("num tasks done");
 			String numTaskDoneStr;
 			synchronized(this){
-				numTaskDoneStr = ms.zc.lookup(key);
+				numTaskDoneStr = ms.zc.lookUp(key);
 				System.out.println("Number of task done is:" + numTaskDoneStr + "\n");
 			}
 
@@ -91,9 +91,9 @@ public class RecordingStat extends Thread{
 				queryValue = new String();
 				increment++;
 			}
-			while (ms.zc.compare_swap(key, numTaskDoneStr, numTaskDoneStrNew,queryValue) != 0) {
+			while (ms.zc.compareSwap(key, numTaskDoneStr, numTaskDoneStrNew,queryValue) != 0) {
 				if (queryValue.isEmpty()) {
-					numTaskDoneStr = ms.zc.lookup(key);
+					numTaskDoneStr = ms.zc.lookUp(key);
 					increment++;
 				} else {
 					numTaskDoneStr = queryValue;

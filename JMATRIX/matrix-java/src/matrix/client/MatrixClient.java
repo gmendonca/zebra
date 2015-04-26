@@ -95,7 +95,7 @@ public class MatrixClient extends PeerClient{
 			
 			String seriValue;
 			seriValue = Tools.valueToStr(value.build());
-			zc.insert(taskId, seriValue);
+			zc.insertZHT(taskId, seriValue);
 			
 		}
 			
@@ -161,13 +161,13 @@ public class MatrixClient extends PeerClient{
 		
 		for(int i = 0; i < config.numTaskPerClient; i++){
 			String taskId = tasks.get(i).getTaskId();
-			String taskDetail = zc.lookup(taskId);
+			String taskDetail = zc.lookUp(taskId);
 			Value value = Tools.strToValue(taskDetail);
 			Value.Builder vb = value.toBuilder();
 			vb.setSubmitTime(System.currentTimeMillis());
 			
 			taskDetail = Tools.valueToStr(vb.build());
-			zc.insert(taskId, taskDetail);
+			zc.insertZHT(taskId, taskDetail);
 			
 			increment += 2;
 		}
@@ -247,18 +247,20 @@ public class MatrixClient extends PeerClient{
 	
 
 	public void doMonitoring() {
-		if (getIndex() != 0)
-			return;
-
-		ExecutorService executor = Executors.newFixedThreadPool(4);
-		for(int i = 0; i < 4; i++)
-			executor.execute(new Monitoring(this));
+		while(true){
+			if (getIndex() != 0)
+				return;
 		
-		while (!executor.isTerminated()) { try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} }
+			ExecutorService executor = Executors.newFixedThreadPool(4);
+			for(int i = 0; i < 4; i++)
+				executor.execute(new Monitoring(this));
+			
+			while (!executor.isTerminated()) { 
+				try { Thread.sleep(10); } catch (InterruptedException e) { } 
+			}
+		}
 	}
+
+	
 	
 }

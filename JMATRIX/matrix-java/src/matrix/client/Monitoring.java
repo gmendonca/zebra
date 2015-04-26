@@ -43,7 +43,7 @@ public class Monitoring extends Thread{
 		long increment = 0;
 
 		while (true) {
-			numTaskFinStr = mc.zc.lookup(key);	// lookup how many tasks are done
+			numTaskFinStr = mc.zc.lookUp(key);	// lookup how many tasks are done
 			numTaskDone = Long.parseLong(numTaskFinStr);
 			System.out.println("number of task done is: " + numTaskDone);
 			increment++;
@@ -53,7 +53,7 @@ public class Monitoring extends Thread{
 			currentTimeUs = System.currentTimeMillis() % 1000;
 			for (int i = 0; i < mc.schedulerList.size(); i++) {
 				String schedulerStat;
-				schedulerStat = mc.zc.lookup(mc.schedulerList.get(i));
+				schedulerStat = mc.zc.lookUp(mc.schedulerList.get(i));
 				if (schedulerStat.isEmpty())
 					continue;
 

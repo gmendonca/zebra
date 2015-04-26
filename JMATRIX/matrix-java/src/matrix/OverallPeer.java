@@ -35,20 +35,20 @@ public abstract class OverallPeer implements Peer{
 		public void waitAllScheduler() {
 			String key = new String("number of scheduler registered");
 			String value;
-			value = zc.lookup(key);
+			value = zc.lookUp(key);
 			while (Integer.parseInt(value) != schedulerList.size()) {
 				try{ Thread.sleep(10000); } catch (Exception e) { }
-				value = zc.lookup(key);
+				value = zc.lookUp(key);
 			}
 		}
 
 		public void waitAllTaskRecv() {
 			String key = new String("num tasks recv");
 			String value;
-			value = zc.lookup(key);
+			value = zc.lookUp(key);
 			while (Long.parseLong(value) != config.numAllTask) {
 				try{ Thread.sleep(10000); } catch(Exception e) { }
-				value = zc.lookup(key);
+				value = zc.lookUp(key);
 			}
 		}
 

@@ -8,14 +8,11 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import matrix.epoll.MatrixEpollServer;
 import matrix.protocol.Metamatrix.MatrixMsg;
@@ -102,24 +99,24 @@ public class MatrixScheduler extends PeerScheduler{
 		 * the number of tasks done
 		 * */
 		if (getIndex() == 0) {
-			zc.insert(regKey, new String("1"));
-			zc.insert(taskFinKey, new String("0"));
-			zc.insert(recvKey, new String("0"));
+			zc.insertZHT(regKey, new String("1"));
+			zc.insertZHT(taskFinKey, new String("0"));
+			zc.insertZHT(recvKey, new String("0"));
 		} else {
 			String value;
-			value = zc.lookup(regKey);
+			value = zc.lookUp(regKey);
 			while (value.isEmpty()) {
 				try{ Thread.sleep(config.sleepLength); } catch(Exception e) { }
-				value = zc.lookup(regKey);
+				value = zc.lookUp(regKey);
 			}
 
 			int newValNum = Integer.parseInt(value) + 1;
 			String newVal = Integer.toString(newValNum);
 			String queryVal = new String();
 
-			while (zc.compare_swap(regKey, value, newVal, queryVal) != 0) {
+			while (zc.compareSwap(regKey, value, newVal, queryVal) != 0) {
 				if (queryVal.isEmpty()) {
-					value = zc.lookup(regKey);
+					value = zc.lookUp(regKey);
 				} else {
 					value = queryVal;
 				}
@@ -152,11 +149,11 @@ public class MatrixScheduler extends PeerScheduler{
 	public void getTaskFromFile() {
 		String done;
 		String key = new String("Split Workload");
-		done = zc.lookup(key);
+		done = zc.lookUp(key);
 
 		while (done.isEmpty()) {
 			try{ Thread.sleep(config.sleepLength); } catch (Exception e) { }
-			done = zc.lookup(key);
+			done = zc.lookUp(key);
 		}
 
 		String filePath = config.schedulerWorkloadPath + "/workload."
@@ -166,7 +163,6 @@ public class MatrixScheduler extends PeerScheduler{
 		try {
 			lines = Tools.readWorkloadFromFile(filePath, Charset.defaultCharset());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (lines.isEmpty()) {
@@ -189,16 +185,16 @@ public class MatrixScheduler extends PeerScheduler{
 
 			String numTaskRecvStr = new String(), numTaskRecvMoreStr = new String(), queryValue = new String();
 			String recvKey = new String("num tasks recv");
-			numTaskRecvStr = zc.lookup(recvKey);
+			numTaskRecvStr = zc.lookUp(recvKey);
 
 			long numTaskRecv = Long.parseLong(numTaskRecvStr);
 			numTaskRecv += numTask;
 			numTaskRecvMoreStr = Long.toString(numTaskRecv);
 			//cout << "number of task more recv is:" << numTaskRecv << endl;
-			while (zc.compare_swap(recvKey, numTaskRecvStr, numTaskRecvMoreStr,
+			while (zc.compareSwap(recvKey, numTaskRecvStr, numTaskRecvMoreStr,
 					queryValue) != 0) {
 				if (queryValue.isEmpty()) {
-					numTaskRecvStr = zc.lookup(recvKey);
+					numTaskRecvStr = zc.lookUp(recvKey);
 				} else {
 					numTaskRecvStr = queryValue;
 				}
@@ -257,7 +253,7 @@ public class MatrixScheduler extends PeerScheduler{
 			for (int j = 0; j < mm.getCount(); j++) {
 				String taskMD;
 				//cout << "Now, I am doing a zht lookup:" << tmList.get(j).taskid() << endl;
-				taskMD = zc.lookup(tmList.get(j).getTaskId());
+				taskMD = zc.lookUp(tmList.get(j).getTaskId());
 				//cout << "I got the task metadata:" << taskMD << endl;
 				Value value = Tools.strToValue(taskMD);
 				taskTimeEntry.add(tmList.get(j).getTaskId() + "\tSubmissionTime\t"
@@ -277,17 +273,17 @@ public class MatrixScheduler extends PeerScheduler{
 		}
 		//cout << "OK, now I have put the tasks in the wait queue, let's update the ZHT record!" << endl;
 		String numTaskRecvStr = new String(), numTaskRecvMoreStr = new String(), queryValue = new String();
-		numTaskRecvStr = zc.lookup("num tasks recv");
+		numTaskRecvStr = zc.lookUp("num tasks recv");
 		long numTaskRecv = Long.parseLong(numTaskRecvStr);
 		//cout << "Number of tasks recv is:" << numTaskRecvStr << endl;
 		numTaskRecv += numTask;
 		numTaskRecvMoreStr = Long.toString(numTaskRecv);
 		//cout << "The one potential to insert is:" << numTaskRecvMoreStr << endl;
 		increment += 2;
-		while (zc.compare_swap("num tasks recv", numTaskRecvStr,
+		while (zc.compareSwap("num tasks recv", numTaskRecvStr,
 				numTaskRecvMoreStr, queryValue) != 0) {
 			if (queryValue.isEmpty()) {
-				numTaskRecvStr = zc.lookup("num tasks recv");
+				numTaskRecvStr = zc.lookUp("num tasks recv");
 				increment++;
 			} else {
 				numTaskRecvStr = queryValue;
@@ -394,13 +390,20 @@ public class MatrixScheduler extends PeerScheduler{
 
 	/* fork epoll server thread */
 	public void forkEsThread() {
-		final MatrixEpollServer mes = new MatrixEpollServer(config.schedulerPortNo, this);
+		MatrixEpollServer mes;
+		Serving s;
 		
-		Thread t = new Thread(new Runnable() { public void run() { 
-				mes.serve();
-			}});
-		
-		t.start();
+		while(true){
+			mes = new MatrixEpollServer(config.schedulerPortNo, this);
+			s = new Serving(mes);
+			s.start();
+			
+			try {
+				s.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/* reset the bitmap of neighbors chosen, "false"
@@ -551,9 +554,18 @@ public class MatrixScheduler extends PeerScheduler{
 
 	/* fork work stealing thread */
 	public void forkWsThread() {
+		WorkStealing ws;
 		if (config.workStealingOn == 1) {
-			WorkStealing ws = new WorkStealing(this);
-			ws.start();
+			while(true){
+				ws = new WorkStealing(this);
+				ws.start();
+				
+				try {
+					ws.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -565,7 +577,7 @@ public class MatrixScheduler extends PeerScheduler{
 	public void execTask(TaskMsg tm) {
 		String taskDetail;
 		synchronized(this){
-			taskDetail = zc.lookup(tm.getTaskId());
+			taskDetail = zc.lookUp(tm.getTaskId());
 		}
 		Value value = Tools.strToValue(taskDetail);
 
@@ -577,7 +589,7 @@ public class MatrixScheduler extends PeerScheduler{
 		String dataPiece;
 		for (int i = 0; i < value.getParentsCount(); i++)
 		{
-			dataPiece = zc.lookup(value.getDataNameList(i));
+			dataPiece = zc.lookUp(value.getDataNameList(i));
 			data += dataPiece;
 		}
 		}else{
@@ -615,9 +627,8 @@ public class MatrixScheduler extends PeerScheduler{
 						ServerSocket sockfd = null;
 						try {
 							sockfd = new ServerSocket(MatrixTcpProxy.sendFirst(value.getParents(i),(int)config.schedulerPortNo, mmStr));
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
 						//sockMutex.unlock();
 
@@ -658,13 +669,13 @@ public class MatrixScheduler extends PeerScheduler{
 		String key = getId() + tm.getTaskId();
 
 		if(Declarations.ZHT_STORAGE){
-		//sockMutex.lock();
-		zc.insert(key, result);
-		//sockMutex.unlock();
+			synchronized(this){
+				zc.insertZHT(key, result);
+			}
 		}else{
 			synchronized(this){
 				localData.put(key,result);
-				//System.out.println("key is:" << key << ", and value is:" << result);
+				//System.out.println("key is:" + key + ", and value is:" + result);
 			}
 		}
 
@@ -683,7 +694,7 @@ public class MatrixScheduler extends PeerScheduler{
 		
 		synchronized(this){
 			numTaskFin++;
-			//System.out.println(tm.taskid() << "\tNumber of task fin is:" << numTaskFin);
+			//System.out.println(tm.taskid() + "\tNumber of task fin is:" + numTaskFin);
 		}
 
 		synchronized(this){
@@ -696,9 +707,17 @@ public class MatrixScheduler extends PeerScheduler{
 	 * number of cores a machine has.
 	 * */
 	public void forkExecTaskThread() {
+		
+		ExecutorService executor;
 
-		for (int i = 0; i < config.numCorePerExecutor; i++) {
-			new ExecutingTask(this).start();
+		while(true){
+			executor = Executors.newFixedThreadPool(config.numCorePerExecutor);
+			for(int i = 0; i < 4; i++)
+				executor.execute(new ExecutingTask(this));
+			
+			while (!executor.isTerminated()) { 
+				try { Thread.sleep(10); } catch (InterruptedException e) { } 
+			}
 		}
 	}
 
@@ -711,10 +730,10 @@ public class MatrixScheduler extends PeerScheduler{
 		
 		TaskMsg.Builder tb = tm.toBuilder();
 
-	//#ifdef ZHT_STORAGE
+	if(Declarations.ZHT_STORAGE){
 		tb.setDataLength(valuePkg.getAllDataSize());
 		flag = 0;
-	//#else
+	}else{
 		if (valuePkg.getAllDataSize() <= config.dataSizeThreshold) {
 			tb.setDataLength(valuePkg.getAllDataSize());
 			flag = 0;
@@ -771,7 +790,7 @@ public class MatrixScheduler extends PeerScheduler{
 				}
 			}
 		}
-	//#endif
+	}
 
 		return flag;
 	}
@@ -783,7 +802,7 @@ public class MatrixScheduler extends PeerScheduler{
 		String taskDetail;
 		Boolean ready = false;
 		synchronized(this){
-			taskDetail = zc.lookup(tm.getTaskId());
+			taskDetail = zc.lookUp(tm.getTaskId());
 		}
 		Value value = Tools.strToValue(taskDetail);
 		//System.out.println("task indegree:" << tm.taskid() << "\t" << value.indegree());
@@ -818,8 +837,18 @@ public class MatrixScheduler extends PeerScheduler{
 	/* fork check ready task thread */
 	public void forkCrtThread() {
 		
-		CheckingReadyTask crt = new CheckingReadyTask(this);
-		crt.start();
+		CheckingReadyTask crt;
+		
+		while(true){
+			crt = new CheckingReadyTask(this);
+			crt.start();
+			
+			try {
+				crt.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/* decrease the indegree of a task by one, because one of
@@ -830,7 +859,7 @@ public class MatrixScheduler extends PeerScheduler{
 		long increment = 0;
 		//sockMutex.lock();
 		//System.out.println("I got the lock, and I am notifying children!");
-		//zc.lookup(cqItem.taskId, taskDetail);
+		//zc.lookUp(cqItem.taskId, taskDetail);
 		//System.out.println("OK, the task id is:" << cqItem.taskId << ", and task detail is:" << taskDetail);
 		//sockMutex.unlock();
 		if (taskDetail.isEmpty()) {
@@ -846,7 +875,7 @@ public class MatrixScheduler extends PeerScheduler{
 		for (int i = 0; i < value.getChildrenCount(); i++) {
 			childTaskId = value.getChildren(i);
 			synchronized(this){
-				childTaskDetail = zc.lookup(childTaskId);
+				childTaskDetail = zc.lookUp(childTaskId);
 				//System.out.println("The child task id is:" << childTaskId << "\t" << childTaskDetail);
 				//System.out.println("The size is:" << childTaskDetail.length());
 			}
@@ -867,10 +896,10 @@ public class MatrixScheduler extends PeerScheduler{
 			//System.out.println(cqItem.taskId << "\t" << childTaskId << "\t" << childTaskDetail << "\t" << childTaskDetailAttempt);
 			increment++;
 			synchronized(this){
-				while (zc.compare_swap(childTaskId, childTaskDetail,
+				while (zc.compareSwap(childTaskId, childTaskDetail,
 						childTaskDetailAttempt, queryValue) != 0) {
 					if (queryValue.isEmpty()) {
-						childTaskDetail = zc.lookup(childTaskId);
+						childTaskDetail = zc.lookUp(childTaskId);
 						increment++;
 					} else {
 						//System.out.println("The queryValue is:" << queryValue);
@@ -895,25 +924,65 @@ public class MatrixScheduler extends PeerScheduler{
 
 	/* fork check complete queue tasks thread */
 	public void forkCctThread() {
-		CheckingCompleteTask cct = new CheckingCompleteTask(this);
-		cct.start();
+		CheckingCompleteTask cct;
+		
+		while(true){
+			cct = new CheckingCompleteTask(this);
+			cct.start();
+			
+			try {
+				cct.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 
 	/* fork recording status thread */
 	public void forkRecordStatThread() {
-		RecordingStat rs = new RecordingStat(this);
-		rs.start();
+		RecordingStat rs;
+		
+		while(true){
+			rs = new RecordingStat(this);
+			rs.start();
+			
+			try {
+				rs.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void forkRecordTaskThread() {
-		RecordingTaskTime rtt = new RecordingTaskTime(this);
-		rtt.start();
+		RecordingTaskTime rtt;
+		
+		while(true){
+			rtt = new RecordingTaskTime(this);
+			rtt.start();
+			
+			try {
+				rtt.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void forkLocalQueueMonitorThread() {
-		LocalQueueMonitor lqm = new LocalQueueMonitor(this);
-		lqm.start();
+		LocalQueueMonitor lqm;
+		
+		while(true){
+			lqm = new LocalQueueMonitor(this);
+			lqm.start();
+			
+			try {
+				lqm.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

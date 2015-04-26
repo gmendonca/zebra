@@ -151,10 +151,6 @@ public abstract class PeerScheduler extends OverallPeer{
 		return index;
 	}
 
-	public void increZHTMsgCount(long count){
-		
-	}
-
 	public void insertWrap(String key, String value){
 		
 	}
@@ -169,14 +165,12 @@ public abstract class PeerScheduler extends OverallPeer{
 		
 	}
 
-	public void sendBatchTasks(ArrayList<TaskMsg> taskMsg, Socket socket, String peer){
-		
-	}
-	public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum){
+	public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum) {
 		
 	}
 
-	public void recvBatchTasks(){
+	@Override
+	public void recvBatchTasks() {
 		
 	}
 }

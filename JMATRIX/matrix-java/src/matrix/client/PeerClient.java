@@ -46,13 +46,6 @@ public abstract class PeerClient extends OverallPeer{
 		return false;
 	}
 
-	public void waitAllScheduler(){
-		
-	}
-	public void waitAllTaskRecv(){
-		
-	}
-
 	public void setId(String id){
 		
 	}
@@ -69,10 +62,6 @@ public abstract class PeerClient extends OverallPeer{
 		return index;
 	}
 
-	public void increZHTMsgCount(long count){
-		
-	}
-
 	public void insertWrap(String key, String value){
 		
 	}
@@ -87,14 +76,11 @@ public abstract class PeerClient extends OverallPeer{
 		
 	}
 
-	public void sendBatchTasks(ArrayList<TaskMsg> taskMsg, Socket socket, String peer){
-		
-	}
-	public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum){
-		
-	}
-
 	public void recvBatchTasks(){
+		
+	}
+	
+	public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum) {
 		
 	}
 
