@@ -1,24 +1,26 @@
 package matrix.epoll;
 
+import java.net.Socket;
+
 public class MatrixEventData {
-	private int fd;
-	private char[] buf;
+	private Socket fd;
+	private String buf;
 	private int bufSize;
 	//TODO: see if this can work
 	private String fromAddr;
 	
-	public MatrixEventData(int fd, String buf, int bufSize, String fromAddr){
+	public MatrixEventData(Socket fd, String buf, int bufSize, String fromAddr){
 		this.fd = fd;
-		this.buf = new char[buf.length()];
+		this.buf = buf;
 		this.bufSize = bufSize;
 		this.fromAddr = fromAddr;
 	}
 	
-	public int fd(){
+	public Socket fd(){
 		return this.fd;
 	}
 	
-	public char[] buf(){
+	public String buf(){
 		return this.buf;
 	}
 	

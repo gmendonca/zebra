@@ -20,34 +20,38 @@ public class RecordingStat extends Thread{
 	}
 	
 	public void run(){
-		if (ms.schedulerLogOS.is_open()) {
-			ms.schedulerLogOS << "Time\tNumTaskFin\tNumTaskWait\tNumTaskReady\t"
-					"NumIdleCore\tNumAllCore\tNumWorkSteal\tNumWorkStealFail"
-					<< endl;
-		}
+
+			try {
+				ms.schedulerLogOS.write("Time\tNumTaskFin\tNumTaskWait\tNumTaskReady\t"+
+						"NumIdleCore\tNumAllCore\tNumWorkSteal\tNumWorkStealFail");
+				ms.schedulerLogOS.newLine();
+			} catch (Exception e) { }
+			
 
 		while (true) {
-			Value.Builder recordVal;
+			Value.Builder recordVal = Value.newBuilder();
 			recordVal.setId(ms.getId());
-			recordVal.set_numtaskfin(ms.numTaskFin);
-			recordVal.set_numtaskwait(ms.waitQueue.size());
-			recordVal.set_numtaskready(ms.localQueue.size() + ms.wsQueue.size());
-			recordVal.set_numcoreavilable(ms.numIdleCore);
+			recordVal.setNumTaskFin(ms.numTaskFin);
+			recordVal.setNumTaskWait(ms.waitQueue.size());
+			recordVal.setNumTaskReady(ms.localQueue.size() + ms.wsQueue.size());
+			recordVal.setNumCoreAvilable(ms.numIdleCore);
 			recordVal.setNumAllCore(ms.config.numCorePerExecutor);
-			recordVal.set_numworksteal(ms.numWS);
-			recordVal.set_numworkstealfail(ms.numWSFail);
+			recordVal.setNumWorkSteal(ms.numWS);
+			recordVal.setNumWorkStealFail(ms.numWSFail);
 			String recordValStr = Tools.valueToStr(recordVal.build());
-			sockMutex.lock();
-			ms.zc.insert(ms.getId(), recordValStr);
-			sockMutex.unlock();
-
-			if (ms.schedulerLogOS.is_open()) {
-				ms.schedulerLogOS << get_time_usec() << "\t" << ms.numTaskFin
-						<< "\t" << ms.waitQueue.size() << "\t"
-						<< ms.localQueue.size() + ms.wsQueue.size() << "\t"
-						<< ms.numIdleCore << "\t" << ms.config.numCorePerExecutor
-						<< "\t" << ms.numWS << "\t" << ms.numWSFail << endl;
+			synchronized(this){
+				ms.zc.insert(ms.getId(), recordValStr);
 			}
+
+			try {
+				ms.schedulerLogOS.write(System.currentTimeMillis() + "\t" + ms.numTaskFin
+						+ "\t" + ms.waitQueue.size() + "\t"
+						+ ms.localQueue.size() + ms.wsQueue.size() + "\t"
+						+ ms.numIdleCore + "\t" + ms.config.numCorePerExecutor
+						+ "\t" + ms.numWS + "\t" + ms.numWSFail);
+				ms.schedulerLogOS.newLine();
+			} catch (Exception e) { }
+			
 
 			/* check and modify how many tasks are done for all the schedulers. If all
 			 * tasks are done, then flipping the scheduler status to off to indicate
@@ -55,39 +59,41 @@ public class RecordingStat extends Thread{
 			 * */
 			String key = new String("num tasks done");
 			String numTaskDoneStr;
-			sockMutex.lock();
-			ms.zc.lookup(key, numTaskDoneStr);
-			cout << "Number of task done is:" << numTaskDoneStr << endl;
-			sockMutex.unlock();
+			synchronized(this){
+				numTaskDoneStr = ms.zc.lookup(key);
+				System.out.println("Number of task done is:" + numTaskDoneStr + "\n");
+			}
 
 			increment += 2;
 
 			long numTaskDone = Long.parseLong(numTaskDoneStr);
 			if (numTaskDone == ms.config.numAllTask) {
-				if (ms.schedulerLogOS.is_open()) {
-					ms.schedulerLogOS << get_time_usec() << "\t" << ms.numTaskFin
-							<< "\t" << ms.waitQueue.size() << "\t"
-							<< ms.localQueue.size() + ms.wsQueue.size() << "\t"
-							<< ms.numIdleCore << "\t"
-							<< ms.config.numCorePerExecutor << "\t" << ms.numWS
-							<< "\t" << ms.numWSFail << endl;
+			
+				try {
+					ms.schedulerLogOS.write(System.currentTimeMillis() + "\t" + ms.numTaskFin
+								+ "\t" + ms.waitQueue.size() + "\t"
+								+ ms.localQueue.size() + ms.wsQueue.size() + "\t"
+								+ ms.numIdleCore + "\t"
+								+ ms.config.numCorePerExecutor + "\t" + ms.numWS
+								+ "\t" + ms.numWSFail);
+					ms.schedulerLogOS.newLine();
+				} catch (Exception e) { }
 
-				}
 				ms.running = false;
 				break;
 			}
-
-			ms.numTaskFinMutex.lock();
-
-			numTaskDone += (ms.numTaskFin - ms.prevNumTaskFin);
-			String numTaskDoneStrNew = numTaskDone;
+			
+			String numTaskDoneStrNew;
 			String queryValue;
-			increment++;
-			sockMutex.lock();
-			while (ms.zc.compare_swap(key, numTaskDoneStr, numTaskDoneStrNew,
-					queryValue) != 0) {
-				if (queryValue.empty()) {
-					ms.zc.lookup(key, numTaskDoneStr);
+			synchronized(this){
+				numTaskDone += (ms.numTaskFin - ms.prevNumTaskFin);
+				numTaskDoneStrNew = Long.toString(numTaskDone);
+				queryValue = new String();
+				increment++;
+			}
+			while (ms.zc.compare_swap(key, numTaskDoneStr, numTaskDoneStrNew,queryValue) != 0) {
+				if (queryValue.isEmpty()) {
+					numTaskDoneStr = ms.zc.lookup(key);
 					increment++;
 				} else {
 					numTaskDoneStr = queryValue;
@@ -97,32 +103,35 @@ public class RecordingStat extends Thread{
 					break;
 				}
 				numTaskDone += (ms.numTaskFin - ms.prevNumTaskFin);
-				numTaskDoneStrNew = numTaskDone;
+				numTaskDoneStrNew = Long.toString(numTaskDone);
 				increment++;
 			}
-			//cout << "OK, Number of task done is:" << numTaskDoneStrNew << endl;
-			sockMutex.unlock();
-			ms.prevNumTaskFin = ms.numTaskFin;
-
-			ms.numTaskFinMutex.unlock();
-			usleep(ms.config.sleepLength);
+			//cout + "OK, Number of task done is:" + numTaskDoneStrNew + endl;
+			synchronized(this){
+				ms.prevNumTaskFin = ms.numTaskFin;
+			}
+			try { Thread.sleep(ms.config.sleepLength); } catch(Exception e) {}
 		}
 
-		ms.ZHTMsgCountMutex.lock();
-		ms.incre_ZHT_msg_count(increment);
-		ms.ZHTMsgCountMutex.unlock();
+		synchronized(this){
+			ms.increZHTMsgCount(increment);
+		}
 
-		ms.schedulerLogOS << "The number of ZHT message is:" << ms.numZHTMsg
-				<< endl;
-		ms.schedulerLogOS.flush();
-		ms.schedulerLogOS.close();
+		try {
+			ms.schedulerLogOS.write("The number of ZHT message is:" + ms.numZHTMsg);
+			ms.schedulerLogOS.newLine();
+		} catch (Exception e) { }
+		
 
 		if (ms.taskTimeEntry.size() > 0) {
-			//ms.tteMutex.lock();
-			for (int i = 0; i < ms.taskTimeEntry.size(); i++) {
-				ms.taskLogOS << ms.taskTimeEntry.at(i) << endl;
+			synchronized(this){
+				for (int i = 0; i < ms.taskTimeEntry.size(); i++) {
+					try {
+						ms.taskLogOS.write(ms.taskTimeEntry.get(i));
+						ms.taskLogOS.newLine();
+					} catch (Exception e) { }
+				}
 			}
-			//ms.tteMutex.unlock();
 		}
 
 	}

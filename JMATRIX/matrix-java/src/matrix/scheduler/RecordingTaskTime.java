@@ -1,5 +1,7 @@
 package matrix.scheduler;
 
+import java.io.IOException;
+
 public class RecordingTaskTime extends Thread{
 	MatrixScheduler ms;
 	
@@ -10,18 +12,17 @@ public class RecordingTaskTime extends Thread{
 	public void run(){
 		while (ms.running) {
 			if (ms.taskTimeEntry.size() > 0) {
-				ms.tteMutex.lock();
-				while (ms.taskTimeEntry.size() > 0) {
-					ms.taskLogOS << ms.taskTimeEntry.back() << endl;
-					ms.taskTimeEntry.pop_back();
+				synchronized(this){
+					for (int i = ms.taskTimeEntry.size(); i > 0; i--) {
+						try {
+							ms.taskLogOS.write(ms.taskTimeEntry.get(i));
+							ms.taskLogOS.newLine();
+						} catch (IOException e) { }
+					}
 				}
-				ms.tteMutex.unlock();
 			}
 
-			Thread.sleep(ms.config.sleepLength);
+			try{ Thread.sleep(ms.config.sleepLength); } catch(Exception e) { }
 		}
-
-		ms.taskLogOS.flush();
-		ms.taskLogOS.close();
 	}
 }
