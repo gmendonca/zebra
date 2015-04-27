@@ -207,37 +207,43 @@ public final class Metazht {
   /**
    * Protobuf type {@code matrix.protocol.Value}
    */
-  public static final class Value extends
+  public  static final class Value extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:matrix.protocol.Value)
       ValueOrBuilder {
     // Use Value.newBuilder() to construct.
-    private Value(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private Value(com.google.protobuf.GeneratedMessage.Builder builder) {
       super(builder);
-      this.unknownFields = builder.getUnknownFields();
     }
-    private Value(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final Value defaultInstance;
-    public static Value getDefaultInstance() {
-      return defaultInstance;
+    private Value() {
+      id_ = "";
+      inDegree_ = 0L;
+      parents_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      children_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      dataNameList_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      dataSize_ = java.util.Collections.emptyList();
+      allDataSize_ = 0L;
+      taskLength_ = 0L;
+      numTaskFin_ = 0L;
+      numWorkSteal_ = 0L;
+      numWorkStealFail_ = 0L;
+      numTaskWait_ = 0;
+      numTaskReady_ = 0;
+      numCoreAvilable_ = 0;
+      numAllCore_ = 0;
+      outputSize_ = 0L;
+      submitTime_ = 0L;
     }
 
-    public Value getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
+    getUnknownFields() {
       return this.unknownFields;
     }
     private Value(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+      this();
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -373,10 +379,11 @@ public final class Metazht {
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
+        throw new RuntimeException(e.setUnfinishedMessage(this));
       } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+        throw new RuntimeException(
+            new com.google.protobuf.InvalidProtocolBufferException(
+                e.getMessage()).setUnfinishedMessage(this));
       } finally {
         if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
           parents_ = parents_.getUnmodifiableView();
@@ -406,13 +413,22 @@ public final class Metazht {
               matrix.protocol.Metazht.Value.class, matrix.protocol.Metazht.Value.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<Value> PARSER =
+    public static final com.google.protobuf.Parser<Value> PARSER =
         new com.google.protobuf.AbstractParser<Value>() {
       public Value parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Value(input, extensionRegistry);
+        try {
+          return new Value(input, extensionRegistry);
+        } catch (RuntimeException e) {
+          if (e.getCause() instanceof
+              com.google.protobuf.InvalidProtocolBufferException) {
+            throw (com.google.protobuf.InvalidProtocolBufferException)
+                e.getCause();
+          }
+          throw e;
+        }
       }
     };
 
@@ -753,25 +769,6 @@ public final class Metazht {
       return submitTime_;
     }
 
-    private void initFields() {
-      id_ = "";
-      inDegree_ = 0L;
-      parents_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      children_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      dataNameList_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      dataSize_ = java.util.Collections.emptyList();
-      allDataSize_ = 0L;
-      taskLength_ = 0L;
-      numTaskFin_ = 0L;
-      numWorkSteal_ = 0L;
-      numWorkStealFail_ = 0L;
-      numTaskWait_ = 0;
-      numTaskReady_ = 0;
-      numCoreAvilable_ = 0;
-      numAllCore_ = 0;
-      outputSize_ = 0L;
-      submitTime_ = 0L;
-    }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -788,7 +785,6 @@ public final class Metazht {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(1, getIdBytes());
       }
@@ -840,7 +836,7 @@ public final class Metazht {
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         output.writeInt64(17, submitTime_);
       }
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
     private int memoizedSerializedSize = -1;
@@ -937,18 +933,12 @@ public final class Metazht {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(17, submitTime_);
       }
-      size += getUnknownFields().getSerializedSize();
+      size += unknownFields.getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-
     public static matrix.protocol.Metazht.Value parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1002,12 +992,17 @@ public final class Metazht {
       return PARSER.parseFrom(input, extensionRegistry);
     }
 
-    public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(matrix.protocol.Metazht.Value prototype) {
-      return newBuilder().mergeFrom(prototype);
+    public static Builder newBuilder() {
+      return defaultInstance.toBuilder();
     }
-    public Builder toBuilder() { return newBuilder(this); }
+    public static Builder newBuilder(matrix.protocol.Metazht.Value prototype) {
+      return defaultInstance.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == defaultInstance
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
 
     @java.lang.Override
     protected Builder newBuilderForType(
@@ -1048,10 +1043,6 @@ public final class Metazht {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
         }
       }
-      private static Builder create() {
-        return new Builder();
-      }
-
       public Builder clear() {
         super.clear();
         id_ = "";
@@ -1089,10 +1080,6 @@ public final class Metazht {
         submitTime_ = 0L;
         bitField0_ = (bitField0_ & ~0x00010000);
         return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
       }
 
       public com.google.protobuf.Descriptors.Descriptor
@@ -1285,7 +1272,8 @@ public final class Metazht {
         if (other.hasSubmitTime()) {
           setSubmitTime(other.getSubmitTime());
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
         return this;
       }
 
@@ -2124,12 +2112,22 @@ public final class Metazht {
       // @@protoc_insertion_point(builder_scope:matrix.protocol.Value)
     }
 
+    // @@protoc_insertion_point(class_scope:matrix.protocol.Value)
+    private static final matrix.protocol.Metazht.Value defaultInstance;
     static {
-      defaultInstance = new Value(true);
-      defaultInstance.initFields();
+      defaultInstance = new matrix.protocol.Metazht.Value();
     }
 
-    // @@protoc_insertion_point(class_scope:matrix.protocol.Value)
+    public static matrix.protocol.Metazht.Value getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public matrix.protocol.Metazht.Value getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    static {
+    }
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor

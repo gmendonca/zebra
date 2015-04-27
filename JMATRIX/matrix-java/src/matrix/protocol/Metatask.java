@@ -80,37 +80,31 @@ public final class Metatask {
   /**
    * Protobuf type {@code matrix.protocol.TaskMsg}
    */
-  public static final class TaskMsg extends
+  public  static final class TaskMsg extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:matrix.protocol.TaskMsg)
       TaskMsgOrBuilder {
     // Use TaskMsg.newBuilder() to construct.
-    private TaskMsg(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    private TaskMsg(com.google.protobuf.GeneratedMessage.Builder builder) {
       super(builder);
-      this.unknownFields = builder.getUnknownFields();
     }
-    private TaskMsg(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final TaskMsg defaultInstance;
-    public static TaskMsg getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public TaskMsg getDefaultInstanceForType() {
-      return defaultInstance;
+    private TaskMsg() {
+      taskId_ = "";
+      user_ = "";
+      dir_ = "";
+      cmd_ = "";
+      dataLength_ = 0L;
     }
 
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
+    getUnknownFields() {
       return this.unknownFields;
     }
     private TaskMsg(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+      this();
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -161,10 +155,11 @@ public final class Metatask {
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
+        throw new RuntimeException(e.setUnfinishedMessage(this));
       } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+        throw new RuntimeException(
+            new com.google.protobuf.InvalidProtocolBufferException(
+                e.getMessage()).setUnfinishedMessage(this));
       } finally {
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -182,13 +177,22 @@ public final class Metatask {
               matrix.protocol.Metatask.TaskMsg.class, matrix.protocol.Metatask.TaskMsg.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<TaskMsg> PARSER =
+    public static final com.google.protobuf.Parser<TaskMsg> PARSER =
         new com.google.protobuf.AbstractParser<TaskMsg>() {
       public TaskMsg parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TaskMsg(input, extensionRegistry);
+        try {
+          return new TaskMsg(input, extensionRegistry);
+        } catch (RuntimeException e) {
+          if (e.getCause() instanceof
+              com.google.protobuf.InvalidProtocolBufferException) {
+            throw (com.google.protobuf.InvalidProtocolBufferException)
+                e.getCause();
+          }
+          throw e;
+        }
       }
     };
 
@@ -381,13 +385,6 @@ public final class Metatask {
       return dataLength_;
     }
 
-    private void initFields() {
-      taskId_ = "";
-      user_ = "";
-      dir_ = "";
-      cmd_ = "";
-      dataLength_ = 0L;
-    }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -420,7 +417,6 @@ public final class Metatask {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(1, getTaskIdBytes());
       }
@@ -436,7 +432,7 @@ public final class Metatask {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeInt64(5, dataLength_);
       }
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
     private int memoizedSerializedSize = -1;
@@ -465,18 +461,12 @@ public final class Metatask {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(5, dataLength_);
       }
-      size += getUnknownFields().getSerializedSize();
+      size += unknownFields.getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-
     public static matrix.protocol.Metatask.TaskMsg parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -530,12 +520,17 @@ public final class Metatask {
       return PARSER.parseFrom(input, extensionRegistry);
     }
 
-    public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(matrix.protocol.Metatask.TaskMsg prototype) {
-      return newBuilder().mergeFrom(prototype);
+    public static Builder newBuilder() {
+      return defaultInstance.toBuilder();
     }
-    public Builder toBuilder() { return newBuilder(this); }
+    public static Builder newBuilder(matrix.protocol.Metatask.TaskMsg prototype) {
+      return defaultInstance.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == defaultInstance
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
 
     @java.lang.Override
     protected Builder newBuilderForType(
@@ -576,10 +571,6 @@ public final class Metatask {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
         }
       }
-      private static Builder create() {
-        return new Builder();
-      }
-
       public Builder clear() {
         super.clear();
         taskId_ = "";
@@ -593,10 +584,6 @@ public final class Metatask {
         dataLength_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000010);
         return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
       }
 
       public com.google.protobuf.Descriptors.Descriptor
@@ -679,7 +666,8 @@ public final class Metatask {
         if (other.hasDataLength()) {
           setDataLength(other.getDataLength());
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
         return this;
       }
 
@@ -1065,12 +1053,22 @@ public final class Metatask {
       // @@protoc_insertion_point(builder_scope:matrix.protocol.TaskMsg)
     }
 
+    // @@protoc_insertion_point(class_scope:matrix.protocol.TaskMsg)
+    private static final matrix.protocol.Metatask.TaskMsg defaultInstance;
     static {
-      defaultInstance = new TaskMsg(true);
-      defaultInstance.initFields();
+      defaultInstance = new matrix.protocol.Metatask.TaskMsg();
     }
 
-    // @@protoc_insertion_point(class_scope:matrix.protocol.TaskMsg)
+    public static matrix.protocol.Metatask.TaskMsg getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public matrix.protocol.Metatask.TaskMsg getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    static {
+    }
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor

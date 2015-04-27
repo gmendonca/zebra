@@ -114,7 +114,8 @@ public class MatrixScheduler extends PeerScheduler{
 			String newVal = Integer.toString(newValNum);
 			String queryVal = new String();
 
-			while (zc.compareSwap(regKey, value, newVal, queryVal) != 0) {
+			while (zc.compareSwapInt(regKey, value, newVal) != 0) {
+				queryVal = zc.compareSwapString(regKey, value, newVal);
 				if (queryVal.isEmpty()) {
 					value = zc.lookUp(regKey);
 				} else {
@@ -191,8 +192,8 @@ public class MatrixScheduler extends PeerScheduler{
 			numTaskRecv += numTask;
 			numTaskRecvMoreStr = Long.toString(numTaskRecv);
 			//cout << "number of task more recv is:" << numTaskRecv << endl;
-			while (zc.compareSwap(recvKey, numTaskRecvStr, numTaskRecvMoreStr,
-					queryValue) != 0) {
+			while (zc.compareSwapInt(recvKey, numTaskRecvStr, numTaskRecvMoreStr) != 0) {
+				queryValue = zc.compareSwapString(recvKey, numTaskRecvStr, numTaskRecvMoreStr);
 				if (queryValue.isEmpty()) {
 					numTaskRecvStr = zc.lookUp(recvKey);
 				} else {
@@ -280,8 +281,9 @@ public class MatrixScheduler extends PeerScheduler{
 		numTaskRecvMoreStr = Long.toString(numTaskRecv);
 		//cout << "The one potential to insert is:" << numTaskRecvMoreStr << endl;
 		increment += 2;
-		while (zc.compareSwap("num tasks recv", numTaskRecvStr,
-				numTaskRecvMoreStr, queryValue) != 0) {
+		while (zc.compareSwapInt("num tasks recv", numTaskRecvStr,
+				numTaskRecvMoreStr) != 0) {
+			queryValue = zc.compareSwapString("num tasks recv", numTaskRecvStr,numTaskRecvMoreStr);
 			if (queryValue.isEmpty()) {
 				numTaskRecvStr = zc.lookUp("num tasks recv");
 				increment++;
@@ -896,8 +898,9 @@ public class MatrixScheduler extends PeerScheduler{
 			//System.out.println(cqItem.taskId << "\t" << childTaskId << "\t" << childTaskDetail << "\t" << childTaskDetailAttempt);
 			increment++;
 			synchronized(this){
-				while (zc.compareSwap(childTaskId, childTaskDetail,
-						childTaskDetailAttempt, queryValue) != 0) {
+				while (zc.compareSwapInt(childTaskId, childTaskDetail,
+						childTaskDetailAttempt) != 0) {
+					queryValue = zc.compareSwapString(childTaskId, childTaskDetail,childTaskDetailAttempt);
 					if (queryValue.isEmpty()) {
 						childTaskDetail = zc.lookUp(childTaskId);
 						increment++;

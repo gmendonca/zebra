@@ -91,7 +91,8 @@ public class RecordingStat extends Thread{
 				queryValue = new String();
 				increment++;
 			}
-			while (ms.zc.compareSwap(key, numTaskDoneStr, numTaskDoneStrNew,queryValue) != 0) {
+			while (ms.zc.compareSwapInt(key, numTaskDoneStr, numTaskDoneStrNew) != 0) {
+				queryValue = ms.zc.compareSwapString(key, numTaskDoneStr, numTaskDoneStrNew);
 				if (queryValue.isEmpty()) {
 					numTaskDoneStr = ms.zc.lookUp(key);
 					increment++;

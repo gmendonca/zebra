@@ -71,7 +71,7 @@ public:
 			int lease);
 	int teardown();
 
-private:
+
 	int commonOp(const string &opcode, const string &key, const string &val,
 			const string &val2, string &result, int lease);
 	string commonOpInternal(const string &opcode, const string &key,

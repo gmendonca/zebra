@@ -2,7 +2,7 @@
 
 #include "cpp_zhtclient.h"
 
-#include  <stdlib.h>
+#include <stdlib.h>
 #include <string.h>
 
 //#include "zpack.pb.h"
@@ -13,33 +13,69 @@
 
 using namespace iit::datasys::zht::dm;
 
-JNIEXPORT jstring JNICALL Java_matrix_client_ZHTClient_lookUp(JNIEnv *, jobject, jstring) {
+JNIEXPORT jstring JNICALL Java_matrix_client_ZHTClient_lookUp(JNIEnv *env, jobject obj, jstring key) {
 	string val;
 	string val2;
-	int rc = commonOp(Const::ZSC_OPC_LOOKUP, key, val, val2, result, 1);
-	result = extract_value(result);
+	string result;
+
+	ZHTClient zc;
+
+	const char *ckey = env->GetStringUTFChars(key, 0);
+	string skey(ckey);
+
+	int rc = zc.commonOp(Const::ZSC_OPC_LOOKUP, skey, val, val2, result, 1);
+
+	result = zc.extract_value(result);
+
+	return result;
+}
+
+JNIEXPORT jint JNICALL Java_matrix_client_ZHTClient_insertZHT(JNIEnv *env, jobject obj, jstring key, jstring val) {
+	string val2;
+	string& result;
+
+
+	const char *ckey = env->GetStringUTFChars(key, 0);
+	string skey(ckey);
+	const char *cval = env->GetStringUTFChars(val, 0);
+	string sval(cval);
+
+	int rc = ZHTClient::commonOp(Const::ZSC_OPC_INSERT, skey, sval, val2, result, 1);
 
 	return rc;
 }
 
-JNIEXPORT jint JNICALL Java_matrix_client_ZHTClient_insertZHT(JNIEnv *, jobject, jstring, jstring) {
-	string skey(key);
-	string sresult;
+JNIEXPORT jint JNICALL Java_matrix_client_ZHTClient_compareSwapInt(JNIEnv *env, jobject obj, jstring key, jstring seen_val, jstring new_val) {
 
-	int rc = lookup(skey, sresult);
+	string& result;
 
-	strncpy(result, sresult.c_str(), sresult.size() + 1);
+	const char *ckey = env->GetStringUTFChars(key, 0);
+	string skey(ckey);
+	const char *cseen_val = env->GetStringUTFChars(seen_val, 0);
+	string sseen_val(cseen_val);
+	const char *cnew_val = env->GetStringUTFChars(new_val, 0);
+	string snew_val(cnew_val);
+
+	int rc = ZHTClient::commonOp(Const::ZSC_OPC_CMPSWP, skey, sseen_val, snew_val, result, 1);
 
 	return rc;
 }
 
-JNIEXPORT jint JNICALL Java_matrix_client_ZHTClient_compareSwap(JNIEnv *, jobject, jstring, jstring, jstring, jstring) {
-	string skey(key);
-	string sresult;
+JNIEXPORT jstring JNICALL Java_matrix_client_ZHTClient_compareSwapString(JNIEnv *env, jobject obj, jstring key, jstring seen_val, jstring new_val) {
 
-	int rc = lookup(skey, sresult);
+	string& result;
 
-	strncpy(result, sresult.c_str(), sresult.size() + 1);
+	const char *ckey = env->GetStringUTFChars(key, 0);
+	string skey(ckey);
+	const char *cseen_val = env->GetStringUTFChars(seen_val, 0);
+	string sseen_val(cseen_val);
+	const char *cnew_val = env->GetStringUTFChars(new_val, 0);
+	string snew_val(cnew_val);
 
-	return rc;
+	int rc = ZHTClient::commonOp(Const::ZSC_OPC_CMPSWP, skey, sseen_val, snew_val, result, 1);
+
+	result = ZHTClient::extract_value(result);
+
+	return result;
+
 }
