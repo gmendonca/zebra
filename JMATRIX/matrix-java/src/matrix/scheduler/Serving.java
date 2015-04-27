@@ -11,7 +11,7 @@ public class Serving extends Thread{
 	}
 	
 	public void run(){
-		
+		mes.serve();
 	}
 
 }
