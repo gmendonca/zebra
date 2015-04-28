@@ -15,7 +15,7 @@ import matrix.util.Tools;
 public abstract class OverallPeer implements Peer{
 	
 	//Attributes from Interface Peer
-		public matrix.zht.ZHTClient zc;
+		public ZHTClient zc;
 		public Configuration config;
 		public ArrayList<String> schedulerList;
 		public Boolean running;
