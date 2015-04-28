@@ -55,6 +55,7 @@ public:
 	int init(const char *zhtConf, const char *neighborConf);
 	int lookup(const string &key, string &result);
 	int lookup(const char *key, char *result);
+	string lookup(const string &key);
 	int remove(const string &key);
 	int remove(const char *key);
 	int insert(const string &key, const string &val);
@@ -65,6 +66,10 @@ public:
 			const string &new_val, string &result);
 	int compare_swap(const char *key, const char *seen_val, const char *new_val,
 			char *result);
+	int compare_swap_int(const string &key, const string &seen_val,
+				const string &new_val);
+	string compare_swap_string(const string &key, const string &seen_val,
+				const string &new_val);
 	int state_change_callback(const string &key, const string &expected_val,
 			int lease);
 	int state_change_callback(const char *key, const char *expeded_val,

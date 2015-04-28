@@ -18,16 +18,16 @@ JNIEXPORT jstring JNICALL Java_matrix_client_ZHTClient_lookUp(JNIEnv *env, jobje
 	string val2;
 	string result;
 
-	ZHTClient zc;
-
 	const char *ckey = env->GetStringUTFChars(key, 0);
 	string skey(ckey);
 
-	int rc = zc.commonOp(Const::ZSC_OPC_LOOKUP, skey, val, val2, result, 1);
+	int rc = commonOp(Const::ZSC_OPC_LOOKUP, skey, val, val2, result, 1);
 
-	result = zc.extract_value(result);
+	result = extract_value(result);
 
-	return result;
+	const char *cstr = result.c_str();
+	env->ReleaseStringUTFChars(key, ckey);
+	return env->NewStringUTF(cstr);
 }
 
 JNIEXPORT jint JNICALL Java_matrix_client_ZHTClient_insertZHT(JNIEnv *env, jobject obj, jstring key, jstring val) {

@@ -125,6 +125,12 @@ int ZHTClient::lookup(const char *key, char *result) {
 	return rc;
 }
 
+string ZHTClient::lookup(const string &key) {
+	string result;
+	int rc = lookup(key, result);
+	return result;
+}
+
 int ZHTClient::remove(const string &key) {
 
 	string val;
@@ -162,6 +168,7 @@ int ZHTClient::insert(const char *key, const char *val) {
 
 	return rc;
 }
+
 
 int ZHTClient::append(const string &key, const string &val) {
 
@@ -246,6 +253,24 @@ int ZHTClient::compare_swap(const char *key, const char *seen_val,
 	strncpy(result, sresult.c_str(), sresult.size() + 1);
 
 	return rc;
+}
+
+int ZHTClient::compare_swap_int(const string &key, const string &seen_val,
+		const string &new_val) {
+
+	string result;
+	int rc = compare_swap(key, seen_val, new_val, result);
+
+	return rc;
+}
+
+string ZHTClient::compare_swap_string(const string &key, const string &seen_val,
+		const string &new_val) {
+
+	string result;
+	int rc = compare_swap(key, seen_val, new_val, result);
+
+	return result;
 }
 
 int ZHTClient::state_change_callback(const string &key,

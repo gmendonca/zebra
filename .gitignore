@@ -84,3 +84,8 @@ hs_err_pid*
 *.exe
 *.out
 *.app
+
+
+#tar
+.tar
+.tar.gz
