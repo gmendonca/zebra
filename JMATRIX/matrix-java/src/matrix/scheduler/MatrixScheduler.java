@@ -99,25 +99,25 @@ public class MatrixScheduler extends PeerScheduler{
 		 * the number of tasks done
 		 * */
 		if (getIndex() == 0) {
-			zc.insertZHT(regKey, new String("1"));
-			zc.insertZHT(taskFinKey, new String("0"));
-			zc.insertZHT(recvKey, new String("0"));
+			zc.insert(regKey, new String("1"));
+			zc.insert(taskFinKey, new String("0"));
+			zc.insert(recvKey, new String("0"));
 		} else {
 			String value;
-			value = zc.lookUp(regKey);
+			value = zc.lookup(regKey);
 			while (value.isEmpty()) {
 				try{ Thread.sleep(config.sleepLength); } catch(Exception e) { }
-				value = zc.lookUp(regKey);
+				value = zc.lookup(regKey);
 			}
 
 			int newValNum = Integer.parseInt(value) + 1;
 			String newVal = Integer.toString(newValNum);
 			String queryVal = new String();
 
-			while (zc.compareSwapInt(regKey, value, newVal) != 0) {
-				queryVal = zc.compareSwapString(regKey, value, newVal);
+			while (zc.compare_swap_int(regKey, value, newVal) != 0) {
+				queryVal = zc.compare_swap_string(regKey, value, newVal);
 				if (queryVal.isEmpty()) {
-					value = zc.lookUp(regKey);
+					value = zc.lookup(regKey);
 				} else {
 					value = queryVal;
 				}
@@ -150,11 +150,11 @@ public class MatrixScheduler extends PeerScheduler{
 	public void getTaskFromFile() {
 		String done;
 		String key = new String("Split Workload");
-		done = zc.lookUp(key);
+		done = zc.lookup(key);
 
 		while (done.isEmpty()) {
 			try{ Thread.sleep(config.sleepLength); } catch (Exception e) { }
-			done = zc.lookUp(key);
+			done = zc.lookup(key);
 		}
 
 		String filePath = config.schedulerWorkloadPath + "/workload."
@@ -186,16 +186,16 @@ public class MatrixScheduler extends PeerScheduler{
 
 			String numTaskRecvStr = new String(), numTaskRecvMoreStr = new String(), queryValue = new String();
 			String recvKey = new String("num tasks recv");
-			numTaskRecvStr = zc.lookUp(recvKey);
+			numTaskRecvStr = zc.lookup(recvKey);
 
 			long numTaskRecv = Long.parseLong(numTaskRecvStr);
 			numTaskRecv += numTask;
 			numTaskRecvMoreStr = Long.toString(numTaskRecv);
 			//cout << "number of task more recv is:" << numTaskRecv << endl;
-			while (zc.compareSwapInt(recvKey, numTaskRecvStr, numTaskRecvMoreStr) != 0) {
-				queryValue = zc.compareSwapString(recvKey, numTaskRecvStr, numTaskRecvMoreStr);
+			while (zc.compare_swap_int(recvKey, numTaskRecvStr, numTaskRecvMoreStr) != 0) {
+				queryValue = zc.compare_swap_string(recvKey, numTaskRecvStr, numTaskRecvMoreStr);
 				if (queryValue.isEmpty()) {
-					numTaskRecvStr = zc.lookUp(recvKey);
+					numTaskRecvStr = zc.lookup(recvKey);
 				} else {
 					numTaskRecvStr = queryValue;
 				}
@@ -254,7 +254,7 @@ public class MatrixScheduler extends PeerScheduler{
 			for (int j = 0; j < mm.getCount(); j++) {
 				String taskMD;
 				//cout << "Now, I am doing a zht lookup:" << tmList.get(j).taskid() << endl;
-				taskMD = zc.lookUp(tmList.get(j).getTaskId());
+				taskMD = zc.lookup(tmList.get(j).getTaskId());
 				//cout << "I got the task metadata:" << taskMD << endl;
 				Value value = Tools.strToValue(taskMD);
 				taskTimeEntry.add(tmList.get(j).getTaskId() + "\tSubmissionTime\t"
@@ -274,18 +274,18 @@ public class MatrixScheduler extends PeerScheduler{
 		}
 		//cout << "OK, now I have put the tasks in the wait queue, let's update the ZHT record!" << endl;
 		String numTaskRecvStr = new String(), numTaskRecvMoreStr = new String(), queryValue = new String();
-		numTaskRecvStr = zc.lookUp("num tasks recv");
+		numTaskRecvStr = zc.lookup("num tasks recv");
 		long numTaskRecv = Long.parseLong(numTaskRecvStr);
 		//cout << "Number of tasks recv is:" << numTaskRecvStr << endl;
 		numTaskRecv += numTask;
 		numTaskRecvMoreStr = Long.toString(numTaskRecv);
 		//cout << "The one potential to insert is:" << numTaskRecvMoreStr << endl;
 		increment += 2;
-		while (zc.compareSwapInt("num tasks recv", numTaskRecvStr,
+		while (zc.compare_swap_int("num tasks recv", numTaskRecvStr,
 				numTaskRecvMoreStr) != 0) {
-			queryValue = zc.compareSwapString("num tasks recv", numTaskRecvStr,numTaskRecvMoreStr);
+			queryValue = zc.compare_swap_string("num tasks recv", numTaskRecvStr,numTaskRecvMoreStr);
 			if (queryValue.isEmpty()) {
-				numTaskRecvStr = zc.lookUp("num tasks recv");
+				numTaskRecvStr = zc.lookup("num tasks recv");
 				increment++;
 			} else {
 				numTaskRecvStr = queryValue;
@@ -579,7 +579,7 @@ public class MatrixScheduler extends PeerScheduler{
 	public void execTask(TaskMsg tm) {
 		String taskDetail;
 		synchronized(this){
-			taskDetail = zc.lookUp(tm.getTaskId());
+			taskDetail = zc.lookup(tm.getTaskId());
 		}
 		Value value = Tools.strToValue(taskDetail);
 
@@ -591,7 +591,7 @@ public class MatrixScheduler extends PeerScheduler{
 		String dataPiece;
 		for (int i = 0; i < value.getParentsCount(); i++)
 		{
-			dataPiece = zc.lookUp(value.getDataNameList(i));
+			dataPiece = zc.lookup(value.getDataNameList(i));
 			data += dataPiece;
 		}
 		}else{
@@ -672,7 +672,7 @@ public class MatrixScheduler extends PeerScheduler{
 
 		if(Declarations.ZHT_STORAGE){
 			synchronized(this){
-				zc.insertZHT(key, result);
+				zc.insert(key, result);
 			}
 		}else{
 			synchronized(this){
@@ -804,7 +804,7 @@ public class MatrixScheduler extends PeerScheduler{
 		String taskDetail;
 		Boolean ready = false;
 		synchronized(this){
-			taskDetail = zc.lookUp(tm.getTaskId());
+			taskDetail = zc.lookup(tm.getTaskId());
 		}
 		Value value = Tools.strToValue(taskDetail);
 		//System.out.println("task indegree:" << tm.taskid() << "\t" << value.indegree());
@@ -861,7 +861,7 @@ public class MatrixScheduler extends PeerScheduler{
 		long increment = 0;
 		//sockMutex.lock();
 		//System.out.println("I got the lock, and I am notifying children!");
-		//zc.lookUp(cqItem.taskId, taskDetail);
+		//zc.lookup(cqItem.taskId, taskDetail);
 		//System.out.println("OK, the task id is:" << cqItem.taskId << ", and task detail is:" << taskDetail);
 		//sockMutex.unlock();
 		if (taskDetail.isEmpty()) {
@@ -877,7 +877,7 @@ public class MatrixScheduler extends PeerScheduler{
 		for (int i = 0; i < value.getChildrenCount(); i++) {
 			childTaskId = value.getChildren(i);
 			synchronized(this){
-				childTaskDetail = zc.lookUp(childTaskId);
+				childTaskDetail = zc.lookup(childTaskId);
 				//System.out.println("The child task id is:" << childTaskId << "\t" << childTaskDetail);
 				//System.out.println("The size is:" << childTaskDetail.length());
 			}
@@ -898,11 +898,11 @@ public class MatrixScheduler extends PeerScheduler{
 			//System.out.println(cqItem.taskId << "\t" << childTaskId << "\t" << childTaskDetail << "\t" << childTaskDetailAttempt);
 			increment++;
 			synchronized(this){
-				while (zc.compareSwapInt(childTaskId, childTaskDetail,
+				while (zc.compare_swap_int(childTaskId, childTaskDetail,
 						childTaskDetailAttempt) != 0) {
-					queryValue = zc.compareSwapString(childTaskId, childTaskDetail,childTaskDetailAttempt);
+					queryValue = zc.compare_swap_string(childTaskId, childTaskDetail,childTaskDetailAttempt);
 					if (queryValue.isEmpty()) {
-						childTaskDetail = zc.lookUp(childTaskId);
+						childTaskDetail = zc.lookup(childTaskId);
 						increment++;
 					} else {
 						//System.out.println("The queryValue is:" << queryValue);

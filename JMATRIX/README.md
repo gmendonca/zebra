@@ -36,7 +36,8 @@ protoc --java_out=src/main/java -I../src ../src/google/protobuf/descriptor.proto
 https://developers.google.com/protocol-buffers/docs/cpptutorial
 protoc -I=$SRC_DIR --cpp_out=$DST_DIR $SRC_DIR/addressbook.proto
 
-
+** protoc -I=. --cpp_out=. ./*.proto
+** protoc-c -I=. --c_out=. ./*.proto
 
 for jni refer to this http://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html
 creating library
@@ -45,5 +46,9 @@ g++ -I /usr/lib/jvm/java-7-openjdk-amd64/include/ matrixzhtclient.cpp -o matrixz
 
 http://www.swig.org/Doc1.3/SWIGPlus.html
 sudo apt-get install swig
-swig -c++ -tcl cpp_zhtclient.i
+
+swig -c++ -java -package "matrix.zht" cpp_zhtclient.i
+g++ -c -fpic -I/usr/lib/jvm/java-7-openjdk-amd64/include/ cpp_zhtclient_wrap.cxx
+g++ -c -fpic cpp_zhtclient.cpp -o cpp_zhtclient.o
+g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o -o cpp_zhtclient.so
 

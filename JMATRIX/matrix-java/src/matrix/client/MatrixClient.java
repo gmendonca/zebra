@@ -95,7 +95,7 @@ public class MatrixClient extends PeerClient{
 			
 			String seriValue;
 			seriValue = Tools.valueToStr(value.build());
-			zc.insertZHT(taskId, seriValue);
+			zc.insert(taskId, seriValue);
 			
 		}
 			
@@ -161,13 +161,13 @@ public class MatrixClient extends PeerClient{
 		
 		for(int i = 0; i < config.numTaskPerClient; i++){
 			String taskId = tasks.get(i).getTaskId();
-			String taskDetail = zc.lookUp(taskId);
+			String taskDetail = zc.lookup(taskId);
 			Value value = Tools.strToValue(taskDetail);
 			Value.Builder vb = value.toBuilder();
 			vb.setSubmitTime(System.currentTimeMillis());
 			
 			taskDetail = Tools.valueToStr(vb.build());
-			zc.insertZHT(taskId, taskDetail);
+			zc.insert(taskId, taskDetail);
 			
 			increment += 2;
 		}

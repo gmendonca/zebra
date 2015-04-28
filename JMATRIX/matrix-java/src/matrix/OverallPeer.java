@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-import matrix.client.ZHTClient;
+import matrix.zht.ZHTClient;
 import matrix.protocol.Metamatrix.MatrixMsg;
 import matrix.protocol.Metatask.TaskMsg;
 import matrix.util.Configuration;
@@ -15,7 +15,7 @@ import matrix.util.Tools;
 public abstract class OverallPeer implements Peer{
 	
 	//Attributes from Interface Peer
-		public ZHTClient zc;
+		public matrix.zht.ZHTClient zc;
 		public Configuration config;
 		public ArrayList<String> schedulerList;
 		public Boolean running;
@@ -35,20 +35,20 @@ public abstract class OverallPeer implements Peer{
 		public void waitAllScheduler() {
 			String key = new String("number of scheduler registered");
 			String value;
-			value = zc.lookUp(key);
+			value = zc.lookup(key);
 			while (Integer.parseInt(value) != schedulerList.size()) {
 				try{ Thread.sleep(10000); } catch (Exception e) { }
-				value = zc.lookUp(key);
+				value = zc.lookup(key);
 			}
 		}
 
 		public void waitAllTaskRecv() {
 			String key = new String("num tasks recv");
 			String value;
-			value = zc.lookUp(key);
+			value = zc.lookup(key);
 			while (Long.parseLong(value) != config.numAllTask) {
 				try{ Thread.sleep(10000); } catch(Exception e) { }
-				value = zc.lookUp(key);
+				value = zc.lookup(key);
 			}
 		}
 
