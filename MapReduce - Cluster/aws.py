@@ -27,17 +27,36 @@ def list_resources(driver):
     if not resources:
         print "No active resources"
     else:
-        print '-'*51
-        print '{0:20} | {1:10} | {2:15}'.format("NAME", "STATUS", "EXTERNAL_IP")
-        print '-'*51
+        print '-'*66
+        print '{0:20} | {1:10} | {2:15} | {3:15}'.format("NAME", "STATUS", "EXTERNAL_IP", "PRIVATE_IP")
+        print '-'*66
         for resource in resources:
             if resource.public_ips:
                 #print resource.name, " | ", NODESTATES[resource.state] , " | ", resource.public_ips[0]
-                print '{0:20} | {1:10} | {2:15}'.format(resource.name, NODESTATES[resource.state], resource.public_ips[0])
-                print '-'*51
+                print '{0:20} | {1:10} | {2:15} | {3:15}'.format(resource.name, NODESTATES[resource.state], resource.public_ips[0], resource.private_ips[0])
+                print '-'*66
 
     return resources
 
+def list_nodes_hosts(driver):
+    resources = driver.list_nodes()
+    nodes_string = " "
+    if not resources:
+        nodes_string = " "
+    else:
+        for resource in resources:
+            nodes_string += resource.private_ips[0] + " " + resource.name + "\n"
+    return nodes_string
+
+def list_nodes_slaves(driver):
+    resources = driver.list_nodes()
+    slaves_string = " "
+    if not resources:
+        slaves_string = " "
+    else:
+        for resource in resources:
+            slaves_string += resource.private_ips[0] + "\n"
+    return slaves_string
 
 def get_public_ip(driver, name):
     resources = driver.list_nodes()
@@ -150,26 +169,26 @@ def start_slave(driver, configs, slave_names):
     userdata   = userdata.replace("SET_HEADNODE_IP", headnode.public_ips[0])
 
     # Setting slave concurrency level
-    if 'slave_CONCURRENCY' in configs:
+    if 'SLAVE_CONCURRENCY' in configs:
         concurrency = "-c " + str(configs['SLAVE_CONCURRENCY'])
     userdata    = userdata.replace("SET_CONCURRENCY", concurrency)
 
-    # Inserting slave_INIT_SCRIPT
-    if 'slave_INIT_SCRIPT' in configs :
+    # Inserting SLAVE_INIT_SCRIPT
+    if 'SLAVE_INIT_SCRIPT' in configs :
         if not os.path.isfile(configs['SLAVE_INIT_SCRIPT']):
             print "Unable to read SLAVE_INIT_SCRIPT"
             exit(-1);
         init_string = open(configs['SLAVE_INIT_SCRIPT'], 'r').read()
     userdata    = userdata.replace("#SLAVE_INIT_SCRIPT", init_string)
 
-    if 'slave_DISK' in configs:
+    if 'SLAVE_DISK' in configs:
         disk_info  = configs['SLAVE_DISK'].split(" ")
         location   = driver.list_locations()[0];
         volume     = driver.create_volume(size=500, location=location, name="test volume 500gb")
     else:
         print "No slave_disk defined"
 
-    logging.info("slave userdata : %s", userdata)
+    logging.info("Worker userdata : %s", userdata)
     list_nodes = []
     sizes      = driver.list_sizes()
     size       = [ s for s in sizes if s.id == configs['SLAVE_MACHINE_TYPE'] ]
@@ -193,13 +212,14 @@ def start_slave(driver, configs, slave_names):
             driver.attach_volume(node, volume, device=disk_info[1] )
 
         list_nodes.append(node)
-        logging.info("slave node started : %s",str(node))
+        logging.info("Worker node started : %s",str(node))
 
 
 def terminate_all_nodes():
     configs,driver = init()
     nodes          = driver.list_nodes()
     for node in nodes:
+        if node.name == "headnode" | node.name.startswith("hadoop-")
         print "Deleting node : ", node.name
         driver.destroy_node(node)
 

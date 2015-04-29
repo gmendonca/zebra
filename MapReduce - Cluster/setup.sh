@@ -32,19 +32,19 @@ start_n_slaves ()
     echo "In start_n_slaves"
     COUNT=$1
     CURRENT=1
-    out=$(list_resources | grep "swift-slave")
+    out=$(list_resources | grep "hadoop-slave")
     if [[ "$?" == 0 ]]
     then
         echo "Current slaves"
         echo "${out[*]}"
-        CURRENT=$(list_resources | grep "swift-slave" | wc -l)
+        CURRENT=$(list_resources | grep "hadoop-slave" | wc -l)
         echo "Count : " $CURRENT
         echo "New slaves needed : $(($COUNT - $CURRENT))"
     fi
 
     for i in $(seq $CURRENT 1 $COUNT)
     do
-        start_slave swift-slave-$i &> $LOG &
+        start_slave hadoop-slave-$i &> $LOG &
     done
     wait
     list_resources
@@ -54,7 +54,7 @@ start_n_more ()
 {
     ACTIVE=$(./aws.py list_resources | grep slave | wc -l)
     MORE=$1
-    start_slave $(printf "swift-slave-%03d " $(seq $(($ACTIVE+1)) 1 $(($ACTIVE+$MORE)) ) )
+    start_slave $(printf "hadoop-slave-%03d " $(seq $(($ACTIVE+1)) 1 $(($ACTIVE+$MORE)) ) )
     list_resources
 }
 
@@ -64,12 +64,12 @@ stop_headnode()
     ./aws.py stop_headnode
 }
 
-generate_swiftproperties()
+generate_hadoopproperties()
 {
     EXTERNAL_IP=$(gcutil --project=$GCE_PROJECTID listinstances | grep headnode | awk '{ print $10 }')
     SERVICE_PORT=50010
     echo http://$EXTERNAL_IP:$SERVICE_PORT > PUBLIC_ADDRESS
-    cat <<EOF > swift.properties
+    cat <<EOF > hadoop.properties
 site=cloud,local
 use.provider.staging=true
 execution.retries=2
@@ -78,7 +78,7 @@ site.local {
    jobmanager=local
    initialScore=10000
    filesystem=local
-   workdir=/tmp/swiftwork
+   workdir=/tmp/hadoopwork
 }
 
 site.cloud {
@@ -112,15 +112,15 @@ start_headnode()
 start_slaves()
 {
     SLAVES_REQUESTED=$AWS_SLAVE_COUNT
-    CURRENT_COUNT=$(list_resources | grep "swift-slave" | wc -l)
+    CURRENT_COUNT=$(list_resources | grep "hadoop-slave" | wc -l)
     echo "Current slaves   : $CURRENT_COUNT"
     echo "Workers requested : $SLAVES_REQUESTED"
     SLAVES_REQUIRED=$(($SLAVES_REQUESTED - $CURRENT_COUNT))
     if [[ $SLAVES_REQUIRED -gt 0 ]]
     then
-        #printf("swift-slave-%03d", {$CURRENT_COUNT..$(($CURRENT_COUNT+$COUNT_NEEDED))})
+        #printf("hadoop-slave-%03d", {$CURRENT_COUNT..$(($CURRENT_COUNT+$COUNT_NEEDED))})
         END=$(($CURRENT_COUNT+$SLAVES_REQUIRED-1))
-        start_slave $(printf "swift-slave-%03d " $(seq $CURRENT_COUNT 1 $END))
+        start_slave $(printf "hadoop-slave-%03d " $(seq $CURRENT_COUNT 1 $END))
     else
         echo "No additional slaves needed"
     fi
@@ -136,6 +136,24 @@ connect()
     IP=$(./aws.py list_resource $NODE)
     echo "Connecting to AWS node:$NODE on $IP as $AWS_USERNAME"
     ssh -A -o StrictHostKeyChecking=no -l $AWS_USERNAME -i $AWS_KEYPAIR_FILE $IP
+}
+
+build_cluster()
+{
+    source configs
+    NODE=$1
+    [[ -z $1 ]] && NODE="headnode"
+    [[ -z $AWS_USERNAME ]] && AWS_USERNAME="ec2-user"
+
+    IP=$(./aws.py list_resource $NODE)
+    
+
+    echo "Connecting to AWS node:$NODE on $IP as $AWS_USERNAME"
+    ./aws.py list_nodes_hosts > $HOSTS_STRING
+    ./aws.py list_nodes_slaves > $SLAVES_STRING
+    ssh -A -o StrictHostKeyChecking=no -l $AWS_USERNAME -i $AWS_KEYPAIR_FILE $IP "echo \"$HOSTS_STRING\" >> /etc/hosts"
+    ssh -A -o StrictHostKeyChecking=no -l $AWS_USERNAME -i $AWS_KEYPAIR_FILE $IP "echo \"$SLAVES_STRING\" >> /usr/local/hadoop/etc/slaves"
+
 }
 
 

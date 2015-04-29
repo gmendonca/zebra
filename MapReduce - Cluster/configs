@@ -8,27 +8,23 @@ AWS_SLAVE_COUNT=16
 # A key will be generated in path if none are found
 AWS_KEYPAIR_NAME=hadoop-cluster
 # Set following config with an absolute path to where you want the keypair file
-AWS_KEYPAIR_FILE=/usr/ubuntu/.ssh/hadoop-cluster.pem
+AWS_KEYPAIR_FILE=/home/ubuntu/.ssh/hadoop-cluster.pem
 
 #ubuntu is the default user on Ubuntu nodes
 AWS_USERNAME=ubuntu
 
-# Ubuntu Server 14.04 LTS (PV), SSD Volume Type - ami-5f87b06f (64-bit)
+# Ubuntu Server 14.04 LTS (PV), SSD Volume Type - ami-fc989494 (64-bit)
 HEADNODE_IMAGE=ami-5f87b06f
-# Headnode instance type, refer to Amazon instance types page for reference
-# Legal machine types : t1.micro | m1.small | m1.medium | m1.large
 HEADNODE_MACHINE_TYPE=t2.medium
 
-# Ubuntu Server 14.04 LTS (PV), SSD Volume Type - ami-5f87b06f(64-bit)
+# Ubuntu Server 14.04 LTS (PV), SSD Volume Type - ami-fc989494 (64-bit)
 SLAVE_IMAGE=ami-5f87b06f
-# Headnode instance type, refer to Amazon instance types page for reference
-# Legal machine types : t1.micro | m1.small | m1.medium | m1.large
 SLAVE_MACHINE_TYPE=t2.medium
 
 # The following allows a script to executed on the SLAVE at boot time
 # SLAVE_INIT_SCRIPT=foo.sh
 # Do not change following parameters
-AWS_REGION=us-west-2
+AWS_REGION=us-west-2c
 SECURITY_GROUP=hadoop_security_group1
 
 

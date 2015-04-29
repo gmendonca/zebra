@@ -44,42 +44,19 @@ def read_configs(config_file):
         config['AWS_KEYPAIR_FILE'] = os.path.expandvars(config['AWS_KEYPAIR_FILE'])
     return config
 
+def
 #configs = read_configs("./configs")
 #pretty_configs(configs)
 
 #!/usr/bin/env python
 
 HEADNODE_USERDATA_TRUNK='''#!/bin/bash
-SLAVEPORT="50005"; SERVICEPORT="50010"
 
-coaster_loop ()
-{
-    while :
-    do
-        coaster-service -p $SERVICEPORT -localport $SLAVEPORT -nosec -passive &> /var/log/coaster-service.logs
-        sleep 10;
-    done
-}
-coaster_loop &
 '''
 
 
 SLAVE_USERDATA_TRUNK='''#!/bin/bash
-#Replace_me
-HEADNODE=SET_HEADNODE_IP
-CONCURRENCY="SET_CONCURRENCY"
-SLAVEPORT="50005"
 
-slave_loop ()
-{
-    while :
-    do
-        echo "Connecting to HEADNODE on $HEADNODE"
-        slave.pl -w 3600 $CONCURRENCY http://$HEADNODE:$SLAVEPORT $HOSTNAME /var/log
-        sleep 5
-    done
-}
-slave_loop &
 '''
 
 
