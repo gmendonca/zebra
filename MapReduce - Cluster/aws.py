@@ -40,28 +40,26 @@ def list_resources(driver):
 
 def list_nodes_hosts(driver):
     resources = driver.list_nodes()
-    nodes_string = " "
     if not resources:
-        nodes_string = " "
+        print ""
     else:
         for resource in resources:
-            nodes_string += resource.private_ips[0] + " " + resource.name + "\n"
-    return nodes_string
+            if resource.public_ips and resource.name.startswith("hadoop-"):
+                print resource.private_ips[0] + "\t" + resource.name
 
 def list_nodes_slaves(driver):
     resources = driver.list_nodes()
-    slaves_string = " "
     if not resources:
         slaves_string = " "
     else:
         for resource in resources:
-            slaves_string += resource.private_ips[0] + "\n"
-    return slaves_string
+            if resource.public_ips and NODESTATES[resource.state] and resource.name.startswith("hadoop-"):
+                print resource.private_ips[0]
 
 def get_public_ip(driver, name):
     resources = driver.list_nodes()
     if not resources:
-        print "No active resources"
+        print ""
     for resource in resources:
         if resource.name == name and resource.public_ips:
             print resource.public_ips[0]
@@ -219,9 +217,9 @@ def terminate_all_nodes():
     configs,driver = init()
     nodes          = driver.list_nodes()
     for node in nodes:
-        if node.name == "headnode" | node.name.startswith("hadoop-")
-        print "Deleting node : ", node.name
-        driver.destroy_node(node)
+        if  node.name == "headnode" or node.name.startswith("hadoop-"):
+            print "Deleting node : ", node.name
+            driver.destroy_node(node)
 
 # node_names is a list
 def terminate_node(driver, node_names):
@@ -293,6 +291,10 @@ elif args[0] == "list_resource":
     if len(args) !=  2 :
         help
     get_public_ip(driver, args[1])
+elif args[0] == "list_nodes_hosts":
+    list_nodes_hosts(driver)
+elif args[0] == "list_nodes_slaves":
+    list_nodes_slaves(driver)
 
 else:
     print "ERROR: Option ", args[0], " not recognized"

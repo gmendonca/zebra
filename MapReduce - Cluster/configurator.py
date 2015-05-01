@@ -44,7 +44,7 @@ def read_configs(config_file):
         config['AWS_KEYPAIR_FILE'] = os.path.expandvars(config['AWS_KEYPAIR_FILE'])
     return config
 
-def
+
 #configs = read_configs("./configs")
 #pretty_configs(configs)
 

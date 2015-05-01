@@ -141,21 +141,18 @@ connect()
 build_cluster()
 {
     source configs
-    NODE=$1
-    [[ -z $1 ]] && NODE="headnode"
-    [[ -z $AWS_USERNAME ]] && AWS_USERNAME="ec2-user"
-
+    NODE="headnode"
     IP=$(./aws.py list_resource $NODE)
-    
+    HOSTS_STRING=hosts.out
+    SLAVES_STRING=slaves.out
 
     echo "Connecting to AWS node:$NODE on $IP as $AWS_USERNAME"
-    ./aws.py list_nodes_hosts > $HOSTS_STRING
-    ./aws.py list_nodes_slaves > $SLAVES_STRING
-    ssh -A -o StrictHostKeyChecking=no -l $AWS_USERNAME -i $AWS_KEYPAIR_FILE $IP "echo \"$HOSTS_STRING\" >> /etc/hosts"
-    ssh -A -o StrictHostKeyChecking=no -l $AWS_USERNAME -i $AWS_KEYPAIR_FILE $IP "echo \"$SLAVES_STRING\" >> /usr/local/hadoop/etc/slaves"
+    HOSTS_STRING=$(./aws.py list_nodes_hosts)
+    SLAVES_STRING=$(./aws.py list_nodes_slaves)
+    ssh -i $AWS_KEYPAIR_FILE ubuntu@$IP "echo \"$HOSTS_STRING\" | sudo tee -a /etc/hosts"
+    ssh -i $AWS_KEYPAIR_FILE ubuntu@$IP "echo \"$SLAVES_STRING\" | sudo tee -a /usr/local/hadoop/etc/slaves"
 
 }
-
 
 init()
 {
@@ -164,5 +161,3 @@ init()
     start_slaves
     list_resources
 }
-
-init
