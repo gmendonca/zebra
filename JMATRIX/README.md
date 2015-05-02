@@ -15,6 +15,8 @@ https://www.digitalocean.com/community/tutorials/how-to-install-java-on-ubuntu-w
   sudo apt-get install libtool
   sudo apt-get install make
   sudo apt-get install pkg-config
+  sudo apt-get install unzip
+  sudo apt-get install git
   export LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH
 ```
 

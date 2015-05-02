@@ -31,7 +31,7 @@ def list_resources(driver):
         print '{0:20} | {1:10} | {2:15} | {3:15}'.format("NAME", "STATUS", "EXTERNAL_IP", "PRIVATE_IP")
         print '-'*66
         for resource in resources:
-            if resource.public_ips:
+            if resource.public_ips and (resource.name = "headnode" or resource.name.startswith("hadoop-")):
                 #print resource.name, " | ", NODESTATES[resource.state] , " | ", resource.public_ips[0]
                 print '{0:20} | {1:10} | {2:15} | {3:15}'.format(resource.name, NODESTATES[resource.state], resource.public_ips[0], resource.private_ips[0])
                 print '-'*66
