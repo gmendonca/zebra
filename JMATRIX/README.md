@@ -45,7 +45,7 @@ If the JMATRIX code is not working due to google protocol buffer, it's due to th
 protoc --java_out=src/main/java -I../src ../src/google/protobuf/descriptor.proto
 ```
 
-Then enter the ZHT [directory](https://github.com/gmendonca/zebra/tree/master/JMATRIX/matrix-java/src/matrix/zht)(matrix-java/matrix/zht) and compile it. If your protocol buffer bindings is a newer version, you might need to redo it, using the following [commands](https://developers.google.com/protocol-buffers/docs/cpptutorial):
+Then enter the ZHT [directory](https://github.com/gmendonca/zebra/tree/master/JMATRIX/matrix-java/src/matrix/zht) (matrix-java/matrix/zht) and compile it. If your protocol buffer bindings is a newer version, you might need to redo it, using the following [commands](https://developers.google.com/protocol-buffers/docs/cpptutorial):
 
 * Example: protoc -I=$SRC_DIR --cpp_out=$DST_DIR $SRC_DIR/addressbook.proto
 
