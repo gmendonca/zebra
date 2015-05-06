@@ -20,7 +20,7 @@ Install java, google protocol buffer and set up the enviroments variables.
   #JAVA_HOME
   echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java" >> ~/.bashrc
   #LD_LIBRARY_PATH
-  echo "export LD_LIBRARY_PATH=/home/ubuntu/matrix-java/matrix/zht/:/usr/local/lib/:$LD_LIBRARY_PATH" >> ~/.bashrc
+  echo "export LD_LIBRARY_PATH=$HOME/matrix-java/matrix/zht/:/usr/local/lib/:$LD_LIBRARY_PATH" >> ~/.bashrc
 ```
 
 Install protocol buffer ([Watch out for spaces](http://stackoverflow.com/questions/22926266/install-protocol-buffer-compiler-error-under-mac))
