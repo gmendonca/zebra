@@ -17,6 +17,7 @@ https://www.digitalocean.com/community/tutorials/how-to-install-java-on-ubuntu-w
   sudo apt-get install pkg-config
   sudo apt-get install unzip
   sudo apt-get install git
+  sudo apt-get install SWIG
   export LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH
 ```
 
@@ -61,8 +62,8 @@ sudo apt-get install swig
 
 ```
 swig -c++ -java -package "matrix.zht" cpp_zhtclient.i
-g++ -c -fpic -I/usr/lib/jvm/java-7-openjdk-amd64/include/ cpp_zhtclient_wrap.cxx
-g++ -c -fpic cpp_zhtclient.cpp -o cpp_zhtclient.o
-g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o -o cpp_zhtclient.so
+g++ -c -fPIC -I/usr/lib/jvm/java-7-openjdk-amd64/include/ cpp_zhtclient_wrap.cxx
+#g++ -c -fPIC cpp_zhtclient.cpp -o cpp_zhtclient.o
+g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o Const.o -o libcpp_zhtclient.so
 ```
 
