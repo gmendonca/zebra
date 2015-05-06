@@ -19,7 +19,7 @@ Install java, google protocol buffer and set up the enviroments variables.
   sudo apt-get install unzip
   sudo apt-get install git
   sudo apt-get install SWIG
-  export LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH
+  export LD_LIBRARY_PATH=/home/ubuntu/matrix-java/matrix/zht/:/usr/local/lib/:$LD_LIBRARY_PATH
 ```
 
 Install protocol buffer ([Watch out for spaces](http://stackoverflow.com/questions/22926266/install-protocol-buffer-compiler-error-under-mac))
