@@ -54,16 +54,22 @@ protoc-c -I=. --c_out=. ./*.proto
 for jni refer to this http://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html
 http://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html
 creating library
+```
 g++ -I /usr/lib/jvm/java-7-openjdk-amd64/include/ matrixzhtclient.cpp -o matrixzhtclient.so
+```
 
 
 http://www.swig.org/Doc1.3/SWIGPlus.html
+```
 sudo apt-get install swig
+```
+
+Running SWIG for ZHT Wrapping:
 
 ```
 swig -c++ -java -package "matrix.zht" cpp_zhtclient.i
-g++ -c -fPIC -I/usr/lib/jvm/java-7-openjdk-amd64/include/ cpp_zhtclient_wrap.cxx
+g++ -c -fPIC -lprotobuf -lprotobuf-c -I/usr/lib/jvm/java-7-openjdk-amd64/include/ cpp_zhtclient_wrap.cxx
 #g++ -c -fPIC cpp_zhtclient.cpp -o cpp_zhtclient.o
-g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o Const.o -o libcpp_zhtclient.so
+g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o Const.o /usr/local/lib/libprotobuf.so -o libcpp_zhtclient.so
 ```
 
