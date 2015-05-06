@@ -39,28 +39,22 @@ For each folder: (Do the protobuf first, then protobuf-c)
 make && make check
 sudo make install
 ```
+If the JMATRIX code is not working due to google protocol buffer, it's due to this [error](http://stackoverflow.com/questions/11697572/protobuf-java-code-has-build-errors), so just run the command below:
 
-
-http://stackoverflow.com/questions/11697572/protobuf-java-code-has-build-errors
+```sh
 protoc --java_out=src/main/java -I../src ../src/google/protobuf/descriptor.proto
+```
 
-https://developers.google.com/protocol-buffers/docs/cpptutorial
-protoc -I=$SRC_DIR --cpp_out=$DST_DIR $SRC_DIR/addressbook.proto
+Then enter the ZHT [directory](https://github.com/gmendonca/zebra/tree/master/JMATRIX/matrix-java/src/matrix/zht)(matrix-java/matrix/zht) and compile it. If your protocol buffer bindings is a newer version, you might need to redo it, using the following [commands](https://developers.google.com/protocol-buffers/docs/cpptutorial):
+
+* Example: protoc -I=$SRC_DIR --cpp_out=$DST_DIR $SRC_DIR/addressbook.proto
 
 ```sh
 protoc -I=. --cpp_out=. ./*.proto
 protoc-c -I=. --c_out=. ./*.proto
 ```
 
-for jni refer to this http://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html
-http://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html
-creating library
-```sh
-g++ -I /usr/lib/jvm/java-7-openjdk-amd64/include/ matrixzhtclient.cpp -o matrixzhtclient.so
-```
-
-
-http://www.swig.org/Doc1.3/SWIGPlus.html
+Install [SWIG](http://www.swig.org/Doc1.3/SWIGPlus.html):
 ```sh
 sudo apt-get install swig
 ```
@@ -73,5 +67,12 @@ g++ -c -fPIC -lprotobuf -lprotobuf-c -I/usr/lib/jvm/java-7-openjdk-amd64/include
 # For SWIG you need to compile the code as well, but is already when compiling ZHT
 # g++ -c -fPIC cpp_zhtclient.cpp -o cpp_zhtclient.o
 g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o Const.o /usr/local/lib/libprotobuf.so -o libcpp_zhtclient.so
+```
+
+This project uses SWIG that runs on top of JNI, for JNI refer to [this](http://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html) and [this](http://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html).
+
+Example creating library:
+```sh
+g++ -I /usr/lib/jvm/java-7-openjdk-amd64/include/ matrixzhtclient.cpp -o matrixzhtclient.so
 ```
 
