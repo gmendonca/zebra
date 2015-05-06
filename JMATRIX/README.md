@@ -66,7 +66,7 @@ sudo apt-get install swig
 
 Running SWIG for ZHT Wrapping:
 
-```
+```bash
 swig -c++ -java -package "matrix.zht" cpp_zhtclient.i
 g++ -c -fPIC -lprotobuf -lprotobuf-c -I/usr/lib/jvm/java-7-openjdk-amd64/include/ cpp_zhtclient_wrap.cxx
 #g++ -c -fPIC cpp_zhtclient.cpp -o cpp_zhtclient.o
