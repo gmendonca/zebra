@@ -24,14 +24,10 @@ public interface Peer {
 	void increZHTMsgCount(long count);
 
 	void insertWrap(String key, String value);
-	void insertWrap(char key, char value);
 
-	void lookupWrap(String key, String result);
-	void lookupWrap(char key, char result);
+	void lookupWrap(String key);
 
 	void sendBatchTasks(ArrayList<TaskMsg> taskMsg, Socket socket, String peer);
 	void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum);
-
-	void recvBatchTasks();
 
 }

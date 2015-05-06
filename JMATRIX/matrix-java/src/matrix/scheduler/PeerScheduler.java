@@ -124,19 +124,8 @@ public abstract class PeerScheduler extends OverallPeer{
 
 	public abstract void forkLocalQueueMonitorThread();
 	
-	public Boolean initZhtClient(String something, String something2){
-		return false;
-	}
-
-	public void waitAllScheduler(){
-		
-	}
-	public void waitAllTaskRecv(){
-		
-	}
-
 	public void setId(String id){
-		
+		this.id = id;
 	}
 
 	public String getId(){
@@ -144,33 +133,10 @@ public abstract class PeerScheduler extends OverallPeer{
 	}
 
 	public void setIndex(Integer index){
-		
+		this.index = index;
 	}
 
 	public int getIndex(){
 		return index;
-	}
-
-	public void insertWrap(String key, String value){
-		
-	}
-	public void insertWrap(char key, char value){
-		
-	}
-
-	public void lookupWrap(String key, String result){
-		
-	}
-	public void lookupWrap(char key, char result){
-		
-	}
-
-	public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum) {
-		
-	}
-
-	@Override
-	public void recvBatchTasks() {
-		
 	}
 }

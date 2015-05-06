@@ -92,4 +92,41 @@ public abstract class OverallPeer implements Peer{
 				}
 			}
 		}
+		
+		public Boolean initZhtClient(String zhtCfgFile, String neighFile){
+			if (zhtCfgFile.isEmpty() || neighFile.isEmpty()) {
+				return false;
+			} else {
+				if (zc.init(zhtCfgFile, neighFile) != 0) {
+					return false;
+				} else {
+					return true;
+				}
+			}
+		}
+		
+		public void insertWrap(String key, String value){
+			if (key.isEmpty()) {
+				System.out.println("There is empty key!");
+				return;
+			}
+			while (zc.insert(key, value) != 0) {
+				try{ Thread.sleep(10); } catch(Exception e) { }
+			}
+		}
+
+		public void lookupWrap(String key){
+			if (key.isEmpty()) {
+				return;
+			}
+			while (zc.lookup(key).isEmpty()) {
+				System.out.println("the key is: " + key);
+				try{ Thread.sleep(10); } catch(Exception e) { }
+			}
+		}
+		
+		public void recvBatchTasks(ArrayList<TaskMsg> taskMsg, int batchNum) {
+			
+		}
+
 }
