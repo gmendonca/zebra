@@ -1,9 +1,6 @@
 package matrix.scheduler;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-
-import matrix.util.Tools;
 
 public class Scheduler {
 	
@@ -14,10 +11,12 @@ public class Scheduler {
 			System.exit(1);
 		}
 		
+		System.loadLibrary("cpp_zhtclient");
+		
 		MatrixScheduler ms = null;
 		
 		try {
-			String configFile = Tools.readFile(args[0],Charset.defaultCharset());
+			String configFile = args[0];
 			 ms = new MatrixScheduler(configFile);
 		} catch (IOException e) {
 			System.out.println("The usage is: scheduler\tconfiguration_file!\n");

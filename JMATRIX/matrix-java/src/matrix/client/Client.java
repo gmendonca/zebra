@@ -1,7 +1,6 @@
 package matrix.client;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import matrix.util.AdjList;
 import matrix.util.InDegree;
@@ -17,11 +16,12 @@ public class Client {
 			System.exit(1);
 		}
 		
+		System.loadLibrary("cpp_zhtclient");
 		
 		MatrixClient mc = null;
 		
 		try {
-			String configFile = Tools.readFile(args[0],Charset.defaultCharset());
+			String configFile = args[0];
 			 mc = new MatrixClient(configFile);
 		} catch (IOException e) {
 			System.out.println("The usage is: client\tconfiguration_file!\n");

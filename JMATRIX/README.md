@@ -67,7 +67,7 @@ swig -c++ -java -package "matrix.zht" cpp_zhtclient.i
 g++ -c -fPIC -lprotobuf -lprotobuf-c -I/usr/lib/jvm/java-7-openjdk-amd64/include/ cpp_zhtclient_wrap.cxx
 # For SWIG you need to compile the code as well, but is already when compiling ZHT
 # g++ -c -fPIC cpp_zhtclient.cpp -o cpp_zhtclient.o
-g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o Const.o /usr/local/lib/libprotobuf.so zpack.pb.o ZHTUtil.o ConfHandler.o ConfEntry.o -o libcpp_zhtclient.so
+g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o /usr/local/lib/libprotobuf.so  ZHTServer.o lock_guard.o meta.pb-c.o lru_cache.o meta.pb.o zpack.pb.o novoht.o bigdata_transfer.o Const.o ConfHandler.o ConfEntry.o ProxyStubFactory.o proxy_stub.o ip_proxy_stub.o mq_proxy_stub.o ipc_plus.o tcp_proxy_stub.o udp_proxy_stub.o ZHTUtil.o Env.o Util.o StrTokenizer.o EpollServer.o ZProcessor.o ip_server.o HTWorker.o TSafeQueue.o -o libcpp_zhtclient.so
 ```
 
 This project uses SWIG that runs on top of JNI, for JNI refer to [this](http://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html) and [this](http://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html).
@@ -77,3 +77,10 @@ Example creating library:
 g++ -I /usr/lib/jvm/java-7-openjdk-amd64/include/ matrixzhtclient.cpp -o matrixzhtclient.so
 ```
 
+
+You might need to add this too:
+
+```sh
+sudo echo "ubuntu	soft	nofile	70000" >> /etc/security/limits.conf
+sudo echo "ubuntu	hard	nofile	70000" >> /etc/security/limits.conf
+sudo echo "fs.file-max = 70000" >> /etc/sysctl.conf
