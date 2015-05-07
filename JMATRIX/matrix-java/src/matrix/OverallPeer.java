@@ -23,13 +23,12 @@ public abstract class OverallPeer implements Peer{
 		
 		public OverallPeer(String configFile) throws IOException{
 			config = new Configuration(configFile);
-			setId(Tools.getHostId(config.hostIdType));
 			schedulerList = Tools.readFromFile(config.schedulerMemFile, Charset.defaultCharset());
-			setIndex(Tools.genSelfIdx(getId(), schedulerList));
 			running = true;
 			numZHTMsg = 0;
-			initZhtClient(config.zhtConfigFile, config.zhtMemFile);
-			
+			System.loadLibrary("cpp_zhtclient");
+			zc = new ZHTClient();
+			//initZhtClient(config.zhtConfigFile, config.zhtMemFile);
 		}
 		
 		public void waitAllScheduler() {

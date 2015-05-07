@@ -12,7 +12,7 @@ public class Client {
 	
 	public static void main(String args[]){
 		
-		if (args.length != 2) {
+		if (args.length != 1) {
 			System.out.println("The usage is: client\tconfiguration_file!\n");
 			System.exit(1);
 		}
@@ -21,10 +21,11 @@ public class Client {
 		MatrixClient mc = null;
 		
 		try {
-			String configFile = Tools.readFile(args[1],Charset.defaultCharset());
+			String configFile = Tools.readFile(args[0],Charset.defaultCharset());
 			 mc = new MatrixClient(configFile);
 		} catch (IOException e) {
 			System.out.println("The usage is: client\tconfiguration_file!\n");
+			e.printStackTrace();
 			System.exit(1);
 		}
 		

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import matrix.OverallPeer;
 import matrix.util.AdjList;
 import matrix.util.InDegree;
+import matrix.util.Tools;
 import matrix.protocol.Metatask.TaskMsg;
 
 public abstract class PeerClient extends OverallPeer{
@@ -15,6 +16,8 @@ public abstract class PeerClient extends OverallPeer{
 
 	public PeerClient(String configFile) throws IOException {
 		super(configFile);
+		setId(Tools.getHostId(config.hostIdType));
+		setIndex(Tools.genSelfIdx(getId(), schedulerList));
 	}
 
 	public ArrayList<String> taskList;

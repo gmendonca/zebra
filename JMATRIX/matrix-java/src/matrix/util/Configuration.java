@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Configuration {
@@ -46,6 +47,7 @@ public class Configuration {
 
 	
 	public Configuration(String configFile){
+		configMap = new HashMap<String, String>();
 		parseConfiguration(configFile);
 		
 	}
@@ -60,8 +62,8 @@ public class Configuration {
 			String line, key, value;
 			
 			while ((line = br.readLine()) != null)   {
-				key = line.split("\\s")[0];
-				value = line.split("\\s")[1];
+				key = line.split("\\s+")[0];
+				value = line.split("\\s+")[1];
 				if (!key.isEmpty() && !key.startsWith("#"))
 					configMap.put(key, value);
 				  //System.out.println (line);

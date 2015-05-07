@@ -67,7 +67,7 @@ swig -c++ -java -package "matrix.zht" cpp_zhtclient.i
 g++ -c -fPIC -lprotobuf -lprotobuf-c -I/usr/lib/jvm/java-7-openjdk-amd64/include/ cpp_zhtclient_wrap.cxx
 # For SWIG you need to compile the code as well, but is already when compiling ZHT
 # g++ -c -fPIC cpp_zhtclient.cpp -o cpp_zhtclient.o
-g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o Const.o /usr/local/lib/libprotobuf.so -o libcpp_zhtclient.so
+g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o Const.o /usr/local/lib/libprotobuf.so zpack.pb.o ZHTUtil.o ConfHandler.o ConfEntry.o -o libcpp_zhtclient.so
 ```
 
 This project uses SWIG that runs on top of JNI, for JNI refer to [this](http://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html) and [this](http://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html).

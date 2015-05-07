@@ -12,6 +12,7 @@ import java.util.PriorityQueue;
 import matrix.OverallPeer;
 import matrix.util.CmpQueueItem;
 import matrix.util.TaskMsgQueueItem;
+import matrix.util.Tools;
 import matrix.protocol.Metamatrix.MatrixMsg;
 import matrix.protocol.Metatask.TaskMsg;
 import matrix.protocol.Metazht.Value;
@@ -20,6 +21,8 @@ public abstract class PeerScheduler extends OverallPeer{
 	
 	public PeerScheduler(String configFile) throws IOException {
 		super(configFile);
+		setId(Tools.getHostId(config.hostIdType));
+		setIndex(Tools.genSelfIdx(getId(), schedulerList));
 	}
 	
 	private String id;

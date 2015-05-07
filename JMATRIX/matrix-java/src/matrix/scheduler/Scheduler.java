@@ -9,7 +9,7 @@ public class Scheduler {
 	
 	public static void main(String args[]){
 		
-		if (args.length != 2) {
+		if (args.length != 1) {
 			System.out.println("The usage is: scheduler\tconfiguration_file!\n");
 			System.exit(1);
 		}
@@ -17,10 +17,11 @@ public class Scheduler {
 		MatrixScheduler ms = null;
 		
 		try {
-			String configFile = Tools.readFile(args[1],Charset.defaultCharset());
+			String configFile = Tools.readFile(args[0],Charset.defaultCharset());
 			 ms = new MatrixScheduler(configFile);
 		} catch (IOException e) {
 			System.out.println("The usage is: scheduler\tconfiguration_file!\n");
+			e.printStackTrace();
 			System.exit(1);
 		}
 		

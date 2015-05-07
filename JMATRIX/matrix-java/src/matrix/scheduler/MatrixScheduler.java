@@ -29,7 +29,6 @@ public class MatrixScheduler extends PeerScheduler{
 
 	public MatrixScheduler(String configFile) throws IOException {
 		super(configFile);
-		
 
 		long startTime, stopTime;
 		startTime = System.currentTimeMillis();
