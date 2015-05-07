@@ -40,7 +40,7 @@ public class Tools {
 	public static ArrayList<String> tokenizer(String source, String regex){
 		return (source.isEmpty()) 
 				? new ArrayList<String>() 
-				: (ArrayList<String>) Arrays.asList(source.split(regex));
+				: new ArrayList <String>(Arrays.asList(source.split(regex)));
 		
 	}
 	
@@ -340,7 +340,7 @@ public class Tools {
 		if (value.getParentsCount() > 0) {
 			for (int i = 0; i < value.getParentsCount(); i++) {
 				str.append(value.getParents(i));
-				str.append("??");
+				str.append("@@@");
 			}
 		} else {
 			str.append("noparents");
@@ -351,7 +351,7 @@ public class Tools {
 		if (value.getChildrenCount() > 0) {
 			for (int i = 0; i < value.getChildrenCount(); i++) {
 				str.append(value.getChildren(i));
-				str.append("??");
+				str.append("@@@");
 			}
 		} else {
 			str.append("nochildren");
@@ -362,7 +362,7 @@ public class Tools {
 		if (value.getDataNameListCount() > 0) {
 			for (int i = 0; i < value.getDataNameListCount(); i++) {
 				str.append(value.getDataNameList(i));
-				str.append("??");
+				str.append("@@@");
 			}
 		} else {
 			str.append("nodataname");
@@ -373,7 +373,7 @@ public class Tools {
 		if (value.getDataSizeCount() > 0) {
 			for (int i = 0; i < value.getDataSizeCount(); i++) {
 				str.append(value.getDataSize(i));
-				str.append("??");
+				str.append("@@@");
 			}
 		} else {
 			str.append("nodatasize");
@@ -473,28 +473,28 @@ public class Tools {
 		}
 
 		if (list.get(2).equals("noparents")) {
-			ArrayList<String> parentVec = tokenizer(list.get(2), "??");
+			ArrayList<String> parentVec = tokenizer(list.get(2), "@@@");
 			for (int i = 0; i < parentVec.size(); i++) {
 				value.addParents(parentVec.get(i));
 			}
 		}
 
 		if (list.get(3).equals("nochildren")) {
-			ArrayList<String> childVec = tokenizer(list.get(3), "??");
+			ArrayList<String> childVec = tokenizer(list.get(3), "@@@");
 			for (int i = 0; i < childVec.size(); i++) {
 				value.addChildren(childVec.get(i));
 			}
 		}
 
 		if (list.get(4).equals("nodataname")) {
-			ArrayList<String> dataNameVec = tokenizer(list.get(4), "??");
+			ArrayList<String> dataNameVec = tokenizer(list.get(4), "@@@");
 			for (int i = 0; i < dataNameVec.size(); i++) {
 				value.addDataNameList(dataNameVec.get(i));
 			}
 		}
 
 		if (list.get(5).equals("nodatasize")) {
-			ArrayList<String> dataSizeList = tokenizer(list.get(5), "??");
+			ArrayList<String> dataSizeList = tokenizer(list.get(5), "@@@");
 			for (int i = 0; i < dataSizeList.size(); i++) {
 				value.addDataSize(Long.parseLong(dataSizeList.get(i)));
 			}

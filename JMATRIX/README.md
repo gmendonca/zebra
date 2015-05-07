@@ -84,3 +84,4 @@ You might need to add this too:
 sudo echo "ubuntu	soft	nofile	70000" >> /etc/security/limits.conf
 sudo echo "ubuntu	hard	nofile	70000" >> /etc/security/limits.conf
 sudo echo "fs.file-max = 70000" >> /etc/sysctl.conf
+```

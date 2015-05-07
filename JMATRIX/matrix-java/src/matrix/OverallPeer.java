@@ -35,8 +35,11 @@ public abstract class OverallPeer implements Peer{
 			String key = new String("number of scheduler registered");
 			String value;
 			value = zc.lookup(key);
-			while (Integer.parseInt(value) != schedulerList.size()) {
-				try{ Thread.sleep(10000); } catch (Exception e) { }
+			int check = -1;
+			while (true) {
+				try{ check = Integer.parseInt(value); } catch (Exception e) { }
+				if(check == schedulerList.size()) break;
+				try{ Thread.sleep(10); } catch (Exception e) { }
 				value = zc.lookup(key);
 			}
 		}
@@ -45,8 +48,11 @@ public abstract class OverallPeer implements Peer{
 			String key = new String("num tasks recv");
 			String value;
 			value = zc.lookup(key);
-			while (Long.parseLong(value) != config.numAllTask) {
-				try{ Thread.sleep(10000); } catch(Exception e) { }
+			long check = -1;
+			while (true) {
+				try{ check = Long.parseLong(value); } catch (Exception e) { }
+				if(check == config.numAllTask) break;
+				try{ Thread.sleep(10); } catch(Exception e) { }
 				value = zc.lookup(key);
 			}
 		}
