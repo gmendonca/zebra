@@ -28,7 +28,11 @@ public abstract class OverallPeer implements Peer{
 			numZHTMsg = 0;
 			System.loadLibrary("cpp_zhtclient");
 			zc = new ZHTClient();
-			initZhtClient(config.zhtConfigFile, config.zhtMemFile);
+			if(initZhtClient(config.zhtConfigFile, config.zhtMemFile)){
+				System.out.println("ZHT Client working!");
+			} else{
+				System.out.println("Something went wrong with your ZHT Client!");
+			}
 		}
 		
 		public void waitAllScheduler() {

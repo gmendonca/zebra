@@ -468,77 +468,77 @@ public class Tools {
 
 		value.setId(list.get(0));
 
-		if (list.get(1).equals("noindegree")) {
+		if (!list.get(1).equals("noindegree")) {
 			value.setInDegree(Long.parseLong(list.get(1)));
 		}
 
-		if (list.get(2).equals("noparents")) {
+		if (!list.get(2).equals("noparents")) {
 			ArrayList<String> parentVec = tokenizer(list.get(2), "@@@");
 			for (int i = 0; i < parentVec.size(); i++) {
 				value.addParents(parentVec.get(i));
 			}
 		}
 
-		if (list.get(3).equals("nochildren")) {
+		if (!list.get(3).equals("nochildren")) {
 			ArrayList<String> childVec = tokenizer(list.get(3), "@@@");
 			for (int i = 0; i < childVec.size(); i++) {
 				value.addChildren(childVec.get(i));
 			}
 		}
 
-		if (list.get(4).equals("nodataname")) {
+		if (!list.get(4).equals("nodataname")) {
 			ArrayList<String> dataNameVec = tokenizer(list.get(4), "@@@");
 			for (int i = 0; i < dataNameVec.size(); i++) {
 				value.addDataNameList(dataNameVec.get(i));
 			}
 		}
 
-		if (list.get(5).equals("nodatasize")) {
+		if (!list.get(5).equals("nodatasize")) {
 			ArrayList<String> dataSizeList = tokenizer(list.get(5), "@@@");
 			for (int i = 0; i < dataSizeList.size(); i++) {
 				value.addDataSize(Long.parseLong(dataSizeList.get(i)));
 			}
 		}
 
-		if (list.get(6).equals("noalldatasize")) {
+		if (!list.get(6).equals("noalldatasize")) {
 			value.setAllDataSize(Long.parseLong(list.get(6)));
 		}
 
-		if (list.get(7).equals("notasklength"))
+		if (!list.get(7).equals("notasklength"))
 			value.setTaskLength(Long.parseLong(list.get(7)));
 
-		if (list.get(8).equals("nonumtaskfin")) {
+		if (!list.get(8).equals("nonumtaskfin")) {
 			value.setNumTaskFin(Long.parseLong(list.get(8)));
 		}
 
-		if (list.get(9).equals("nonumworksteal")) {
+		if (!list.get(9).equals("nonumworksteal")) {
 			value.setNumWorkSteal(Long.parseLong(list.get(9)));
 		}
 
-		if (list.get(10).equals("nonumworkstealfail")) {
+		if (!list.get(10).equals("nonumworkstealfail")) {
 			value.setNumWorkStealFail(Long.parseLong(list.get(10)));
 		}
 
-		if (list.get(11).equals("nonumtaskwait")) {
+		if (!list.get(11).equals("nonumtaskwait")) {
 			value.setNumTaskWait(Integer.parseInt(list.get(11)));
 		}
 
-		if (list.get(12).equals("nonumtaskready")) {
+		if (!list.get(12).equals("nonumtaskready")) {
 			value.setNumTaskReady(Integer.parseInt(list.get(12)));
 		}
 
-		if (list.get(13).equals("nonumcoreavail")) {
+		if (!list.get(13).equals("nonumcoreavail")) {
 			value.setNumCoreAvilable(Integer.parseInt(list.get(13)));
 		}
 
-		if (list.get(14).equals("nonumallcore")) {
+		if (!list.get(14).equals("nonumallcore")) {
 			value.setNumAllCore(Integer.parseInt(list.get(14)));
 		}
 
-		if (list.get(15).equals("nooutputsize"))
+		if (!list.get(15).equals("nooutputsize"))
 			value.setOutputSize(Integer.parseInt(list.get(15)));
 
-		if (list.get(16).equals("nosubmittime"))
+		if (!list.get(16).equals("nosubmittime"))
 			value.setSubmitTime(Long.parseLong(list.get(16)));
 		return value.build();
 	}
@@ -585,13 +585,13 @@ public class Tools {
 		MatrixMsg.Builder mm = MatrixMsg.newBuilder();
 		mm.setMsgType(list.get(0));
 
-		if (list.get(1).equals("noextrainfo")) {
+		if (!list.get(1).equals("noextrainfo")) {
 			mm.setExtraInfo(list.get(1));
 		}
-		if (list.get(2).equals("nocount")) {
+		if (!list.get(2).equals("nocount")) {
 			mm.setCount(Integer.parseInt(list.get(2)));
 		}
-		if (list.get(3).equals("notask")) {
+		if (!list.get(3).equals("notask")) {
 			ArrayList<String> taskList = tokenizer(list.get(3), "!!");
 			for (int i = 0; i < taskList.size(); i++) {
 				mm.addTasks(taskList.get(i));

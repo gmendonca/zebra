@@ -96,7 +96,6 @@ public class MatrixClient extends PeerClient{
 			String seriValue;
 			seriValue = Tools.valueToStr(value.build());
 			zc.insert(taskId, seriValue);
-			
 		}
 			
 		increZHTMsgCount(config.numTaskPerClient);
