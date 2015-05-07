@@ -61,6 +61,11 @@ protoc -I=. --cpp_out=. ./*.proto
 protoc-c -I=. --c_out=. ./*.proto
 ```
 
+After that, in the zht directory:
+```sh
+make
+````
+
 Install [SWIG](http://www.swig.org/Doc1.3/SWIGPlus.html):
 ```sh
 sudo apt-get install swig
@@ -87,7 +92,20 @@ g++ -I /usr/lib/jvm/java-7-openjdk-amd64/include/ matrixzhtclient.cpp -o matrixz
 You might need to add this too:
 
 ```sh
-sudo echo "ubuntu	soft	nofile	70000" >> /etc/security/limits.conf
-sudo echo "ubuntu	hard	nofile	70000" >> /etc/security/limits.conf
-sudo echo "fs.file-max = 70000" >> /etc/sysctl.conf
+sudo vim /etc/security/limits.conf
+```
+* ubuntu	soft	nofile	70000
+* ubuntu	hard	nofile	70000
+
+```sh
+sudo vim /etc/sysctl.conf
+```
+* fs.file-max = 70000
+
+Compile zebra:
+//TODO: need to create a Makefile for it
+
+Run ZHT server inside matrix/zht:
+```sh
+./zhtserver -z zht.conf -n neighbor.conf
 ```

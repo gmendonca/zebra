@@ -3,7 +3,7 @@ CC = gcc
 CCFLAGS = -g -I${USER_INCLUDE} -L${USER_LIB} -DPF_INET -DBIG_MSG -DSOCKET_CACHE -DSCCB -DTSQUEUE
 #CCFLAGS = -g -I${USER_INCLUDE} -L${USER_LIB} -DTHREADED_SERVE -DPF_INET -DBIG_MSG -DSOCKET_CACHE -DSCCB -DTSQUEUE 
 MPIFLAGS = -g -I${USER_INCLUDE} -L${USER_LIB} -DMPI_INET
-LIBFLAGS = -lstdc++ -lrt -lpthread -lm -lc -lprotobuf -lprotobuf-c
+LIBFLAGS = -fPIC -lstdc++ -lrt -lpthread -lm -lc -lprotobuf -lprotobuf-c
 MPILIBFLAGS = -lprotobuf -lpthread
 COMMON = common/
 
