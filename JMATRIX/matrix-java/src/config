@@ -12,22 +12,22 @@ WorkStealOn	1
 WorkStealPollIntervalStart	1000
 WorkStealPollIntervalUpperBound	1000000
 
-DataSizeThreshold	1000
-Policy	MDL
-EstimatedTimeThreshold	20
-SchedulerMemlistFile	/home/ubuntu/matrix-java/memlist
-NetworkProtocol	TCP
-DagType	Pipeline
-DagArgument	10
-HostIdentityType	localhost
+DataSizeThreshold       1000
+Policy  MDL
+EstimatedTimeThreshold  20
+SchedulerMemlistFile    /home/ubuntu/zebra/JMATRIX/matrix-java/src/memlist
+NetworkProtocol TCP
+DagType Pipeline
+DagArgument     10
+HostIdentityType        localhost
 
-SubmissionMode	bestcase
-WorkloadFile	/home/ubuntu/matrix-java/workload
-SchedulerWorkloadPath	/home/ubuntu/matrix-java/workload_dag
-ClientLog	1
-TaskLog	1
-SystemLog	1
-SchedulerLog	1
+SubmissionMode  bestcase
+WorkloadFile    /home/ubuntu/zebra/JMATRIX/matrix-java/src/workload
+SchedulerWorkloadPath   /home/ubuntu/zebra/JMATRIX/matrix-java/src/workload_dag
+ClientLog       1
+TaskLog 1
+SystemLog       1
+SchedulerLog    1
 
-ZhtMemlistFile	/home/ubuntu/matrix-java/matrix/zht/neighbor.conf
-ZhtConfigFile	/home/ubuntu/matrix-java/matrix/zht/zht.conf
+ZhtMemlistFile  /home/ubuntu/zebra/JMATRIX/matrix-java/src/matrix/zht/neighbor.conf
+ZhtConfigFile   /home/ubuntu/zebra/JMATRIX/matrix-java/src/matrix/zht/zht.conf

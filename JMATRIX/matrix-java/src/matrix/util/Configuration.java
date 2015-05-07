@@ -62,6 +62,7 @@ public class Configuration {
 			String line, key, value;
 			
 			while ((line = br.readLine()) != null)   {
+				if(line.isEmpty()) continue;
 				key = line.split("\\s+")[0];
 				value = line.split("\\s+")[1];
 				if (!key.isEmpty() && !key.startsWith("#"))

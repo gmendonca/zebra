@@ -20,7 +20,7 @@ Install java, google protocol buffer and set up the enviroments variables.
   #JAVA_HOME
   echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java" >> ~/.bashrc
   #LD_LIBRARY_PATH
-  echo "export LD_LIBRARY_PATH=$HOME/matrix-java/matrix/zht/:/usr/local/lib/:$LD_LIBRARY_PATH" >> ~/.bashrc
+  echo "export LD_LIBRARY_PATH=$HOME/zebra/JMATRIX/matrix-java/src/matrix/zht/:/usr/local/lib/:$LD_LIBRARY_PATH" >> ~/.bashrc
   source ~/.bashrc
 ```
 
@@ -79,6 +79,7 @@ g++ -c -fPIC -lprotobuf -lprotobuf-c -I/usr/lib/jvm/java-7-openjdk-amd64/include
 # For SWIG you need to compile the code as well, but is already when compiling ZHT
 # g++ -c -fPIC cpp_zhtclient.cpp -o cpp_zhtclient.o
 g++ -shared cpp_zhtclient.o cpp_zhtclient_wrap.o /usr/local/lib/libprotobuf.so  ZHTServer.o lock_guard.o meta.pb-c.o lru_cache.o meta.pb.o zpack.pb.o novoht.o bigdata_transfer.o Const.o ConfHandler.o ConfEntry.o ProxyStubFactory.o proxy_stub.o ip_proxy_stub.o mq_proxy_stub.o ipc_plus.o tcp_proxy_stub.o udp_proxy_stub.o ZHTUtil.o Env.o Util.o StrTokenizer.o EpollServer.o ZProcessor.o ip_server.o HTWorker.o TSafeQueue.o -o libcpp_zhtclient.so
+javac *.java
 ```
 
 This project uses SWIG that runs on top of JNI, for JNI refer to [this](http://www.ibm.com/developerworks/java/tutorials/j-jni/j-jni.html) and [this](http://docs.oracle.com/javase/6/docs/technotes/guides/jni/spec/jniTOC.html).
@@ -104,8 +105,11 @@ sudo vim /etc/sysctl.conf
 
 Compile zebra:
 //TODO: need to create a Makefile for it
+javac matrix/*.java matrix/*/*.java
 
 Run ZHT server inside matrix/zht:
 ```sh
+rm -rf neighbor.conf
+echo "localhost 50000" >> neighbor.conf
 ./zhtserver -z zht.conf -n neighbor.conf
 ```
