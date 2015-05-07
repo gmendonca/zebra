@@ -41,6 +41,11 @@ For each folder: (Do the protobuf first, then protobuf-c)
 make && make check
 sudo make install
 ```
+Then install JMATRIX:
+```sh
+git clone https://github.com/gmendonca/zebra.git
+```
+
 If the JMATRIX code is not working due to google protocol buffer, it's due to this [error](http://stackoverflow.com/questions/11697572/protobuf-java-code-has-build-errors), so just run the command below:
 
 ```sh
