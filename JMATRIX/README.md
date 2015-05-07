@@ -11,7 +11,7 @@ Install java, google protocol buffer and set up the enviroments variables.
   sudo apt-get update
   sudo apt-get install openjdk-7-jdk
   sudo apt-get install g++ gcc
-  # sudo apt-get install autoconf
+  sudo apt-get install autoconf
   sudo apt-get install libtool
   sudo apt-get install make
   sudo apt-get install pkg-config
@@ -21,6 +21,7 @@ Install java, google protocol buffer and set up the enviroments variables.
   echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java" >> ~/.bashrc
   #LD_LIBRARY_PATH
   echo "export LD_LIBRARY_PATH=$HOME/matrix-java/matrix/zht/:/usr/local/lib/:$LD_LIBRARY_PATH" >> ~/.bashrc
+  source ~/.bashrc
 ```
 
 Install protocol buffer ([Watch out for spaces](http://stackoverflow.com/questions/22926266/install-protocol-buffer-compiler-error-under-mac))

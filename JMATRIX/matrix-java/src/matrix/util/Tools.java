@@ -300,13 +300,13 @@ public class Tools {
 			tm.setUser(listStr.get(1));
 		} else {
 			System.out.println("has problem, the vector size is:1");
-			tm.setUser("kwang");
+			tm.setUser("ubuntu");
 		}
 		if (listStr.size() > 2) {
 			tm.setDir(listStr.get(2));
 		} else {
 			System.out.println("has problem, the vector size is:2");
-			tm.setDir("/home/kwang/Documents");
+			tm.setDir("/home/ubuntu");
 		}
 		if (listStr.size() > 3) {
 			tm.setCmd(listStr.get(3));

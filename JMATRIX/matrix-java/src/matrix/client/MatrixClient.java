@@ -260,7 +260,6 @@ public class MatrixClient extends PeerClient{
 			}
 		}
 	}
-
 	
 	
 }
