@@ -37,9 +37,10 @@ public class Scheduler {
 		//ms->load_data();
 
 		//ms->get_task_from_file();
-
-		ms.waitAllTaskRecv();
+		System.out.println("hey--------------you2-----------------------");
 		
+		ms.waitAllTaskRecv();
+		System.out.println("hey--------------you3-----------------------");
 		//TODO: we gotta change this, it's used somewhere else
 		long startTime = System.currentTimeMillis();
 
@@ -54,7 +55,7 @@ public class Scheduler {
 		if (ms.config.policy.equals("FLWS")) {
 			ms.forkLocalQueueMonitorThread();
 		}
-
+		System.out.println("hey--------------you4-----------------------");
 		ms.forkRecordStatThread();	// forks recording status thread
 
 		while (true) {

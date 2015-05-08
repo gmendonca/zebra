@@ -36,29 +36,43 @@ public abstract class OverallPeer implements Peer{
 		}
 		
 		public void waitAllScheduler() {
-			String key = new String("number of scheduler registered");
-			String value;
-			value = zc.lookup(key);
-			int check = -1;
-			while (true) {
-				try{ check = Integer.parseInt(value); } catch (Exception e) { }
-				if(check == schedulerList.size()) break;
-				try{ Thread.sleep(10); } catch (Exception e) { }
-				value = zc.lookup(key);
-			}
+			new Thread(new Runnable(){
+
+				@Override
+				public void run() {
+					String key = new String("number of scheduler registered");
+					String value;
+					value = zc.lookup(key);
+					int check = -1;
+					while (true) {
+						try{ check = Integer.parseInt(value); } catch (Exception e) { }
+						if(check == schedulerList.size()) break;
+						try{ Thread.sleep(10); } catch (Exception e) { }
+						value = zc.lookup(key);
+					}
+					
+				}
+				
+			}).start();
 		}
 
 		public void waitAllTaskRecv() {
-			String key = new String("num tasks recv");
-			String value;
-			value = zc.lookup(key);
-			long check = -1;
-			while (true) {
-				try{ check = Long.parseLong(value); } catch (Exception e) { }
-				if(check == config.numAllTask) break;
-				try{ Thread.sleep(10); } catch(Exception e) { }
-				value = zc.lookup(key);
-			}
+			new Thread(new Runnable(){
+
+				@Override
+				public void run() {
+					String key = new String("num tasks recv");
+					String value;
+					value = zc.lookup(key);
+					long check = -1;
+					while (true) {
+						try{ check = Long.parseLong(value); } catch (Exception e) { }
+						if(check == config.numAllTask) break;
+						try{ Thread.sleep(10); } catch(Exception e) { }
+						value = zc.lookup(key);
+					}
+				}
+			}).start();
 		}
 
 		public void increZHTMsgCount(long increment) {

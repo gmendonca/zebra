@@ -54,9 +54,10 @@ public class Monitoring extends Thread{
 			for (int i = 0; i < mc.schedulerList.size(); i++) {
 				String schedulerStat;
 				schedulerStat = mc.zc.lookup(mc.schedulerList.get(i));
+				System.out.println("schedulerStat " + mc.schedulerList.get(i));
 				if (schedulerStat.isEmpty())
 					continue;
-
+				System.out.println("schedulerStat " + schedulerStat);
 				Value value = Tools.strToValue(schedulerStat);
 				numIdleCore += value.getNumCoreAvilable();
 				numTaskWait += value.getNumTaskWait();

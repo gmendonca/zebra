@@ -257,13 +257,18 @@ public class MatrixClient extends PeerClient{
 			if (getIndex() != 0)
 				return;
 		
-			ExecutorService executor = Executors.newFixedThreadPool(4);
-			for(int i = 0; i < 4; i++)
-				executor.execute(new Monitoring(this));
+			//ExecutorService executor = Executors.newFixedThreadPool(4);
+			//for(int i = 0; i < 4; i++)
+				//executor.execute(new Monitoring(this));
 			
-			while (!executor.isTerminated()) { 
-				try { Thread.sleep(10); } catch (InterruptedException e) { } 
-			}
+			//while (!executor.isTerminated()) { 
+			//	try { Thread.sleep(10); } catch (InterruptedException e) { } 
+			//}
+			
+			Monitoring m = new Monitoring(this);
+			m.start();
+			try { m.join(); } catch (InterruptedException e) { } 
+			try { Thread.sleep(10); } catch (InterruptedException e) { } 
 		}
 	}
 	

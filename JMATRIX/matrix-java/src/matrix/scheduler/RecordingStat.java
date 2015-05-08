@@ -29,6 +29,7 @@ public class RecordingStat extends Thread{
 			
 
 		while (true) {
+			System.out.println("================================ Registing ============================");
 			Value.Builder recordVal = Value.newBuilder();
 			recordVal.setId(ms.getId());
 			recordVal.setNumTaskFin(ms.numTaskFin);

@@ -715,17 +715,21 @@ public class MatrixScheduler extends PeerScheduler{
 	 * */
 	public void forkExecTaskThread() {
 		
-		ExecutorService executor;
+		//ExecutorService executor;
 
 		//while(true){
-			executor = Executors.newFixedThreadPool(config.numCorePerExecutor);
-			for(int i = 0; i < 4; i++)
-				executor.execute(new ExecutingTask(this));
+			//executor = Executors.newFixedThreadPool(config.numCorePerExecutor);
+			//for(int i = 0; i < 4; i++)
+				//executor.execute(new ExecutingTask(this));
 			
-			while (!executor.isTerminated()) { 
-				try { Thread.sleep(10); } catch (InterruptedException e) { } 
-			}
+			//while (!executor.isTerminated()) { 
+				//try { Thread.sleep(10); } catch (InterruptedException e) { } 
+			//}
 		//}
+		ExecutingTask et = new ExecutingTask(this);
+		
+		try { et.join(); } catch (InterruptedException e) { } 
+		
 	}
 
 	public int taskReadyProcess(Value valuePkg, TaskMsg tm) {
