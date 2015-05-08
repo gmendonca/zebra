@@ -238,7 +238,7 @@ public class MatrixClient extends PeerClient{
 				sockfd.close();
 				return;
 			}
-			System.out.println("Submiting...");
+			System.out.println("Subimiting...");
 			sendBatchTasks(tmVec, sockfd, "client");
 			System.out.println("Done");
 			sockfd.close();

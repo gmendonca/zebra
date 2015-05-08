@@ -31,7 +31,7 @@ public abstract class OverallPeer implements Peer{
 			if(initZhtClient(config.zhtConfigFile, config.zhtMemFile)){
 				System.out.println("ZHT Client working!");
 			} else{
-				System.out.println("Something went wrong with your ZHT Client!");
+				System.out.println("ZHT Client!");
 			}
 		}
 		
