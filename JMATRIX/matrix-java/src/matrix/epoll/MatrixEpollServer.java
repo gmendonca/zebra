@@ -50,7 +50,8 @@ public class MatrixEpollServer {
 		        while((buf = br.readLine()) != null){
 		        	System.out.println(buf);
 		        	synchronized(this){
-		        		eventQueue.add(new MatrixEventData(client, buf, buf.length(), port));
+		        		System.out.println("adding event " + port);
+		        		eventQueue.add(new MatrixEventData(client, buf, buf.length(), server));
 		        	}
 		        }
 		        System.out.println("Done trying to read from client");

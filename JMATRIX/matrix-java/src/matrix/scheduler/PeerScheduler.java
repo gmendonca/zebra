@@ -86,7 +86,7 @@ public abstract class PeerScheduler extends OverallPeer{
 	public abstract void sendTask(Socket sock);
 
 	/* processing requests received by the epoll server */
-	public abstract int procReq(Socket sock, String buf);
+	public abstract int procReq(Socket sock, String buf, ServerSocket recvSock);
 
 	public abstract void forkEsThread();	// fork epoll server thread
 

@@ -1,5 +1,6 @@
 package matrix.epoll;
 
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class MatrixEventData {
@@ -7,9 +8,9 @@ public class MatrixEventData {
 	private String buf;
 	private int bufSize;
 	//TODO: see if this can work
-	private int fromAddr;
+	private ServerSocket fromAddr;
 	
-	public MatrixEventData(Socket fd, String buf, int bufSize, int fromAddr){
+	public MatrixEventData(Socket fd, String buf, int bufSize, ServerSocket fromAddr){
 		this.fd = fd;
 		this.buf = buf;
 		this.bufSize = bufSize;
@@ -28,7 +29,7 @@ public class MatrixEventData {
 		return this.bufSize;
 	}
 	
-	public int fromAddr(){
+	public ServerSocket fromAddr(){
 		return this.fromAddr;
 	}
 }

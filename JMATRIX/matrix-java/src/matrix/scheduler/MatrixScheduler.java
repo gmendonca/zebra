@@ -329,15 +329,10 @@ public class MatrixScheduler extends PeerScheduler{
 	}
 	
 	/* processing requests received by the epoll server */
-	public int procReq(Socket sockfd, String buf) {
+	public int procReq(Socket sockfd, String buf, ServerSocket recvSock) {
 		String bufStr = new String(buf);
-		ServerSocket recvSock = null;
-		try {
-			System.out.println(sockfd.getPort());
-			recvSock = new ServerSocket(sockfd.getPort());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		System.out.println(bufStr);
+		
 		
 		/* this is client submitting tasks */
 		String prefix = "client send tasks";
@@ -401,11 +396,11 @@ public class MatrixScheduler extends PeerScheduler{
 			s = new Serving(mes);
 			s.start();
 			
-			try {
+			/*try {
 				s.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		//}
 	}
 
@@ -563,11 +558,11 @@ public class MatrixScheduler extends PeerScheduler{
 				ws = new WorkStealing(this);
 				ws.start();
 				
-				try {
-					ws.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				//try {
+				//	ws.join();
+				//} catch (InterruptedException e) {
+				//	e.printStackTrace();
+				//}
 			//}
 		}
 	}
@@ -846,11 +841,11 @@ public class MatrixScheduler extends PeerScheduler{
 			crt = new CheckingReadyTask(this);
 			crt.start();
 			
-			try {
+			/*try {
 				crt.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		//}
 	}
 
@@ -934,11 +929,11 @@ public class MatrixScheduler extends PeerScheduler{
 			cct = new CheckingCompleteTask(this);
 			cct.start();
 			
-			try {
+			/*try {
 				cct.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		//}
 	}
 	
@@ -951,11 +946,11 @@ public class MatrixScheduler extends PeerScheduler{
 			rs = new RecordingStat(this);
 			rs.start();
 			
-			try {
+			/*try {
 				rs.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		//}
 	}
 
@@ -966,11 +961,11 @@ public class MatrixScheduler extends PeerScheduler{
 			rtt = new RecordingTaskTime(this);
 			rtt.start();
 			
-			try {
+			/*try {
 				rtt.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		//}
 	}
 
@@ -981,11 +976,11 @@ public class MatrixScheduler extends PeerScheduler{
 			lqm = new LocalQueueMonitor(this);
 			lqm.start();
 			
-			try {
+			/*try {
 				lqm.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		//}
 	}
 

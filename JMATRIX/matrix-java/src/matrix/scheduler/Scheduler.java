@@ -31,6 +31,8 @@ public class Scheduler {
 		ms.waitAllScheduler();	// waits all the other schedulers are running
 
 		ms.forkEsThread();	// forks the epoll event driven server
+		
+		System.out.println("hey--------------you-----------------------");
 
 		//ms->load_data();
 

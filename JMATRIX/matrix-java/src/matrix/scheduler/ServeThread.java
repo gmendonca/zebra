@@ -16,9 +16,11 @@ public class ServeThread extends Thread{
 				MatrixEventData eventData;
 				synchronized(this){
 					eventData = mes.eventQueue.poll();
-					mes.ms.procReq(eventData.fd(), eventData.buf());
+					mes.ms.procReq(eventData.fd(), eventData.buf(), eventData.fromAddr());
 				}
+				try { Thread.sleep(1000); } catch (Exception e) { }
 			}
+			try { Thread.sleep(1000); } catch (Exception e) { }
 		}
 	}
 }
