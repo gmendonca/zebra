@@ -58,7 +58,7 @@ public class Scheduler {
 		while (true) {
 			try {
 				Thread.sleep(10);
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

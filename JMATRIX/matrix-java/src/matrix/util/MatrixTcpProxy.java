@@ -52,9 +52,11 @@ public class MatrixTcpProxy {
 		Socket socket;
 		
 		buf = null;
-
+		System.out.println("Hi");
 		try {
+			System.out.println("Waiting for the client..");
 			socket = sock.accept();
+			System.out.println("Connected..");
 			InputStream is = socket.getInputStream();
 	        InputStreamReader isr = new InputStreamReader(is);
 	        BufferedReader br = new BufferedReader(isr);

@@ -231,9 +231,12 @@ public class MatrixClient extends PeerClient{
 	public void submitTaskWc(ArrayList<TaskMsg> tmVec, int toScheIdx) {
 		Socket sockfd;
 		try {
-			sockfd = new Socket(schedulerList.get(toScheIdx), (int) config.schedulerPortNo);
-			if (sockfd.isClosed())
+			System.out.println(schedulerList.get(toScheIdx) + " " + config.schedulerPortNo);
+			sockfd = new Socket(schedulerList.get(toScheIdx), config.schedulerPortNo);
+			if (sockfd.isClosed()){
+				sockfd.close();
 				return;
+			}
 			sendBatchTasks(tmVec, sockfd, "client");
 			sockfd.close();
 		} catch (UnknownHostException e) {

@@ -250,25 +250,25 @@ public class MatrixScheduler extends PeerScheduler{
 			}
 			//cout << "OK, before the time record!" << endl;
 			synchronized(this){
-			for (int j = 0; j < mm.getCount(); j++) {
-				String taskMD;
-				//cout << "Now, I am doing a zht lookup:" << tmList.get(j).taskid() << endl;
-				taskMD = zc.lookup(tmList.get(j).getTaskId());
-				//cout << "I got the task metadata:" << taskMD << endl;
-				Value value = Tools.strToValue(taskMD);
-				taskTimeEntry.add(tmList.get(j).getTaskId() + "\tSubmissionTime\t"
-						+ Long.toString(value.getSubmitTime()));
-				taskTimeEntry.add(tmList.get(j).getTaskId()
-						+ "\tWaitQueueTime\t" + time);
-			}
+				for (int j = 0; j < mm.getCount(); j++) {
+					String taskMD;
+					//cout << "Now, I am doing a zht lookup:" << tmList.get(j).taskid() << endl;
+					taskMD = zc.lookup(tmList.get(j).getTaskId());
+					//cout << "I got the task metadata:" << taskMD << endl;
+					Value value = Tools.strToValue(taskMD);
+					taskTimeEntry.add(tmList.get(j).getTaskId() + "\tSubmissionTime\t"
+							+ Long.toString(value.getSubmitTime()));
+					taskTimeEntry.add(tmList.get(j).getTaskId()
+							+ "\tWaitQueueTime\t" + time);
+				}
 			}
 			//cout << "OK, I did the time record!" << endl;
 			increment += mm.getCount();
 
 			synchronized(this){
-			for (int j = 0; j < mm.getCount(); j++) {
-				waitQueue.add(tmList.get(j));
-			}
+				for (int j = 0; j < mm.getCount(); j++) {
+					waitQueue.add(tmList.get(j));
+				}
 			}
 		}
 		//cout << "OK, now I have put the tasks in the wait queue, let's update the ZHT record!" << endl;
@@ -333,10 +333,12 @@ public class MatrixScheduler extends PeerScheduler{
 		String bufStr = new String(buf);
 		ServerSocket recvSock = null;
 		try {
+			System.out.println(sockfd.getPort());
 			recvSock = new ServerSocket(sockfd.getPort());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		/* this is client submitting tasks */
 		String prefix = "client send tasks";
 		if (bufStr.substring(0, prefix.length()) == prefix) {
@@ -649,7 +651,7 @@ public class MatrixScheduler extends PeerScheduler{
 						//		<< "ns to receive the " << i << "\tdata from scheduler " << value.parents(i));
 						MatrixMsg mmData = Tools.strToMm(dataPiece);
 						//System.out.println("The data piece is:" << dataPiece << ", task id is:" << tm.taskid() << ", before pasre!");
-						//mmData.ParseFromString(dataPiece);
+						//mmData.parseFromString(dataPiece);
 						//System.out.println("After parse, extra info is:" << mmData.extrainfo());
 						data += mmData.getExtraInfo();
 						if (cache) {

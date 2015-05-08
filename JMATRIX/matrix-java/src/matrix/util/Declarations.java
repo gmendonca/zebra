@@ -9,7 +9,6 @@ public class Declarations {
 	Map<Long, Long> inDegree;
 	
 	public final static int BUF_SIZE = 64;
-	public final static Boolean ZHT_STORAGE = false;
-	public static final boolean DATA_CACHE = false;
-	
+	public static final Boolean ZHT_STORAGE = true;
+	public static final Boolean DATA_CACHE = true;
 }

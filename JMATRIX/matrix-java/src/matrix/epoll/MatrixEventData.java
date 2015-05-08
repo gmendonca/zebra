@@ -7,9 +7,9 @@ public class MatrixEventData {
 	private String buf;
 	private int bufSize;
 	//TODO: see if this can work
-	private String fromAddr;
+	private int fromAddr;
 	
-	public MatrixEventData(Socket fd, String buf, int bufSize, String fromAddr){
+	public MatrixEventData(Socket fd, String buf, int bufSize, int fromAddr){
 		this.fd = fd;
 		this.buf = buf;
 		this.bufSize = bufSize;
@@ -28,7 +28,7 @@ public class MatrixEventData {
 		return this.bufSize;
 	}
 	
-	public String fromAddr(){
+	public int fromAddr(){
 		return this.fromAddr;
 	}
 }

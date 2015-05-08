@@ -25,7 +25,7 @@ SubmissionMode  bestcase
 WorkloadFile    /home/ubuntu/zebra/JMATRIX/matrix-java/src/workload
 SchedulerWorkloadPath   /home/ubuntu/zebra/JMATRIX/matrix-java/src/workload_dag
 ClientLog       1
-TaskLog 1
+TaskLog 		1
 SystemLog       1
 SchedulerLog    1
 
