@@ -52,7 +52,7 @@ public class MatrixEpollServer {
 		        	}
 		        }
 				
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				try {
 					server.close();

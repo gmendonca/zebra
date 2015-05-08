@@ -29,6 +29,7 @@ public class MatrixTcpProxy {
 	public static int sendBf(Socket sock, String buf) {
 		
 		try {
+			sock = new Socket("localhost", 60000);
 			sock.getOutputStream();
 			OutputStream os = sock.getOutputStream();
 	        OutputStreamWriter osw = new OutputStreamWriter(os);

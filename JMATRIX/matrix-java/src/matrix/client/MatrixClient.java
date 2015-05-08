@@ -233,11 +233,14 @@ public class MatrixClient extends PeerClient{
 		try {
 			System.out.println(schedulerList.get(toScheIdx) + " " + config.schedulerPortNo);
 			sockfd = new Socket(schedulerList.get(toScheIdx), config.schedulerPortNo);
+			System.out.println("Trying to submit tasks");
 			if (sockfd.isClosed()){
 				sockfd.close();
 				return;
 			}
+			System.out.println("Submiting...");
 			sendBatchTasks(tmVec, sockfd, "client");
+			System.out.println("Done");
 			sockfd.close();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();

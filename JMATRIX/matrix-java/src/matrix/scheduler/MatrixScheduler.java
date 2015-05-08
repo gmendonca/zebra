@@ -396,7 +396,7 @@ public class MatrixScheduler extends PeerScheduler{
 		MatrixEpollServer mes;
 		Serving s;
 		
-		while(true){
+		//while(true){
 			mes = new MatrixEpollServer(config.schedulerPortNo, this);
 			s = new Serving(mes);
 			s.start();
@@ -406,7 +406,7 @@ public class MatrixScheduler extends PeerScheduler{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		//}
 	}
 
 	/* reset the bitmap of neighbors chosen, "false"
@@ -559,7 +559,7 @@ public class MatrixScheduler extends PeerScheduler{
 	public void forkWsThread() {
 		WorkStealing ws;
 		if (config.workStealingOn == 1) {
-			while(true){
+			//while(true){
 				ws = new WorkStealing(this);
 				ws.start();
 				
@@ -568,7 +568,7 @@ public class MatrixScheduler extends PeerScheduler{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			}
+			//}
 		}
 	}
 
@@ -713,7 +713,7 @@ public class MatrixScheduler extends PeerScheduler{
 		
 		ExecutorService executor;
 
-		while(true){
+		//while(true){
 			executor = Executors.newFixedThreadPool(config.numCorePerExecutor);
 			for(int i = 0; i < 4; i++)
 				executor.execute(new ExecutingTask(this));
@@ -721,7 +721,7 @@ public class MatrixScheduler extends PeerScheduler{
 			while (!executor.isTerminated()) { 
 				try { Thread.sleep(10); } catch (InterruptedException e) { } 
 			}
-		}
+		//}
 	}
 
 	public int taskReadyProcess(Value valuePkg, TaskMsg tm) {
@@ -842,7 +842,7 @@ public class MatrixScheduler extends PeerScheduler{
 		
 		CheckingReadyTask crt;
 		
-		while(true){
+		//while(true){
 			crt = new CheckingReadyTask(this);
 			crt.start();
 			
@@ -851,7 +851,7 @@ public class MatrixScheduler extends PeerScheduler{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		//}
 	}
 
 	/* decrease the indegree of a task by one, because one of
@@ -930,7 +930,7 @@ public class MatrixScheduler extends PeerScheduler{
 	public void forkCctThread() {
 		CheckingCompleteTask cct;
 		
-		while(true){
+		//while(true){
 			cct = new CheckingCompleteTask(this);
 			cct.start();
 			
@@ -939,7 +939,7 @@ public class MatrixScheduler extends PeerScheduler{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		//}
 	}
 	
 
@@ -947,7 +947,7 @@ public class MatrixScheduler extends PeerScheduler{
 	public void forkRecordStatThread() {
 		RecordingStat rs;
 		
-		while(true){
+		//while(true){
 			rs = new RecordingStat(this);
 			rs.start();
 			
@@ -956,13 +956,13 @@ public class MatrixScheduler extends PeerScheduler{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		//}
 	}
 
 	public void forkRecordTaskThread() {
 		RecordingTaskTime rtt;
 		
-		while(true){
+		//while(true){
 			rtt = new RecordingTaskTime(this);
 			rtt.start();
 			
@@ -971,13 +971,13 @@ public class MatrixScheduler extends PeerScheduler{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		//}
 	}
 
 	public void forkLocalQueueMonitorThread() {
 		LocalQueueMonitor lqm;
 		
-		while(true){
+		//while(true){
 			lqm = new LocalQueueMonitor(this);
 			lqm.start();
 			
@@ -986,7 +986,7 @@ public class MatrixScheduler extends PeerScheduler{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		//}
 	}
 
 }
