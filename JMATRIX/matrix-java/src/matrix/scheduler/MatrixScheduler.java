@@ -284,11 +284,12 @@ public class MatrixScheduler extends PeerScheduler{
 		System.out.println("Number of tasks recv is:" + numTaskRecvStr);
 		numTaskRecv += numTask;
 		numTaskRecvMoreStr = Long.toString(numTaskRecv);
-		System.out.println("The one potential to insert is:" + numTaskRecvMoreStr);
+		System.out.println("The one potential to insert is: " + numTaskRecvMoreStr);
 		increment += 2;
-		while (zc.compare_swap_int("num tasks recv", numTaskRecvStr,
-				numTaskRecvMoreStr) != 0) {
+		System.out.println("Compare Swap Int: " + zc.compare_swap_int("num tasks recv", numTaskRecvStr, numTaskRecvMoreStr));
+		do {
 			queryValue = zc.compare_swap_string("num tasks recv", numTaskRecvStr,numTaskRecvMoreStr);
+			System.out.println("queryValue: " + queryValue);
 			if (queryValue.isEmpty()) {
 				numTaskRecvStr = zc.lookup("num tasks recv");
 				increment++;
@@ -298,7 +299,7 @@ public class MatrixScheduler extends PeerScheduler{
 			numTaskRecv = Long.parseLong(numTaskRecvStr);
 			numTaskRecv += numTask;
 			numTaskRecvMoreStr = Long.toString(numTaskRecv);
-		}
+		} while (zc.compare_swap_int("num tasks recv", numTaskRecvStr, numTaskRecvMoreStr) != 0);
 
 		if (increment > 0) {
 			synchronized(this){
