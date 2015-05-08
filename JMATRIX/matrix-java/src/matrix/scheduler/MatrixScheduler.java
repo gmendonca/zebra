@@ -670,7 +670,7 @@ public class MatrixScheduler extends PeerScheduler{
 		}
 		}
 
-		
+		System.out.println("Trying to execute the tasks!");
 		String execmd = tm.getCmd();
 		String result = Tools.exec(execmd);
 		String key = getId() + tm.getTaskId();

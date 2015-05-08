@@ -113,3 +113,9 @@ rm -rf neighbor.conf
 echo "localhost 50000" >> neighbor.conf
 ./zhtserver -z zht.conf -n neighbor.conf
 ```
+
+Then run the Client and the scheduler:
+```sh
+java matrix.client.Client config
+java matrix.scheduler.Scheduler config
+```

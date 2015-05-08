@@ -22,15 +22,15 @@ public class CheckingReadyTask extends Thread{
 	public void run(){
 		while (ms.running) {
 			while (ms.waitQueue.size() > 0) {
-				System.out.println("number of task waiting is:" + ms.waitQueue.size());
+				//System.out.println("number of task waiting is:" + ms.waitQueue.size());
 				tm = ms.waitQueue.poll();
-				System.out.println("next one to process is:" + tm.getTaskId());
+				//System.out.println("next one to process is:" + tm.getTaskId());
 
 				Boolean ready = ms.checkReadyTask(tm);
 				increment++;
 				if (!ready) {
 					ms.waitQueue.add(tm);
-					System.out.println("Ok, the task is still not ready! " + tm.getTaskId());
+					//System.out.println("Ok, the task is still not ready! " + tm.getTaskId());
 				}
 			}
 		}

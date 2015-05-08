@@ -43,7 +43,7 @@ public class ExecutingTask extends Thread{
 					ms.numIdleCore--;
 				}
 
-				//cout << "The task to execute is:" << tm.taskid() << endl;
+				System.out.println("The task to execute is:" + tm.getTaskId());
 				ms.execTask(tm);
 
 				synchronized(this){
