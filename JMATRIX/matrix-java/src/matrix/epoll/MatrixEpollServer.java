@@ -36,6 +36,7 @@ public class MatrixEpollServer {
 		ServerSocket server = null;
 		while(true){
 			try {
+				StringBuffer buffer = new StringBuffer("");
 				System.out.println("...");
 				server = new ServerSocket(port);
 				System.out.println("Server runnning on port "+ port);
@@ -48,12 +49,14 @@ public class MatrixEpollServer {
 		        String buf = null;
 		        System.out.println("Trying to read from client");
 		        while((buf = br.readLine()) != null){
-		        	System.out.println(buf);
-		        	synchronized(this){
-		        		System.out.println("adding event " + port);
-		        		eventQueue.add(new MatrixEventData(client, buf, buf.length(), server));
-		        	}
+		        	//System.out.println(buf);
+		        	buffer.append(buf);
+		        	if(buf.endsWith("$")) break;
 		        }
+		        synchronized(this){
+	        		System.out.println("adding event in port " + port + " with uffer length " + buffer.toString().length());
+	        		eventQueue.add(new MatrixEventData(client, buffer.toString(), buffer.toString().length(), server));
+	        	}
 		        br.close();
 		        isr.close();
 		        System.out.println("Done trying to read from client");

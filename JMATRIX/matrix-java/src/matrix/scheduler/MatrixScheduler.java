@@ -72,6 +72,7 @@ public class MatrixScheduler extends PeerScheduler{
 		localQueue = new PriorityQueue<TaskMsgQueueItem>();
 		wsQueue = new PriorityQueue<TaskMsgQueueItem>();
 		completeQueue = new ArrayDeque<CmpQueueItem>();
+		taskTimeEntry = new ArrayList<String>();
 
 		localData = new TreeMap<String, String>();
 		cache = false;
@@ -190,7 +191,7 @@ public class MatrixScheduler extends PeerScheduler{
 			long numTaskRecv = Long.parseLong(numTaskRecvStr);
 			numTaskRecv += numTask;
 			numTaskRecvMoreStr = Long.toString(numTaskRecv);
-			//cout << "number of task more recv is:" << numTaskRecv << endl;
+			//System.out.println("number of task more recv is:" << numTaskRecv);
 			while (zc.compare_swap_int(recvKey, numTaskRecvStr, numTaskRecvMoreStr) != 0) {
 				queryValue = zc.compare_swap_string(recvKey, numTaskRecvStr, numTaskRecvMoreStr);
 				if (queryValue.isEmpty()) {
@@ -198,7 +199,7 @@ public class MatrixScheduler extends PeerScheduler{
 				} else {
 					numTaskRecvStr = queryValue;
 				}
-				//cout << "OK, conflict, current value is:" << numTaskRecvStr << endl;
+				//System.out.println("OK, conflict, current value is:" << numTaskRecvStr);
 				numTaskRecv = Long.parseLong(numTaskRecvStr);
 				numTaskRecv += numTask;
 				numTaskRecvMoreStr = Long.toString(numTaskRecv);
@@ -225,20 +226,25 @@ public class MatrixScheduler extends PeerScheduler{
 	
 	/* receive tasks submitted by client */
 	public void recvTaskFromClient(String str, ServerSocket sockfd) {
-		StringBuffer taskStr = new StringBuffer("");
-		taskStr.append(str);
-		ReturnValue rv = MatrixTcpProxy.recvMul(sockfd,taskStr.toString());
-		String taskStrLs = rv.result.substring(0, taskStr.length() - 1);
-		//cout << "The task String is:" << taskStrLs << endl;
-		ArrayList<String> stealList = Tools.tokenizer(taskStrLs, "##");
-		//cout << "The task size is:" << stealList.size() << endl;
+		//StringBuffer taskStr = new StringBuffer("");
+		//taskStr.append(str);
+		//ReturnValue rv = MatrixTcpProxy.recvMul(sockfd,taskStr.toString());
+		//String taskStrLs = rv.result.substring(0, taskStr.length() - 1);
+		//System.out.println("The task String is:" << taskStrLs);
+		System.out.println("Hi you");
+		ArrayList<String> stealList;
+		if(str.endsWith("$"))
+			stealList = Tools.tokenizer(str.substring(0, str.length()-1), "##");
+		else
+			stealList = Tools.tokenizer(str, "##");
+		System.out.println("The task size is:" + stealList.size());
 		if (stealList.size() == 1) {
 			return;
 		}
 
 		MatrixMsg mmNumTask = Tools.strToMm(stealList.get(0));
 		long numTask = mmNumTask.getCount();
-		//cout << "Number of tasks is:" << numTask << endl;
+		System.out.println("Number of tasks is: " + numTask);
 		int increment = 0;
 
 		for (int i = 1; i < stealList.size(); i++) {
@@ -248,13 +254,13 @@ public class MatrixScheduler extends PeerScheduler{
 			for (int j = 0; j < mm.getCount(); j++) {
 				tmList.add(Tools.strToTaskMsg(mm.getTasks(j)));
 			}
-			//cout << "OK, before the time record!" << endl;
+			System.out.println("OK, before the time record!");
 			synchronized(this){
 				for (int j = 0; j < mm.getCount(); j++) {
 					String taskMD;
-					//cout << "Now, I am doing a zht lookup:" << tmList.get(j).taskid() << endl;
+					System.out.println("Now, I am doing a zht lookup: " + tmList.get(j).getTaskId());
 					taskMD = zc.lookup(tmList.get(j).getTaskId());
-					//cout << "I got the task metadata:" << taskMD << endl;
+					//System.out.println("I got the task metadata: " + taskMD);
 					Value value = Tools.strToValue(taskMD);
 					taskTimeEntry.add(tmList.get(j).getTaskId() + "\tSubmissionTime\t"
 							+ Long.toString(value.getSubmitTime()));
@@ -262,7 +268,7 @@ public class MatrixScheduler extends PeerScheduler{
 							+ "\tWaitQueueTime\t" + time);
 				}
 			}
-			//cout << "OK, I did the time record!" << endl;
+			System.out.println("OK, I did the time record!");
 			increment += mm.getCount();
 
 			synchronized(this){
@@ -271,14 +277,14 @@ public class MatrixScheduler extends PeerScheduler{
 				}
 			}
 		}
-		//cout << "OK, now I have put the tasks in the wait queue, let's update the ZHT record!" << endl;
+		System.out.println("OK, now I have put the tasks in the wait queue, let's update the ZHT record!");
 		String numTaskRecvStr = new String(), numTaskRecvMoreStr = new String(), queryValue = new String();
 		numTaskRecvStr = zc.lookup("num tasks recv");
 		long numTaskRecv = Long.parseLong(numTaskRecvStr);
-		//cout << "Number of tasks recv is:" << numTaskRecvStr << endl;
+		System.out.println("Number of tasks recv is:" + numTaskRecvStr);
 		numTaskRecv += numTask;
 		numTaskRecvMoreStr = Long.toString(numTaskRecv);
-		//cout << "The one potential to insert is:" << numTaskRecvMoreStr << endl;
+		System.out.println("The one potential to insert is:" + numTaskRecvMoreStr);
 		increment += 2;
 		while (zc.compare_swap_int("num tasks recv", numTaskRecvStr,
 				numTaskRecvMoreStr) != 0) {
@@ -299,7 +305,7 @@ public class MatrixScheduler extends PeerScheduler{
 				increZHTMsgCount(increment);
 			}
 		}
-		//cout << "Now, I am done with the number of tasks:" << queryValue << endl;
+		System.out.println("Now, I am done with the number of tasks:" + queryValue);
 	}
 	
 	public void recvPushingTask(MatrixMsg mm, Socket sockfd) {
@@ -331,14 +337,14 @@ public class MatrixScheduler extends PeerScheduler{
 	/* processing requests received by the epoll server */
 	public int procReq(Socket sockfd, String buf, ServerSocket recvSock) {
 		String bufStr = new String(buf);
-		System.out.println(bufStr);
+		//System.out.println(bufStr);
 		
 		
 		/* this is client submitting tasks */
 		String prefix = "client send tasks";
-		System.out.println("I am in procReq");
-		if (bufStr.substring(0, prefix.length()) == prefix) {
-			System.out.println("I am in procReq" + bufStr.substring(0, prefix.length()));
+		System.out.println("I am in procReq " + bufStr.length());
+		if (bufStr.substring(0, prefix.length()).equals(prefix)) {
+			System.out.println("Sending task in procReq");
 			recvTaskFromClient(bufStr, recvSock);
 		} else {
 			MatrixMsg mm;
