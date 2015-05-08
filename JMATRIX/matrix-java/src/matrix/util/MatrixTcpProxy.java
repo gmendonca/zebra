@@ -37,9 +37,9 @@ public class MatrixTcpProxy {
 	        out.write(buf + "\n");
 	        System.out.println("Writing on scheduler a buf "+ buf);
 	        out.flush();
-	        out.close();
+	        //out.close();
 	        //bw.close();
-	        sock.close();
+	        //sock.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

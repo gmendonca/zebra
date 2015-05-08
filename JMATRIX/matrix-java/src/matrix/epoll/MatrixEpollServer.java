@@ -54,6 +54,8 @@ public class MatrixEpollServer {
 		        		eventQueue.add(new MatrixEventData(client, buf, buf.length(), server));
 		        	}
 		        }
+		        br.close();
+		        isr.close();
 		        System.out.println("Done trying to read from client");
 				
 			} catch (Exception e) {

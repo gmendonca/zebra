@@ -336,7 +336,9 @@ public class MatrixScheduler extends PeerScheduler{
 		
 		/* this is client submitting tasks */
 		String prefix = "client send tasks";
+		System.out.println("I am in procReq");
 		if (bufStr.substring(0, prefix.length()) == prefix) {
+			System.out.println("I am in procReq" + bufStr.substring(0, prefix.length()));
 			recvTaskFromClient(bufStr, recvSock);
 		} else {
 			MatrixMsg mm;
