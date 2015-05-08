@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -30,15 +31,14 @@ public class MatrixTcpProxy {
 		
 		try {
 			//sock = new Socket("localhost", 60000);
-			sock.getOutputStream();
-			OutputStream os = sock.getOutputStream();
-	        OutputStreamWriter osw = new OutputStreamWriter(os);
-	        BufferedWriter bw = new BufferedWriter(osw);
-	        bw.write(buf);
+			PrintWriter out = new PrintWriter(sock.getOutputStream());
+	        //OutputStreamWriter osw = new OutputStreamWriter(os);
+	        //BufferedWriter bw = new BufferedWriter(osw);
+	        out.write(buf + "\n");
 	        System.out.println("Writing on scheduler a buf "+ buf);
-	        bw.flush();
-	        bw.close();
-	        sock.close();
+	        out.flush();
+	        //bw.close();
+	        //sock.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
