@@ -268,7 +268,6 @@ public class MatrixClient extends PeerClient{
 			Monitoring m = new Monitoring(this);
 			m.start();
 			try { m.join(); } catch (InterruptedException e) { } 
-			try { Thread.sleep(10); } catch (InterruptedException e) { } 
 		}
 	}
 	
