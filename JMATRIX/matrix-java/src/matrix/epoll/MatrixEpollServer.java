@@ -45,12 +45,15 @@ public class MatrixEpollServer {
 				InputStream is = client.getInputStream();
 		        InputStreamReader isr = new InputStreamReader(is);
 		        BufferedReader br = new BufferedReader(isr);
-		        String buf = br.readLine();
-		        if(!buf.isEmpty()){
+		        String buf = null;
+		        System.out.println("Trying to read from client");
+		        while((buf = br.readLine()) != null){
+		        	System.out.println(buf);
 		        	synchronized(this){
 		        		eventQueue.add(new MatrixEventData(client, buf, buf.length(), port));
 		        	}
 		        }
+		        System.out.println("Done trying to read from client");
 				
 			} catch (Exception e) {
 				e.printStackTrace();

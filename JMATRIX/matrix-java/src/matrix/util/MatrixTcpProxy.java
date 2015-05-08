@@ -29,12 +29,13 @@ public class MatrixTcpProxy {
 	public static int sendBf(Socket sock, String buf) {
 		
 		try {
-			sock = new Socket("localhost", 60000);
+			//sock = new Socket("localhost", 60000);
 			sock.getOutputStream();
 			OutputStream os = sock.getOutputStream();
 	        OutputStreamWriter osw = new OutputStreamWriter(os);
 	        BufferedWriter bw = new BufferedWriter(osw);
 	        bw.write(buf);
+	        System.out.println("Writing on scheduler a buf "+ buf);
 	        bw.flush();
 	        bw.close();
 	        sock.close();
@@ -108,6 +109,7 @@ public class MatrixTcpProxy {
 		if (end) {
 			bufUp.append("$");
 		}
+		System.out.println("Writing on scheduler "+ bufUp.toString());
 		return sendBf(sock, bufUp.toString());
 	}
 
@@ -119,6 +121,7 @@ public class MatrixTcpProxy {
 		
 		while (rv.value > 0) {
 			sum += rv.value ;
+			System.out.println(rv.value);
 			temporary.append(rv.result);
 			if (rv.result.charAt(rv.result.length() - 1) == '$') {
 				break;
