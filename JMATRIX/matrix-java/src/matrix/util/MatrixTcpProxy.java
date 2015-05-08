@@ -27,7 +27,6 @@ public class MatrixTcpProxy {
 	}
 
 	public static int sendBf(Socket sock, String buf) {
-		buf = null;
 		
 		try {
 			sock.getOutputStream();
