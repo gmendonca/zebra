@@ -37,6 +37,7 @@ public class CheckingReadyTask extends Thread{
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+			try { Thread.sleep(10); } catch (Exception e) { }
 		}
 
 		synchronized(this){

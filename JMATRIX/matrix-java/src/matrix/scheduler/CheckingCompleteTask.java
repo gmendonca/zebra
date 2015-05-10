@@ -13,6 +13,7 @@ public class CheckingCompleteTask extends Thread{
 	long increment;
 	
 	public CheckingCompleteTask(MatrixScheduler ms){
+		this.ms = ms;
 		cqItem = new CmpQueueItem();
 		increment = 0;
 	}
@@ -20,7 +21,7 @@ public class CheckingCompleteTask extends Thread{
 	public void run(){
 		while (ms.running) {
 			while (ms.completeQueue.size() > 0) {
-				synchronized(ms.completeQueue){
+				synchronized(ms){
 					if (ms.completeQueue.size() > 0) {
 						cqItem = ms.completeQueue.poll();
 					} else {
@@ -28,6 +29,7 @@ public class CheckingCompleteTask extends Thread{
 					}
 				}
 				increment += ms.notifyChildren(cqItem);
+				try{ Thread.sleep(10); } catch(Exception e) { }
 			}
 			try{ Thread.sleep(10); } catch(Exception e) { }
 		}

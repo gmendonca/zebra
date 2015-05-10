@@ -7,7 +7,7 @@ MaxTaskPerPkg	100
 
 MonitorInterval	10000
 SchedulerPortNo	60000
-SleepLength	100000
+SleepLength	10000
 WorkStealOn	1
 WorkStealPollIntervalStart	1000
 WorkStealPollIntervalUpperBound	1000000

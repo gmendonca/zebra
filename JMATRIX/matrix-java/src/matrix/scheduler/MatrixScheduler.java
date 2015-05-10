@@ -278,6 +278,7 @@ public class MatrixScheduler extends PeerScheduler{
 				}
 			}
 		}
+		
 		System.out.println("OK, now I have put the tasks in the wait queue, let's update the ZHT record!");
 		String numTaskRecvStr = new String(), numTaskRecvMoreStr = new String(), queryValue = new String();
 		numTaskRecvStr = zc.lookup("num tasks recv");
@@ -388,11 +389,11 @@ public class MatrixScheduler extends PeerScheduler{
 				MatrixTcpProxy.sendBig(sockfd, dataStr);
 			}
 		}
-		try {
+		/*try {
 			sockfd.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		return 1;
 	}
 
@@ -697,6 +698,7 @@ public class MatrixScheduler extends PeerScheduler{
 		}
 		
 		synchronized(this){
+			System.out.println("Adding a complete task: " + tm.getTaskId() + " " +key);
 			completeQueue.add(new CmpQueueItem(tm.getTaskId(), key, value.getOutputSize()));
 			numTaskFin++;
 			System.out.println(tm.getTaskId() + "\tNumber of task fin is:" + numTaskFin);
@@ -865,7 +867,7 @@ public class MatrixScheduler extends PeerScheduler{
 		String taskDetail = new String();
 		long increment = 0;
 		//sockMutex.lock();
-		//System.out.println("I got the lock, and I am notifying children!");
+		System.out.println("I got the lock, and I am notifying children!");
 		synchronized(this){
 			taskDetail = zc.lookup(cqItem.taskId);
 		}
@@ -902,7 +904,7 @@ public class MatrixScheduler extends PeerScheduler{
 			vb.setAllDataSize(vb.getAllDataSize() + cqItem.dataSize);
 			childTaskDetailAttempt = Tools.valueToStr(vb.build());
 
-			//System.out.println(cqItem.taskId << "\t" << childTaskId << "\t" << childTaskDetail << "\t" << childTaskDetailAttempt);
+			System.out.println(cqItem.taskId + "\t" + childTaskId + "\t" +childTaskDetail + "\t" + childTaskDetailAttempt);
 			increment++;
 			synchronized(this){
 				while (zc.compare_swap_int(childTaskId, childTaskDetail,
