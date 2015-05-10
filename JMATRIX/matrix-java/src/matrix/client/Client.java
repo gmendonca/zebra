@@ -50,9 +50,7 @@ public class Client {
 			mc.clientLogOS.newLine();
 			mc.clientLogOS.write("------------------------------------------------------------");
 			mc.clientLogOS.write("Now, I am waiting until all the schedulers are running!");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) { }
 
 
 		long startTime = System.currentTimeMillis();
@@ -69,10 +67,7 @@ public class Client {
 			mc.clientLogOS.newLine();
 			mc.clientLogOS.write("It took " + diff + "ms");
 			mc.clientLogOS.write("------------------------------------------------------------");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception e) { }
 		
 		/* insert the task information to ZHT */
 		mc.insertTaskInfoToZHT(dagAdjList, dagInDegree);
@@ -84,9 +79,9 @@ public class Client {
 		mc.submitTask();
 
 		/* do the monitoring to watch th executing progress */
+		try{ Thread.sleep(100); } catch(Exception e) { }
+		System.out.println("Starting monitoring");
 		mc.doMonitoring();
-		
-		
 		
 	}
 }

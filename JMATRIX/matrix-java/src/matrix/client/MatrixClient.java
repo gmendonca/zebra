@@ -60,7 +60,7 @@ public class MatrixClient extends PeerClient{
 		try{
 			clientLogOS.newLine();
 			clientLogOS.write("I am a Matrix Client, it takes me " + diff + "ms for initialization!");
-		} catch(IOException e) { }
+		} catch(Exception e) { }
 	}
 
 
@@ -111,7 +111,7 @@ public class MatrixClient extends PeerClient{
 			clientLogOS.newLine();
 			clientLogOS.write("I am done, the time taken is: " + diff + "ms!");
 			clientLogOS.write("------------------------------------------------------------");
-		} catch(IOException e) { }
+		} catch(Exception e) { }
 		
 	}
 	
@@ -152,7 +152,7 @@ public class MatrixClient extends PeerClient{
 			clientLogOS.newLine();
 			clientLogOS.write("------------------------------------------------------------");
 			clientLogOS.write("Now, I am going to submit tasks to the schedulers");
-		} catch(IOException e) { }
+		} catch(Exception e) { }
 		
 		startTime = System.currentTimeMillis();
 		
@@ -191,10 +191,7 @@ public class MatrixClient extends PeerClient{
 			clientLogOS.newLine();
 			clientLogOS.write("It took " + diff + "ms");
 			clientLogOS.write("------------------------------------------------------------");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception e) { }
 	}
 	
 	/* submit tasks with the best case scenario, in which,
@@ -254,8 +251,9 @@ public class MatrixClient extends PeerClient{
 
 	public void doMonitoring() {
 		while(true){
-			if (getIndex() != 0)
-				return;
+			try{ Thread.sleep(100); } catch(Exception e) { }
+			//if (getIndex() != 0)
+				//continue;
 		
 			/*ExecutorService executor = Executors.newFixedThreadPool(4);
 			for(int i = 0; i < 4; i++)

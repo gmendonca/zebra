@@ -119,3 +119,12 @@ Then run the Client and the scheduler:
 java matrix.client.Client config
 java matrix.scheduler.Scheduler config
 ```
+
+
+To run in a cluster do the same steps, but edit neighbor.conf with all the machines in the cluster and memlist with all the schedulers ips, and edit config:
+```
+./zhtserver -z zht.conf -n neighbor.conf &
+
+#config
+HostIdentityType ip
+```

@@ -19,7 +19,7 @@ SchedulerMemlistFile    /home/ubuntu/zebra/JMATRIX/matrix-java/src/memlist
 NetworkProtocol TCP
 DagType Pipeline
 DagArgument     10
-HostIdentityType        localhost
+HostIdentityType        ip
 
 SubmissionMode  bestcase
 WorkloadFile    /home/ubuntu/zebra/JMATRIX/matrix-java/src/workload
