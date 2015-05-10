@@ -51,7 +51,7 @@ public class ExecutingTask extends Thread{
 					ms.numIdleCore++;
 				}
 			}
-			try { Thread.sleep(10); } catch(Exception e) { }
+			try { Thread.sleep(50); } catch(Exception e) { }
 		}
 
 	}

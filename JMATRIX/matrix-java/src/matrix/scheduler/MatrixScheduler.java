@@ -867,7 +867,7 @@ public class MatrixScheduler extends PeerScheduler{
 		String taskDetail = new String();
 		long increment = 0;
 		//sockMutex.lock();
-		System.out.println("I got the lock, and I am notifying children!");
+		//System.out.println("I got the lock, and I am notifying children!");
 		synchronized(this){
 			taskDetail = zc.lookup(cqItem.taskId);
 		}
@@ -904,7 +904,7 @@ public class MatrixScheduler extends PeerScheduler{
 			vb.setAllDataSize(vb.getAllDataSize() + cqItem.dataSize);
 			childTaskDetailAttempt = Tools.valueToStr(vb.build());
 
-			System.out.println(cqItem.taskId + "\t" + childTaskId + "\t" +childTaskDetail + "\t" + childTaskDetailAttempt);
+			//System.out.println(cqItem.taskId + "\t" + childTaskId + "\t" +childTaskDetail + "\t" + childTaskDetailAttempt);
 			increment++;
 			synchronized(this){
 				while (zc.compare_swap_int(childTaskId, childTaskDetail,

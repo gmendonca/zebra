@@ -117,6 +117,8 @@ public class Monitoring extends Thread{
 			mc.clientLogOS.close();
 		} catch(IOException e) { }
 		
+		System.exit(1);
+		
 	}	
 
 }
