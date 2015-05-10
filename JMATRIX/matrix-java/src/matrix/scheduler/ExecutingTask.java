@@ -17,6 +17,7 @@ public class ExecutingTask extends Thread{
 	
 	public void run(){
 		while (ms.running) {
+			//System.out.println("Executing Task: " + ms.localQueue.size() + " " + ms.wsQueue.size());
 			while (ms.localQueue.size() > 0 || ms.wsQueue.size() > 0) {
 				if (ms.localQueue.size() > 0) {
 					synchronized(this){
@@ -50,6 +51,7 @@ public class ExecutingTask extends Thread{
 					ms.numIdleCore++;
 				}
 			}
+			try { Thread.sleep(10); } catch(Exception e) { }
 		}
 
 	}

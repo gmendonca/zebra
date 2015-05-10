@@ -57,7 +57,7 @@ public abstract class OverallPeer implements Peer{
 			long check = -1;
 			while (true) {
 				try{ check = Long.parseLong(value); } catch (Exception e) { }
-				System.out.println("check and all = " + check + " " + config.numAllTask);
+				//System.out.println("check and all = " + check + " " + config.numAllTask);
 				//TODO:find out why is comming duplicate
 				if(check/2 == config.numAllTask) break;
 				try{ Thread.sleep(10); } catch(Exception e) { }

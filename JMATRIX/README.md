@@ -30,7 +30,7 @@ Install protocol buffer ([Watch out for spaces](http://stackoverflow.com/questio
 
 ```sh
 git init
-git clone https://github.com/google/protobuf.git 
+git clone https://github.com/google/protobuf.git
 git clone https://github.com/protobuf-c/protobuf-c.git
 ```
 

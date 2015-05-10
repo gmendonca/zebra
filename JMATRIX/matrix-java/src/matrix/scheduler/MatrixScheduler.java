@@ -58,6 +58,7 @@ public class MatrixScheduler extends PeerScheduler{
 
 			long diff = stopTime - startTime;
 			schedulerLogOS.write("I am a Scheduler, it takes me " + diff + " ms for initialization!");
+			schedulerLogOS.close();
 		}
 
 		numIdleCore = config.numCorePerExecutor;
@@ -677,6 +678,7 @@ public class MatrixScheduler extends PeerScheduler{
 
 		if(Declarations.ZHT_STORAGE){
 			synchronized(this){
+				//System.out.println("Inserting finish tasks = key is:" + key + ", and value is:" + result);
 				zc.insert(key, result);
 			}
 		}else{
@@ -695,16 +697,9 @@ public class MatrixScheduler extends PeerScheduler{
 		}
 		
 		synchronized(this){
-			//completeQueue.push_back(CmpQueueItem(tm.taskid(), key, result.length()));
 			completeQueue.add(new CmpQueueItem(tm.getTaskId(), key, value.getOutputSize()));
-		}
-		
-		synchronized(this){
 			numTaskFin++;
-			//System.out.println(tm.taskid() + "\tNumber of task fin is:" + numTaskFin);
-		}
-
-		synchronized(this){
+			System.out.println(tm.getTaskId() + "\tNumber of task fin is:" + numTaskFin);
 			increZHTMsgCount(1);
 		}
 	}
@@ -727,8 +722,9 @@ public class MatrixScheduler extends PeerScheduler{
 			//}
 		//}
 		ExecutingTask et = new ExecutingTask(this);
+		et.start();
 		
-		try { et.join(); } catch (InterruptedException e) { } 
+		//try { et.join(); } catch (InterruptedException e) { } 
 		
 	}
 
@@ -870,7 +866,9 @@ public class MatrixScheduler extends PeerScheduler{
 		long increment = 0;
 		//sockMutex.lock();
 		//System.out.println("I got the lock, and I am notifying children!");
-		//zc.lookup(cqItem.taskId, taskDetail);
+		synchronized(this){
+			taskDetail = zc.lookup(cqItem.taskId);
+		}
 		//System.out.println("OK, the task id is:" << cqItem.taskId << ", and task detail is:" << taskDetail);
 		//sockMutex.unlock();
 		if (taskDetail.isEmpty()) {

@@ -69,6 +69,7 @@ public class MatrixEpollServer {
 					e1.printStackTrace();
 				}
 			}
+			try{ Thread.sleep(100); } catch (Exception e) {}
 		}
 		
 	}

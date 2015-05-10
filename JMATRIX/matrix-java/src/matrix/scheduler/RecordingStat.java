@@ -1,5 +1,8 @@
 package matrix.scheduler;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 import matrix.protocol.Metazht.Value;
 import matrix.util.Tools;
 
@@ -45,12 +48,17 @@ public class RecordingStat extends Thread{
 			}
 
 			try {
+				String schedulerLogFile = new String("./scheduler." + (Integer.toString(ms.schedulerList.size())) +
+						"." + Long.toString(ms.config.numTaskPerClient) + 
+						"." + Integer.toString(ms.getIndex()));
+				ms.schedulerLogOS = new BufferedWriter(new FileWriter(schedulerLogFile, true));
 				ms.schedulerLogOS.write(System.currentTimeMillis() + "\t" + ms.numTaskFin
 						+ "\t" + ms.waitQueue.size() + "\t"
 						+ ms.localQueue.size() + ms.wsQueue.size() + "\t"
 						+ ms.numIdleCore + "\t" + ms.config.numCorePerExecutor
 						+ "\t" + ms.numWS + "\t" + ms.numWSFail);
 				ms.schedulerLogOS.newLine();
+				ms.schedulerLogOS.close();
 			} catch (Exception e) { }
 			
 

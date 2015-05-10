@@ -29,6 +29,7 @@ public class CheckingCompleteTask extends Thread{
 				}
 				increment += ms.notifyChildren(cqItem);
 			}
+			try{ Thread.sleep(10); } catch(Exception e) { }
 		}
 
 		synchronized(this){
